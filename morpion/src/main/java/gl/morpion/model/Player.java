@@ -5,6 +5,7 @@ public class Player {
 	private Symbol symbol;
 	private String name;
 	private int points;
+    private boolean turn;
 
 	public String getName() {
 		return this.name;
@@ -27,9 +28,33 @@ public class Player {
 	 * @param name
 	 * @param point
 	 */
-	public Player(String name, int point) {
-		// TODO - implement Player.Player
-		throw new UnsupportedOperationException();
-	}
+    //Constructeurs
+    public Player(String name, int point, Symbol symbol) {
+        this.name=name;
+        this.points=point;
+        this.symbol=symbol;
+    }
+    public Player(String name, Symbol symbol) {
+        this.name=name;
+        this.symbol=symbol;
+    }
+    //fonction a appler en cas de victoire
+    public void addPoint() {
+        this.points = this.points +1;
+        System.out.println("Le joueur "+this.name+" a marqué un point ");
+    }
+    //permet à l'utilisateur de jouer
+    public void playTurn() {
+        this.turn = true;
+    }
+    //oblige l'utilisateur à attendre son prochain tour
+    public void waitTurn() {
+        this.turn = false;
+    }
+
+
+    public boolean isTurn() {
+        return this.turn;
+    }
 
 }
