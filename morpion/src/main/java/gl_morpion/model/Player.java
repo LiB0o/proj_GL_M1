@@ -32,10 +32,12 @@ public class Player {
         this.name=name;
         this.points=point;
         this.symbol=symbol;
+        this.turn = false;
     }
     public Player(String name, Symbol symbol) {
         this.name=name;
         this.symbol=symbol;
+        this.turn = false;
     }
 
     /**
