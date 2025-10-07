@@ -8,7 +8,8 @@ public class TriangleBoard extends GameBoard {
 	 * @param y
 	 */
 	public TriangleBoard(int x, int y) {
-		// TODO - implement TriangleBoard.TriangleBoard
+        super(x, y);
+        // TODO - implement TriangleBoard.TriangleBoard
 		throw new UnsupportedOperationException();
 	}
 

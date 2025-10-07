@@ -1,8 +1,9 @@
 package gl.morpion.model;
 
 /**
- * Cette classe enum�re les types de symboles de notre systeme (X, +, O, ...)
+ * This class lists the types of symbols in our system (X, +, O, ...)
  */
 public enum TypeOfSymbol {
-
+    CROSS,
+    CIRCLE
 }

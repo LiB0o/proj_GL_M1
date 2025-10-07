@@ -19,7 +19,8 @@ public class RectangleBoard extends GameBoard {
 	 * @param y
 	 */
 	public RectangleBoard(int x, int y) {
-		// TODO - implement RectangleBoard.RectangleBoard
+        super(x, y);
+        // TODO - implement RectangleBoard.RectangleBoard
 		throw new UnsupportedOperationException();
 	}
 

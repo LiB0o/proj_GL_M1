@@ -3,14 +3,14 @@ package gl.morpion.model;
 public class Player {
 
 	private Symbol symbol;
-	private string name;
+	private String name;
 	private int points;
 
-	public string getName() {
+	public String getName() {
 		return this.name;
 	}
 
-	public void setName(string name) {
+	public void setName(String name) {
 		this.name = name;
 	}
 
@@ -27,7 +27,7 @@ public class Player {
 	 * @param name
 	 * @param point
 	 */
-	public Player(string name, int point) {
+	public Player(String name, int point) {
 		// TODO - implement Player.Player
 		throw new UnsupportedOperationException();
 	}

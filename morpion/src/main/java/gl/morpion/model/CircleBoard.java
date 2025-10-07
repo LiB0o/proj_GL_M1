@@ -17,7 +17,8 @@ public class CircleBoard extends GameBoard {
 	 * @param radius
 	 */
 	public CircleBoard(int radius) {
-		// TODO - implement CircleBoard.CircleBoard
+        super(2*radius, 2*radius);
+        // TODO - implement CircleBoard.CircleBoard
 		throw new UnsupportedOperationException();
 	}
 
