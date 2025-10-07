@@ -5,5 +5,6 @@ package gl.morpion.model;
  */
 public enum TypeOfSymbol {
     CROSS,
-    CIRCLE
+    CIRCLE,
+    SQUARE
 }
