@@ -1,4 +1,4 @@
-package gl.morpion.model;
+package gl_morpion.model;
 
 public class Player {
 
@@ -24,11 +24,10 @@ public class Player {
 	}
 
 	/**
-	 * 
+	 * Constructor of Player
 	 * @param name
 	 * @param point
 	 */
-    //Constructeurs
     public Player(String name, int point, Symbol symbol) {
         this.name=name;
         this.points=point;
@@ -38,21 +37,34 @@ public class Player {
         this.name=name;
         this.symbol=symbol;
     }
-    //fonction a appler en cas de victoire
+
+    /**
+     * Add a point after a victory
+     */
+
     public void addPoint() {
         this.points = this.points +1;
         System.out.println("Le joueur "+this.name+" a marqué un point ");
     }
-    //permet à l'utilisateur de jouer
+
+    /**
+     * Set the value that permit the player to play to true
+     */
     public void playTurn() {
         this.turn = true;
     }
-    //oblige l'utilisateur à attendre son prochain tour
+
+    /**
+     * Set the value that permit the player to play to false
+     */
     public void waitTurn() {
         this.turn = false;
     }
 
-
+    /**
+     * Return the value that permit/stop the player to play
+     * @return boolean
+     */
     public boolean isTurn() {
         return this.turn;
     }
