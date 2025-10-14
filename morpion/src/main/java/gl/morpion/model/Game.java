@@ -26,10 +26,11 @@ public class Game {
 	/**
 	 * test every possibility for a case to check if there is a win
 	 * @param limit how many symbols are needed next to each other to win
-	 * @return boolean
+	 * @return a pair with a boolean and the symbol of the winner (if boolean == true)
 	 */
-	public boolean checkVictory(int limit) {
+	public Pair<Boolean,Symbol> checkClassicVictory(int limit) {
 		boolean victory = false;
+		Symbol winner = null;
 
 		//TODO: get the HashMap<> from the GameBoard fonction
 
@@ -38,9 +39,12 @@ public class Game {
 					checkDiagonalUpLeft_DownRight(key,limit)||
 					checkDiagonalUpRight_DownLeft(key,limit)||
 					checkLine(key,limit));
+			if(victory){
+				winner = usedCase.get(key);
+			}
 		}
 
-		return victory;
+		return new Pair<Boolean,Symbol>(victory,winner);
 	}
 
 	/**
