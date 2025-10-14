@@ -6,6 +6,7 @@ module gl.morpion {
     requires com.dlsc.formsfx;
     requires net.synedra.validatorfx;
     requires org.kordamp.bootstrapfx.core;
+    requires java.desktop;
 
     opens gl.morpion to javafx.fxml;
     exports gl.morpion;
