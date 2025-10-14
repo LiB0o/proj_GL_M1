@@ -1,4 +1,4 @@
-package gl.morpion.model;
+package gl_morpion.model;
 
 public class BotPlayer extends Player {
 
@@ -16,8 +16,8 @@ public class BotPlayer extends Player {
 	 * 
 	 * @param level
 	 */
-	public BotPlayer(String name, int point, int level) {
-        super(name, point);
+	public BotPlayer(String name,Symbol symbol , int point, int level) {
+        super(name, symbol);
         // TODO - implement BotPlayer.BotPlayer
 		throw new UnsupportedOperationException();
 	}
