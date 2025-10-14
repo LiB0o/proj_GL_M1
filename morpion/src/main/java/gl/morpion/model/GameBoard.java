@@ -111,4 +111,20 @@ public abstract class GameBoard {
         return (line[y] == null);
 	}
 
+	public HashMap<Pair<Integer, Integer>, Symbol> getSymbolInPair(){
+		HashMap<Pair<Integer, Integer>, Symbol> result = new HashMap<>();
+		for(int i = 0; i < row; i++){
+			for(int j = 0; j < column; j++){
+				if(this.isValidCase(i, j)){
+					result.put(new Pair<>(i, j), this.getSymbolInCase(i, j));
+				}
+
+			}
+		}
+		return result;
+	}
+
+	Pair<Integer, Integer> getPair(int x, int y){
+		return new Pair<>(x, y);
+	}
 }

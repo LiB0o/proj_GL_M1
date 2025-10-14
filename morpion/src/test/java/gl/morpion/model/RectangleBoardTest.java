@@ -3,6 +3,8 @@ package gl.morpion.model;
 import javafx.util.Pair;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -82,5 +84,38 @@ class RectangleBoardTest {
         board.placeSymbol(symbol, 2, 3);
         boolean test = board.isEmptyCase(2, 3);
         assertFalse(test);
+    }
+    @Test
+    void getPair(){
+        Pair<Integer, Integer> pair  = board.getPair(2, 3);
+        assertEquals(pair.getKey(), 2);
+        assertEquals(pair.getValue(), 3);
+    }
+
+    void placeSymbols(){
+        this.board.placeSymbol(new Symbol("X", TypeOfSymbol.CROSS), 2, 3);
+        this.board.placeSymbol(new Symbol("X", TypeOfSymbol.CROSS), 1, 2);
+        this.board.placeSymbol(new Symbol("X", TypeOfSymbol.CROSS), 4, 3);
+        this.board.placeSymbol(new Symbol("0", TypeOfSymbol.CIRCLE), 1, 3);
+        this.board.placeSymbol(new Symbol("0", TypeOfSymbol.CIRCLE), 0, 0);
+
+    }
+
+    @Test
+    void getSizeSymbolInPair(){
+        placeSymbols();
+        HashMap<Pair<Integer, Integer>, Symbol> result = this.board.getSymbolInPair();
+        assertFalse(result.isEmpty());
+        assertEquals(result.size(), 30*30);
+    }
+    @Test
+    void getSymbolInPair() {
+        //place symbols
+        placeSymbols();
+        HashMap<Pair<Integer, Integer>, Symbol> result = this.board.getSymbolInPair();
+
+        assertEquals(board.getSymbolInCase(2, 3), result.get(board.getPair(2, 3)));
+        assertNull(result.get(board.getPair(3,4)));
+        assertNotNull(result.get(board.getPair(0, 0)));
     }
 }

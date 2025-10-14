@@ -1,7 +1,10 @@
 package gl.morpion.model;
 
+import javafx.util.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -83,5 +86,11 @@ class TriangleBoardTest {
     void getTypeSymbolInCase() {
         this.placeSymbol(board, 3, 2, new Symbol("0", TypeOfSymbol.CIRCLE));
         assertEquals(TypeOfSymbol.CIRCLE, board.getSymbolInCase(3, 2).typeOfSymbol);
+    }
+
+    @Test
+    void getSizeSymbolInPair() {
+        HashMap<Pair<Integer, Integer>, Symbol> result = board.getSymbolInPair();
+        assertNotEquals(result.size(), 30*30);
     }
 }

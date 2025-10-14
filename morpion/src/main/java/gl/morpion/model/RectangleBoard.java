@@ -3,6 +3,7 @@ package gl.morpion.model;
 import javafx.util.Pair;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class RectangleBoard extends GameBoard {
