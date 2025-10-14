@@ -9,5 +9,8 @@
         <module name="morpion" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="morpion" target="21" />
+    </bytecodeTargetLevel>
   </component>
 </project>
