@@ -5,12 +5,18 @@ import javafx.util.Pair;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
 public class RectangleBoard extends GameBoard {
 
-	final private int DEFAULT_COLUMN = 30;
-	final private int DEFAULT_ROW = 30;
+	private int DEFAULT_COLUMN = 30;
+	private int DEFAULT_ROW = 30;
+
+	public int getDEFAULT_COLUMN() {
+		return this.DEFAULT_COLUMN;
+	}
+
+	public int getDEFAULT_ROW() {
+		return this.DEFAULT_ROW;
+	}
 
 	/**
 	 *
@@ -21,15 +27,6 @@ public class RectangleBoard extends GameBoard {
         super(x, y);
 
 		super.setUseCase(setListRectangle(x,y));
-	}
-
-	/**
-	 * Default constructor
-	 */
-	public RectangleBoard(){
-		super(30,30);
-
-		super.setUseCase(setListRectangle(30,30));
 	}
 
 

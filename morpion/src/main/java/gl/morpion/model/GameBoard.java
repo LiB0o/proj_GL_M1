@@ -10,8 +10,8 @@ import java.util.*;
 public abstract class GameBoard {
 
 	public List<Symbol[]> symbols;
-	private int column;
-	private int row;
+	private final int column;
+	private final int row;
 	public List<Pair<Integer, Integer>> useCase;
 
 	/**
@@ -23,14 +23,6 @@ public abstract class GameBoard {
 	}
 
 	/**
-	 *
-	 * @param column
-	 */
-	public void setColumn(int column) {
-		this.column = column; //Maybe useless
-	}
-
-	/**
 	 * Get the number of row of the Board
 	 * @return int
 	 */
@@ -38,23 +30,16 @@ public abstract class GameBoard {
 		return this.row;
 	}
 
-	/**
-	 *
-	 * @param row
-	 */
-	public void setRow(int row) {
-		this.row = row; //Maybe useless
-	}
 
 	/**
 	 *  Place a symbol inside the List<Symbol[]> symbols
 	 *  Return a true if the symbol was inserted
 	 *
-	 * @param symbol
+	 * @param symbol : the symbol that must be placed
 	 * @param x : line of the board
 	 * @param y : column of the board
 	 */
-	protected boolean placeSymbol(Symbol symbol, int x, int y) {
+	public boolean placeSymbol(Symbol symbol, int x, int y) {
 
 		boolean result = false;
 
@@ -68,34 +53,35 @@ public abstract class GameBoard {
 
 	/**
 	 * Determine whether a box is valid or not
-	 * @param x
-	 * @param y
+	 * @param x : the x coordinate
+	 * @param y : the y coordinate
+	 * @return : if the case (x, y) is empty
 	 */
-	protected boolean isValidCase(int x, int y) {
+	public boolean isValidCase(int x, int y) {
 		Pair<Integer, Integer> test = new Pair<>(x,y);
 		return this.useCase.contains(test);
 	}
 
 	/**
 	 * Allows you to get a symbol in a given box.
-	 * @param row
-	 * @param col
+	 * @param x : the x coordinate
+	 * @param y : the y coordinate
 	 */
-	protected Symbol getSymbolInCase(int row, int col) {
-		return this.symbols.get(row)[col];
+	public Symbol getSymbolInCase(int x, int y) {
+		return this.symbols.get(x)[y];
 	}
 
 	/**
 	 * Constructor of GameBoard, cannot be used without children
-	 * @param column
-	 * @param row
+	 * @param column : number of column
+	 * @param row : number of line
 	 */
 	public GameBoard(int row,int column) {
 
 		this.row = row;
 		this.column = column;
 
-		List<Symbol[]> tab = new ArrayList<Symbol[]>();
+		List<Symbol[]> tab = new ArrayList<>();
 		for(int i=0;i<row;i++){
 			tab.add(new Symbol[column]);
 		}
@@ -113,10 +99,11 @@ public abstract class GameBoard {
 	/**
 	 * Return if the place selected is empty
 	 * For test purpose, will print the state of the case
-	 * @param x : row
-	 * @param y : column
+	 * @param x : the x coordinate
+	 * @param y : the y coordinate
+	 * @return : return true if a case is empty
 	 */
-	protected boolean isEmptyCase(int x, int y) {
+	public boolean isEmptyCase(int x, int y) {
 
 		Symbol[] line = this.symbols.get(x);
 		System.out.println("GameBoard isEmptyCase :"+line[y]); //test
