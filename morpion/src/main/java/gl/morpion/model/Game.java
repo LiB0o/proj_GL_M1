@@ -14,6 +14,10 @@ public class Game {
 		this.players.addAll(players);
 	}
 
+	public Game(){
+
+	}
+
 	public boolean checkVictory() {
 		// TODO - implement Game.checkVictory
 		throw new UnsupportedOperationException();
