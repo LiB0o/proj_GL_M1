@@ -33,6 +33,7 @@ public class Game {
 		Symbol winner = null;
 
 		//TODO: get the HashMap<> from the GameBoard fonction
+		this.usedCase = gameBoard.getSymbolInPair();
 
 		for(Pair<Integer,Integer>key : this.usedCase.keySet()){
 			victory = victory || (checkColumn(key,limit)||
@@ -306,9 +307,15 @@ public class Game {
 	 * @param board
 	 * @param players
 	 */
-	public void playTurn(GameBoard board, Player[] players) {
-		// TODO - implement Game.playTurn
-		throw new UnsupportedOperationException();
+	public void playTurn(GameBoard board, Player[] players, int limit) {
+		if(board != null && players != null){
+			int i = 0;
+			while(this.checkClassicVictory(limit) && i < 100){
+				for(Player p : players){
+					//Je fais quoi ?
+				}
+			}
+		}
 	}
 
 }
