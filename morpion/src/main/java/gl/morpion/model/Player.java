@@ -70,5 +70,8 @@ public class Player {
     public boolean isTurn() {
         return this.turn;
     }
+    public Symbol getSymbol() {
+        return this.symbol;
+    }
 
 }
