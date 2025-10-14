@@ -16,8 +16,8 @@ public class BotPlayer extends Player {
 	 * 
 	 * @param level
 	 */
-	public BotPlayer(String name, int point, int level) {
-        super(name, point);
+	public BotPlayer(String name, int point, int level,Symbol symbol) {
+        super(name, point,symbol);
         // TODO - implement BotPlayer.BotPlayer
 		throw new UnsupportedOperationException();
 	}
