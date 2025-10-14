@@ -5,7 +5,14 @@ import java.util.*;
 public class Game {
 
 	private GameBoard gameBoard;
-	Collection<Player> players;
+	List<Player> players;
+
+	public Game(GameBoard board,List<Player> players){
+		this.gameBoard = board;
+		this.players = new ArrayList<>();
+
+		this.players.addAll(players);
+	}
 
 	public boolean checkVictory() {
 		// TODO - implement Game.checkVictory
