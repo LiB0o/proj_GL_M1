@@ -7,6 +7,10 @@ public class Game {
 	private GameBoard gameBoard;
 	Collection<Player> players;
 
+	public Game(){
+
+	}
+
 	public boolean checkVictory() {
 		// TODO - implement Game.checkVictory
 		throw new UnsupportedOperationException();

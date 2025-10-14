@@ -1,4 +1,4 @@
-package gl_morpion.model;
+package gl.morpion.model;
 
 public class Player {
 
