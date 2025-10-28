@@ -258,14 +258,18 @@ public class Game {
 						new Pair<Integer,Integer>(key.getKey()-i, key.getValue()))){ //if the case exist
 					if(testedSymbol == usedCase.get(
 							new Pair<Integer,Integer>(key.getKey()-i, key.getValue()))){ //if it have the same symbol
+
+						System.out.println("checkLine: je suis position"+(key.getKey()-i)+","+key.getValue()+" augmente verif de 1 \n");
 						verif += 1;
 					}
 					else{
 						folowed = false;
+						System.out.println("checkLine: je suis position"+(key.getKey()-i)+","+key.getValue()+" je suis pas du bon symbol \n");
 					}
 				}
 				else{
 					folowed = false;
+					System.out.println("checkLine: je suis position"+(key.getKey()-i)+","+key.getValue()+" je n ai pas de symbol \n");
 				}
 
 				if(folowed == false){
@@ -274,19 +278,23 @@ public class Game {
 			}
 
 			folowed = true;
+
 			for(int i=0;i<limit;i++){ //forward
 				if(usedCase.containsKey(
 						new Pair<Integer,Integer>(key.getKey()+i, key.getValue()))){ //if the case exist
 					if(testedSymbol == usedCase.get(
 							new Pair<Integer,Integer>(key.getKey()+i, key.getValue()))){ //if it have the same symbol
 						verif += 1;
+						System.out.println("checkLine: je suis position"+(key.getKey()+i)+","+key.getValue()+" augmente verif de 1 \n");
 					}
 					else{
 						folowed = false;
+						System.out.println("checkLine: je suis position"+(key.getKey()+i)+","+key.getValue()+" je suis pas du bon symbol \n");
 					}
 				}
 				else{
 					folowed = false;
+					System.out.println("checkLine: je suis position"+(key.getKey()+i)+","+key.getValue()+" je n ai pas de symbol \n");
 				}
 
 				if(folowed == false){
