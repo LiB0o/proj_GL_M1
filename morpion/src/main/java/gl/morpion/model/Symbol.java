@@ -22,4 +22,10 @@ public class Symbol {
 		this.image = image;
 	}
 
+    public TypeOfSymbol getTypeOfSymbol() {
+        return typeOfSymbol;
+    }
+    
+
+
 }
