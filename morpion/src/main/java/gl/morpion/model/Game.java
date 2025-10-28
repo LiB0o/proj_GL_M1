@@ -62,7 +62,7 @@ public class Game {
 		Symbol testedSymbol = usedCase.get(key); //Symbol of the case you test victory
 
 		if(testedSymbol != null){
-			for(int i=1;i<limit;i++){ //behind (left)
+			for(int i=0;i<limit;i++){ //behind (left)
 				if(usedCase.containsKey(
 						new Pair<Integer,Integer>(key.getKey()-i, key.getValue()-i))){ //if the case exist
 					if(testedSymbol == usedCase.get(
@@ -83,7 +83,7 @@ public class Game {
 			}
 
 			folowed = true;
-			for(int i=1;i<limit;i++){ //forward
+			for(int i=0;i<limit;i++){ //forward
 				if(usedCase.containsKey(
 						new Pair<Integer,Integer>(key.getKey()+i, key.getValue()+i))){ //if the case exist
 					if(testedSymbol == usedCase.get(
@@ -126,7 +126,7 @@ public class Game {
 		Symbol testedSymbol = usedCase.get(key); //Symbol of the case you test victory
 
 		if(testedSymbol != null){
-			for(int i=1;i<limit;i++){ //behind (left)
+			for(int i=0;i<limit;i++){ //behind (left)
 				if(usedCase.containsKey(
 						new Pair<Integer,Integer>(key.getKey()+i, key.getValue()-i))){ //if the case exist
 					if(testedSymbol == usedCase.get(
@@ -147,7 +147,7 @@ public class Game {
 			}
 
 			folowed = true;
-			for(int i=1;i<limit;i++){ //forward (right)
+			for(int i=0;i<limit;i++){ //forward (right)
 				if(usedCase.containsKey(
 						new Pair<Integer,Integer>(key.getKey()-i, key.getValue()+i))){ //if the case exist
 					if(testedSymbol == usedCase.get(
@@ -190,7 +190,7 @@ public class Game {
 		Symbol testedSymbol = usedCase.get(key); //Symbol of the case you test victory
 
 		if(testedSymbol != null){
-			for(int i=1;i<limit;i++){ //behind
+			for(int i=0;i<limit;i++){ //behind
 				if(usedCase.containsKey(
 						new Pair<Integer,Integer>(key.getKey(), key.getValue()-i))){ //if the case exist
 					if(testedSymbol == usedCase.get(
@@ -211,7 +211,7 @@ public class Game {
 			}
 
 			folowed = true;
-			for(int i=1;i<limit;i++){ //forward
+			for(int i=0;i<limit;i++){ //forward
 				if(usedCase.containsKey(
 						new Pair<Integer,Integer>(key.getKey(), key.getValue()+i))){ //if the case exist
 					if(testedSymbol == usedCase.get(
@@ -253,7 +253,7 @@ public class Game {
 		Symbol testedSymbol = usedCase.get(key); //Symbol of the case you test victory
 
 		if(testedSymbol != null){
-			for(int i=1;i<limit;i++){ //behind
+			for(int i=0;i<limit;i++){ //behind
 				if(usedCase.containsKey(
 						new Pair<Integer,Integer>(key.getKey()-i, key.getValue()))){ //if the case exist
 					if(testedSymbol == usedCase.get(
@@ -274,7 +274,7 @@ public class Game {
 			}
 
 			folowed = true;
-			for(int i=1;i<limit;i++){ //forward
+			for(int i=0;i<limit;i++){ //forward
 				if(usedCase.containsKey(
 						new Pair<Integer,Integer>(key.getKey()+i, key.getValue()))){ //if the case exist
 					if(testedSymbol == usedCase.get(
