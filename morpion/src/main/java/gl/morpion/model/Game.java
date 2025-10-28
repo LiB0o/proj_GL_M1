@@ -196,13 +196,16 @@ public class Game {
 					if(testedSymbol == usedCase.get(
 							new Pair<Integer,Integer>(key.getKey(), key.getValue()-i))){ //if it have the same symbol
 						verif += 1;
+						System.out.println("checkColumn: je suis position"+(key.getKey())+","+(key.getValue()-i)+" augmente verif de 1 \n");
 					}
 					else{
 						folowed = false;
+						System.out.println("checkColumn: je suis position"+(key.getKey())+","+(key.getValue()-i)+" je n ai pas le bon symbol \n");
 					}
 				}
 				else{
 					folowed = false;
+					System.out.println("checkColumn: je suis position"+(key.getKey())+","+(key.getValue()-i)+" je nai pas de symbol \n");
 				}
 
 				if(folowed == false){
@@ -217,13 +220,16 @@ public class Game {
 					if(testedSymbol == usedCase.get(
 							new Pair<Integer,Integer>(key.getKey(), key.getValue()+i))){ //if it have the same symbol
 						verif += 1;
+						System.out.println("checkColumn: je suis position"+(key.getKey())+","+(key.getValue()+i)+" augmente verif de 1 \n");
 					}
 					else{
 						folowed = false;
+						System.out.println("checkColumn: je suis position"+(key.getKey())+","+(key.getValue()+i)+" je n ai pas le bon symbol \n");
 					}
 				}
 				else{
 					folowed = false;
+					System.out.println("checkColumn: je suis position"+(key.getKey())+","+(key.getValue()+i)+" je nai pas de symbol \n");
 				}
 
 				if(folowed == false){
@@ -232,6 +238,7 @@ public class Game {
 			}
 		}
 
+		System.out.println("verif est a :"+verif+"\n");
 		if(verif >= limit){ //if we win
 			result = true;
 		}
