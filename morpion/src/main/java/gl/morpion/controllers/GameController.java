@@ -2,6 +2,8 @@ package gl.morpion.controllers;
 
 import gl.morpion.model.*;
 import gl.morpion.vue.GameBoardView;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 
 import java.util.ArrayList;
@@ -41,7 +43,8 @@ public class GameController {
                     //gameBoardView.dispalytest(finali, finalj);
                     this.gameBoardView.update(this.game.getGameBoard());
                     if(this.game.getFin()==true){
-                        this.gameBoardView.exit();
+                        //this.gameBoardView.exit();
+                        this.popup();
 
                     }
 
@@ -49,6 +52,21 @@ public class GameController {
             }
         }
 
+
+    }
+    public void popup(){
+        Platform.runLater(()->{
+            Alert alert=new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Information");
+            alert.setHeaderText("Information");
+            alert.setContentText("PARTIE FINIE");
+            alert.showAndWait();
+            Platform.exit();     // ⬅️ Quitte l'application juste après
+
+
+                }
+
+        );
     }
     public GameBoardView getGameBoardView() {
         return gameBoardView;
