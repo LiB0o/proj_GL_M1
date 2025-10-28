@@ -9,11 +9,14 @@ import java.util.*;
  */
 public abstract class GameBoard {
 
-	public List<Symbol[]> symbols;
+	public List<Symbol[]> symbols;//la grille
 	private final int column;
 	private final int row;
 	public List<Pair<Integer, Integer>> useCase;
 
+    public Symbol getSymbolAt(int x, int y) {
+        return symbols.get(x)[y];
+    }
 	/**
 	 * Get the number of column of the Board
 	 * @return int

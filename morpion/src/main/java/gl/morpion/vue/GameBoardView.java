@@ -3,6 +3,8 @@ package gl.morpion.vue;
 import gl.morpion.controllers.GameBoardController;
 import gl.morpion.model.GameBoard;
 import gl.morpion.model.Player;
+import gl.morpion.model.Symbol;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -56,6 +58,24 @@ public class GameBoardView extends Pane {
         cells[x][y].setGraphic(imageView2);
 
     }
+    public void update(GameBoard gameBoard) {
+        for (int row = 0; row < gameBoard.getRow(); row++) {
+            for (int col = 0; col < gameBoard.getColumn(); col++) {
+                Symbol symbol = gameBoard.getSymbolAt(row, col);
+
+                if (symbol != null) {
+                    ImageView img = new ImageView(symbol.getImage());
+                    img.setFitWidth(40);
+                    img.setFitHeight(40);
+                    img.setPreserveRatio(true);
+                    cells[row][col].setGraphic(img);
+                } else {
+                    cells[row][col].setGraphic(null);
+                }
+            }
+        }
+    }
+
     public void dispalytest(int x, int y) {
 
         Image image = new Image(getClass().getResource("/gl/morpion/croix.jpg").toExternalForm());
@@ -67,6 +87,10 @@ public class GameBoardView extends Pane {
 
         cells[x][y].setGraphic(imageView);
     }
+    public void exit() {
+        Platform.exit();
+    }
+
     public Label getLabel(int x,int y) {
         return cells[x][y];
     }
