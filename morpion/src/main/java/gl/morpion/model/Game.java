@@ -307,7 +307,7 @@ public class Game {
 	 * @param board
 	 * @param players
 	 */
-	public void playTurn(GameBoard board, Player[] players, int limit) {
+	/*public void playTurn(GameBoard board, Player[] players, int limit) {
 		if(board != null && players != null){
 			int i = 0;
 			while(this.checkClassicVictory(limit) && i < 100){
@@ -316,6 +316,6 @@ public class Game {
 				}
 			}
 		}
-	}
+	}*/
 
 }

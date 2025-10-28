@@ -109,9 +109,7 @@ public class Player {
      *
      * @return the player's symbol
      */
-    public Symbol getSymbol() {
-        return this.symbol;
-    }
+
 
     /**
      * Sets the player's symbol.
