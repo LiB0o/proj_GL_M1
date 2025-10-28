@@ -1,5 +1,6 @@
 package gl.morpion;
 
+import gl.morpion.controllers.GameController;
 import gl.morpion.controllers.PvsPController;
 import gl.morpion.model.*;
 import gl.morpion.vue.GameBoardView;
@@ -14,12 +15,13 @@ public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
-        RectangleBoard gameBoard=new RectangleBoard(10,10);
+        /*RectangleBoard gameBoard=new RectangleBoard(10,10);
 
         GameBoardView gameBoardView= new GameBoardView(gameBoard);
 
         PvsPController controller= new PvsPController(gameBoardView,gameBoard);
-        controller.handle();
+        controller.handle();*/
+
         /*Symbol s = new Symbol(
                 getClass().getResource("croix.jpg").toExternalForm(),
                 TypeOfSymbol.CROSS
@@ -36,7 +38,11 @@ public class HelloApplication extends Application {
 
 
         //Scene scene = new Scene(fxmlLoader.load(), 320, 240);
-        Scene scene = new Scene(gameBoardView, 800, 800);
+        GameController gameController = new GameController();
+        gameController.handleGame();
+        Scene scene = new Scene(gameController.getGameBoardView(), 800, 800);
+
+        //Scene scene = new Scene(gameBoardView, 800, 800);
 
 
         //stage.setTitle("Hello!");

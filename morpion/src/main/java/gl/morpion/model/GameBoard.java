@@ -9,11 +9,14 @@ import java.util.*;
  */
 public abstract class GameBoard {
 
-	public List<Symbol[]> symbols;
+	public List<Symbol[]> symbols;//la grille
 	private final int column;
 	private final int row;
 	public List<Pair<Integer, Integer>> useCase;
 
+    public Symbol getSymbolAt(int x, int y) {
+        return symbols.get(x)[y];
+    }
 	/**
 	 * Get the number of column of the Board
 	 * @return int
@@ -106,7 +109,7 @@ public abstract class GameBoard {
 	public boolean isEmptyCase(int x, int y) {
 
 		Symbol[] line = this.symbols.get(x);
-		System.out.println("GameBoard isEmptyCase :"+line[y]); //test
+		//System.out.println("GameBoard isEmptyCase :"+line[y]); //test
 
         return (line[y] == null);
 	}
@@ -118,7 +121,6 @@ public abstract class GameBoard {
 				if(this.isValidCase(i, j)){
 					result.put(new Pair<>(i, j), this.getSymbolInCase(i, j));
 				}
-
 			}
 		}
 		return result;
