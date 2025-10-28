@@ -109,7 +109,7 @@ public abstract class GameBoard {
 	public boolean isEmptyCase(int x, int y) {
 
 		Symbol[] line = this.symbols.get(x);
-		System.out.println("GameBoard isEmptyCase :"+line[y]); //test
+		//System.out.println("GameBoard isEmptyCase :"+line[y]); //test
 
         return (line[y] == null);
 	}
@@ -121,7 +121,6 @@ public abstract class GameBoard {
 				if(this.isValidCase(i, j)){
 					result.put(new Pair<>(i, j), this.getSymbolInCase(i, j));
 				}
-
 			}
 		}
 		return result;
