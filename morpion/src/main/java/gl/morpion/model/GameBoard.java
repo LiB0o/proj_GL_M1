@@ -124,7 +124,7 @@ public abstract class GameBoard {
 		return result;
 	}
 
-	Pair<Integer, Integer> getPair(int x, int y){
+	public Pair<Integer, Integer> getPair(int x, int y){
 		return new Pair<>(x, y);
 	}
 }
