@@ -32,6 +32,7 @@ public class Game {
 		boolean victory = false;
 		Symbol winner = null;
 
+		//TODO: get the HashMap<> from the GameBoard fonction
 		this.usedCase = gameBoard.getSymbolInPair();
 
 		for(Pair<Integer,Integer>key : this.usedCase.keySet()){
@@ -309,10 +310,9 @@ public class Game {
 	public void playTurn(GameBoard board, Player[] players, int limit) {
 		if(board != null && players != null){
 			int i = 0;
-			while(this.checkClassicVictory(limit).getKey() && i < 100){
+			while(this.checkClassicVictory(limit) && i < 100){
 				for(Player p : players){
 					//Je fais quoi ?
-
 				}
 			}
 		}
