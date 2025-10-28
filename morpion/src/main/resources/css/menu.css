@@ -1,0 +1,63 @@
+/*
+ * Morpion GL-M1 – Styles globaux
+ */
+
+/* ----- Fond du menu ----- */
+.main-menu-bg {
+    -fx-background-color: linear-gradient(to bottom, #0a0f14, #14202a);
+}
+
+/* ----- Titre ----- */
+.title-glow {
+    -fx-text-fill: #e8f6ff;
+    /* lueur douce */
+    -fx-effect: dropshadow(gaussian, rgba(80,180,220,0.35), 20, 0.0, 0, 0);
+}
+
+/* ----- Gros boutons (modes) ----- */
+.big-button {
+    -fx-pref-width: 320px;
+    -fx-min-height: 50px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: rgba(120, 220, 255, 0.75);
+    -fx-border-width: 2;
+    -fx-background-color: rgba(80, 180, 220, 0.18);
+    -fx-cursor: hand;
+}
+.big-button:hover, .big-button:focused {
+    -fx-background-color: rgba(80, 180, 220, 0.30);
+    -fx-border-color: rgba(120, 220, 255, 0.90);
+    -fx-effect: dropshadow(gaussian, rgba(120,220,255,0.5), 10, 0.0, 0, 0);
+}
+
+/* ----- Boutons “pill” (Rules, etc.) ----- */
+.pill-button {
+    -fx-background-radius: 999;
+    -fx-background-color: rgba(255, 255, 255, 0.10);
+    -fx-text-fill: #e8f6ff;
+    -fx-padding: 6 14 6 14;
+    -fx-cursor: hand;
+}
+
+/* ----- Boutons icône (settings, langue) ----- */
+.icon-button {
+    -fx-background-radius: 999;
+    -fx-background-color: rgba(255, 255, 255, 0.12);
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 6 10 6 10;
+    -fx-cursor: hand;
+    -fx-focus-traversable: false;
+}
+.icon-button:hover { -fx-background-color: rgba(255,255,255,0.25); }
+.icon-button:selected { -fx-background-color: rgba(120, 220, 255, 0.5); }
+
+/* ----- Version (en bas à gauche) ----- */
+.version-label {
+    -fx-text-fill: #FFFFFFA0;
+    -fx-font-size: 12px;
+}
