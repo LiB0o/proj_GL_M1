@@ -7,12 +7,12 @@ import java.util.*;
 public class Game {
 
 	private int turn=0;
-    private HashMap<Pair<Integer,Integer>,Symbol> usedCase;
+	private HashMap<Pair<Integer,Integer>,Symbol> usedCase;
 	private GameBoard gameBoard;
 	List<Player> players;
-    private boolean fin=false;
+	private boolean fin=false;
 
-    /**
+	/**
 	 * Create the instance of Game
 	 * @param board of type GameBoard
 	 * @param players as a List<Player>
@@ -33,7 +33,7 @@ public class Game {
 	public Pair<Boolean,Symbol> checkClassicVictory(int limit) {
 		boolean victory = false;
 		Symbol winner = null;
-        Pair<Boolean,Symbol> winnerPair = new Pair<>(false,null);
+		Pair<Boolean,Symbol> winnerPair = new Pair<>(false,null);
 
 		//TODO: get the HashMap<> from the GameBoard fonction
 		this.usedCase = gameBoard.getSymbolInPair();
@@ -45,13 +45,13 @@ public class Game {
 					checkLine(key,limit));
 			if(victory){
 				//winner = usedCase.get(key);
-                winnerPair =  new Pair<>(true,usedCase.get(key));
-			    //System.out.println(winner.getTypeOfSymbol());
-                victory = false;
-            }
+				winnerPair =  new Pair<>(true,usedCase.get(key));
+				//System.out.println(winner.getTypeOfSymbol());
+				victory = false;
+			}
 		}
-        //Pair<Boolean,Symbol> result = new Pair<Boolean,Symbol>(victory,winner);
-        //System.out.println(result.getValue().getTypeOfSymbol());
+		//Pair<Boolean,Symbol> result = new Pair<Boolean,Symbol>(victory,winner);
+		//System.out.println(result.getValue().getTypeOfSymbol());
 		return winnerPair;
 	}
 
@@ -69,7 +69,7 @@ public class Game {
 		Symbol testedSymbol = usedCase.get(key); //Symbol of the case you test victory
 
 		if(testedSymbol != null){
-			for(int i=0;i<limit;i++){ //behind (left)
+			for(int i=1;i<limit;i++){ //behind (left)
 				if(usedCase.containsKey(
 						new Pair<Integer,Integer>(key.getKey()-i, key.getValue()-i))){ //if the case exist
 					if(testedSymbol == usedCase.get(
@@ -90,7 +90,7 @@ public class Game {
 			}
 
 			folowed = true;
-			for(int i=0;i<limit;i++){ //forward
+			for(int i=1;i<limit;i++){ //forward
 				if(usedCase.containsKey(
 						new Pair<Integer,Integer>(key.getKey()+i, key.getValue()+i))){ //if the case exist
 					if(testedSymbol == usedCase.get(
@@ -133,7 +133,7 @@ public class Game {
 		Symbol testedSymbol = usedCase.get(key); //Symbol of the case you test victory
 
 		if(testedSymbol != null){
-			for(int i=0;i<limit;i++){ //behind (left)
+			for(int i=1;i<limit;i++){ //behind (left)
 				if(usedCase.containsKey(
 						new Pair<Integer,Integer>(key.getKey()+i, key.getValue()-i))){ //if the case exist
 					if(testedSymbol == usedCase.get(
@@ -154,7 +154,7 @@ public class Game {
 			}
 
 			folowed = true;
-			for(int i=0;i<limit;i++){ //forward (right)
+			for(int i=1;i<limit;i++){ //forward (right)
 				if(usedCase.containsKey(
 						new Pair<Integer,Integer>(key.getKey()-i, key.getValue()+i))){ //if the case exist
 					if(testedSymbol == usedCase.get(
@@ -197,7 +197,7 @@ public class Game {
 		Symbol testedSymbol = usedCase.get(key); //Symbol of the case you test victory
 
 		if(testedSymbol != null){
-			for(int i=0;i<limit;i++){ //behind
+			for(int i=1;i<limit;i++){ //behind
 				if(usedCase.containsKey(
 						new Pair<Integer,Integer>(key.getKey(), key.getValue()-i))){ //if the case exist
 					if(testedSymbol == usedCase.get(
@@ -218,7 +218,7 @@ public class Game {
 			}
 
 			folowed = true;
-			for(int i=0;i<limit;i++){ //forward
+			for(int i=1;i<limit;i++){ //forward
 				if(usedCase.containsKey(
 						new Pair<Integer,Integer>(key.getKey(), key.getValue()+i))){ //if the case exist
 					if(testedSymbol == usedCase.get(
@@ -260,23 +260,19 @@ public class Game {
 		Symbol testedSymbol = usedCase.get(key); //Symbol of the case you test victory
 
 		if(testedSymbol != null){
-			for(int i=0;i<limit;i++){ //behind
+			for(int i=1;i<limit;i++){ //behind
 				if(usedCase.containsKey(
 						new Pair<Integer,Integer>(key.getKey()-i, key.getValue()))){ //if the case exist
 					if(testedSymbol == usedCase.get(
 							new Pair<Integer,Integer>(key.getKey()-i, key.getValue()))){ //if it have the same symbol
-
-						System.out.println("checkLine: je suis position"+(key.getKey()-i)+","+key.getValue()+" augmente verif de 1 \n");
 						verif += 1;
 					}
 					else{
 						folowed = false;
-						System.out.println("checkLine: je suis position"+(key.getKey()-i)+","+key.getValue()+" je suis pas du bon symbol \n");
 					}
 				}
 				else{
 					folowed = false;
-					System.out.println("checkLine: je suis position"+(key.getKey()-i)+","+key.getValue()+" je n ai pas de symbol \n");
 				}
 
 				if(folowed == false){
@@ -285,23 +281,19 @@ public class Game {
 			}
 
 			folowed = true;
-
-			for(int i=0;i<limit;i++){ //forward
+			for(int i=1;i<limit;i++){ //forward
 				if(usedCase.containsKey(
 						new Pair<Integer,Integer>(key.getKey()+i, key.getValue()))){ //if the case exist
 					if(testedSymbol == usedCase.get(
 							new Pair<Integer,Integer>(key.getKey()+i, key.getValue()))){ //if it have the same symbol
 						verif += 1;
-						System.out.println("checkLine: je suis position"+(key.getKey()+i)+","+key.getValue()+" augmente verif de 1 \n");
 					}
 					else{
 						folowed = false;
-						System.out.println("checkLine: je suis position"+(key.getKey()+i)+","+key.getValue()+" je suis pas du bon symbol \n");
 					}
 				}
 				else{
 					folowed = false;
-					System.out.println("checkLine: je suis position"+(key.getKey()+i)+","+key.getValue()+" je n ai pas de symbol \n");
 				}
 
 				if(folowed == false){
@@ -317,11 +309,7 @@ public class Game {
 		return result;
 	}
 
-	/**
-	 * 
-	 * @param board
-	 * @param players
-	 */
+
 	/*public void playTurn(GameBoard board, Player[] players, int limit) {
 		if(board != null && players != null){
 			int i = 0;
@@ -332,59 +320,60 @@ public class Game {
 			}
 		}
 	}*/
-    public void playTurn(int x, int y) {
-        int i = 0;
+	public void playTurn(int x, int y) {
+		int i = 0;
 
-        while ( i <= gameBoard.getColumn()*gameBoard.getRow()) {
-            Player currentPlayer;
+		while ( i <= gameBoard.getColumn()*gameBoard.getRow()) {
+			Player currentPlayer;
 
-            if (i % 2 == 0) { // i pair → joueur 1
-                currentPlayer = players.get(0);
-            } else { // i impair → joueur 2
-                currentPlayer = players.get(1);
-            }
+			if (i % 2 == 0) { // i pair → joueur 1
+				currentPlayer = players.get(0);
+			} else { // i impair → joueur 2
+				currentPlayer = players.get(1);
+			}
 
-            if (this.gameBoard.placeSymbol(currentPlayer.getSymbol(), x, y)) {
-                this.gameBoard.symbols.get(x)[y] = currentPlayer.getSymbol();
-                i++; // coup joué → on change de joueur
+			if (this.gameBoard.placeSymbol(currentPlayer.getSymbol(), x, y)) {
+				this.gameBoard.symbols.get(x)[y] = currentPlayer.getSymbol();
+				i++; // coup joué → on change de joueur
 
-            }
+			}
 
-        }
-    }
-    public void plaayTurn(int x, int y) {
-        Player currentPlayer = players.get(turn % 2); // joueur actuel
+		}
+	}
+	public void plaayTurn(int x, int y) {
+		Player currentPlayer = players.get(turn % 2); // joueur actuel
 
-        // Vérifier si la case est vide
-        if (this.gameBoard.symbols.get(x)[y] == null) {
-            // Placer le symbole dans la grille
-            this.gameBoard.symbols.get(x)[y] = currentPlayer.getSymbol();
-            Pair<Boolean, Symbol> victory =  this.checkClassicVictory(5);
-            if(victory.getKey() && currentPlayer.getSymbol() == victory.getValue()){
-                System.out.println(victory.getValue());
-                currentPlayer.addPoint();
-                System.out.println("Points de   " + currentPlayer.getName()+" :"+ currentPlayer.getPoints());
+		// Vérifier si la case est vide
+		if (this.gameBoard.symbols.get(x)[y] == null) {
+			// Placer le symbole dans la grille
+			this.gameBoard.symbols.get(x)[y] = currentPlayer.getSymbol();
+			Pair<Boolean, Symbol> victory =  this.checkClassicVictory(5);
+			if(victory.getKey() && currentPlayer.getSymbol() == victory.getValue()){
+				System.out.println(victory.getValue());
+				currentPlayer.addPoint();
+				System.out.println("Points de   " + currentPlayer.getName()+" :"+ currentPlayer.getPoints());
 
 
-                System.out.println("Vicoire pour  " + currentPlayer.getName());
-            }
+				System.out.println("Vicoire pour  " + currentPlayer.getName());
+			}
 
-            // Incrémenter le tour pour passer au joueur suivant
-            turn++;
+			// Incrémenter le tour pour passer au joueur suivant
+			turn++;
 
-        } else {
-            System.out.println("Case déjà occupée !");
-        }
-        if( players.getFirst().getPoints()!=0 || players.getLast().getPoints()!=0){
-            this.fin=true;
-        }
-    }
+		} else {
+			System.out.println("Case déjà occupée !");
+		}
+		if( players.getFirst().getPoints()!=0 || players.getLast().getPoints()!=0){
+			this.fin=true;
+		}
+	}
 
-    public GameBoard getGameBoard() {
-        return gameBoard;
-    }
-    public boolean getFin() {
-        return fin;
-    }
+	public GameBoard getGameBoard() {
+		return gameBoard;
+	}
+	public boolean getFin() {
+		return fin;
+	}
+//Force Change
 
 }
