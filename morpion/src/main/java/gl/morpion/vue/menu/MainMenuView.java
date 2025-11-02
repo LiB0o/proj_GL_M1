@@ -54,7 +54,7 @@ public class MainMenuView extends StackPane {
         title.setTextFill(Color.web("#e8f6ff"));
 
         vsBot    = big("Player vs Bots",   () -> controller.showMode("Player vs Bots"));
-        vsPlayer = big("Player vs Player", () -> controller.showMode("Player vs Player"));
+        vsPlayer = big("Player vs Player", controller::startModePvp);
         custom   = big("Custom",           () -> controller.showMode("Custom"));
 
         VBox btnCol = new VBox(14, vsBot, vsPlayer, custom);
@@ -64,7 +64,7 @@ public class MainMenuView extends StackPane {
         centerCol.setAlignment(Pos.CENTER);
 
         // bottom: version left + rules right
-        Label version = new Label("v0.1 (GL M1)");
+        Label version = new Label("v1.0.2 (GL M1)");
         version.getStyleClass().add("version-label");
 
         Button rules = new Button("Rules…");
