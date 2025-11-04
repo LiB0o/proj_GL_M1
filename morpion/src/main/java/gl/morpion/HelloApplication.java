@@ -14,7 +14,7 @@ import java.io.IOException;
 public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
+        //FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
         /*RectangleBoard gameBoard=new RectangleBoard(10,10);
 
         GameBoardView gameBoardView= new GameBoardView(gameBoard);
@@ -38,7 +38,7 @@ public class HelloApplication extends Application {
 
 
         //Scene scene = new Scene(fxmlLoader.load(), 320, 240);
-        GameController gameController = new GameController();
+        /*GameController gameController = new GameController();
         gameController.handleGame();
         Scene scene = new Scene(gameController.getGameBoardView(), 800, 800);
 
@@ -47,7 +47,7 @@ public class HelloApplication extends Application {
 
         //stage.setTitle("Hello!");
         stage.setScene(scene);
-        stage.show();
+        stage.show();*/
     }
 
     public static void main(String[] args) {
