@@ -18,7 +18,7 @@ public class MainMenuController {
 
     public void showMainMenu() {
         MainMenuView menu = new MainMenuView(this);
-        stage.setScene(new Scene(menu, 1200, 800));
+        stage.setScene(new Scene(menu, 1400, 900));
     }
 
     public void showMode(String modeName) {
@@ -26,7 +26,7 @@ public class MainMenuController {
                 "Je suis dans " + modeName,
                 this::showMainMenu
         );
-        stage.setScene(new Scene(view, 1200, 800));
+        stage.setScene(new Scene(view, 1400, 900));
     }
 
     public void startModePvp() {
@@ -39,7 +39,7 @@ public class MainMenuController {
         );
 
         // CSS global
-        Scene scene = new Scene(gameView, 1200, 800);
+        Scene scene = new Scene(gameView, 1400, 900);
         var css = getClass().getResource("/css/menu.css");
         if (css != null) scene.getStylesheets().add(css.toExternalForm());
 
