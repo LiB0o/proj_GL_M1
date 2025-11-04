@@ -1,5 +1,5 @@
 package gl.morpion.controllers.menu;
-
+import gl.morpion.vue.player.PlayerNamesView;
 import gl.morpion.controllers.GameController;
 import gl.morpion.vue.menu.GameBoardWithMenuView;
 import gl.morpion.vue.menu.MainMenuView;
@@ -30,29 +30,46 @@ public class MainMenuController {
     }
 
     public void startModePvp() {
-        GameController gameController = new GameController();
+        PlayerNamesView namesView = new PlayerNamesView(
+                // onStart: reçoit (name1, name2)
+                (name1, name2) -> {
+                    // Créer le GameController avec les deux noms (voir point 3)
+                    GameController gameController = new GameController(name1, name2);
 
-        // Vue avec bouton "Retour" intégré
-        GameBoardWithMenuView gameView = new GameBoardWithMenuView(
-                gameController.getGameBoardView(),
-                this::showMainMenu  // action du bouton Retour
+                    GameBoardWithMenuView gameView = new GameBoardWithMenuView(
+                            gameController.getGameBoardView(),
+                            this::showMainMenu // bouton Retour intégré
+                    );
+
+                    Scene scene = new Scene(gameView, 1400, 900);
+
+                    // garder le même CSS !
+                    var css = getClass().getResource("/css/menu.css");
+                    if (css != null) scene.getStylesheets().add(css.toExternalForm());
+
+                    // Escape pour revenir au menu
+                    scene.setOnKeyPressed(e -> {
+                        if (e.getCode() == KeyCode.ESCAPE) showMainMenu();
+                    });
+
+                    // logiques de fin de partie → retour au menu
+                    gameController.handleGame(this::showMainMenu);
+
+                    stage.setScene(scene);
+                },
+                // onBack → retour au menu principal
+                this::showMainMenu
         );
 
-        // CSS global
-        Scene scene = new Scene(gameView, 1400, 900);
+        Scene scene = new Scene(namesView, 1400, 900);
+
+        // garder le même CSS !
         var css = getClass().getResource("/css/menu.css");
         if (css != null) scene.getStylesheets().add(css.toExternalForm());
 
-        // ESC pour revenir au menu (en bonus)
-        scene.setOnKeyPressed(e -> {
-            if (e.getCode() == KeyCode.ESCAPE) showMainMenu();
-        });
-
-        // Branchement logique de jeu (fin → retour menu)
-        gameController.handleGame(this::showMainMenu);
-
         stage.setScene(scene);
     }
+
 
     public void openSettings() { /* à faire plus tard */ }
     public void showRules()    { showMode("Rules"); }

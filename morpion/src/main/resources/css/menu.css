@@ -10,6 +10,7 @@
 /* ----- Titre ----- */
 .title-glow {
     -fx-text-fill: #e8f6ff;
+    -fx-font-size: 42px;
     /* lueur douce */
     -fx-effect: dropshadow(gaussian, rgba(80,180,220,0.35), 20, 0.0, 0, 0);
 }
@@ -62,3 +63,42 @@
     -fx-text-fill: #FFFFFFA0;
     -fx-font-size: 12px;
 }
+/* ----- Player Names View ----- */
+
+/* Carte centrale translucide */
+.form-card {
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+    -fx-background-radius: 16;
+    -fx-border-color: rgba(120, 220, 255, 0.25);
+    -fx-border-width: 1;
+    -fx-border-radius: 16;
+    -fx-padding: 28;
+}
+
+/* Libellés des champs */
+.form-label {
+    -fx-text-fill: #e8f6ff;
+    -fx-font-size: 24px;
+    -fx-opacity: 0.95;
+}
+
+/* Champs de saisie */
+.text-input {
+    -fx-pref-width: 320px;
+    -fx-background-radius: 10;
+    -fx-background-color: rgba(255,255,255,0.10);
+    -fx-text-fill: #e8f6ff;
+    -fx-prompt-text-fill: rgba(232,246,255,0.6);
+    -fx-border-radius: 10;
+    -fx-border-color: transparent;
+    -fx-padding: 10 12 10 12;
+}
+.text-input:focused {
+    -fx-background-color: rgba(255,255,255,0.16);
+    -fx-border-color: rgba(120, 220, 255, 0.65);
+    -fx-effect: dropshadow(gaussian, rgba(120,220,255,0.35), 8, 0.0, 0, 0);
+}
+
+/* Espacement vertical léger entre les éléments (optionnel si tu ne veux pas gérer en code) */
+.v-gap-8 { -fx-padding: 4 0 4 0; }
+.v-gap-12 { -fx-padding: 6 0 6 0; }

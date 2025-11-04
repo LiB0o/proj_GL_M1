@@ -37,7 +37,7 @@ public class GameController {
     /**
      * Constructor: Initializes the complete game setup including players, symbols, board, and views.
      */
-    public GameController() {
+    public GameController(String player1Name, String player2Name) {
         // ---- joueurs & symboles ----
         
         // Create cross symbol for player 1 with image resource
@@ -53,10 +53,16 @@ public class GameController {
         );
         
         // Initialize player 1 with name "yassine" and cross symbol
-        Player p1 = new Player("yassine", cross);
+        Player p1 = new Player(
+                (player1Name == null || player1Name.isBlank()) ? "Joueur 1" : player1Name,
+                cross
+        );
         
         // Initialize player 2 with name "mehdi" and circle symbol
-        Player p2 = new Player("mehdi", circle);
+        Player p2 = new Player(
+                (player2Name == null || player2Name.isBlank()) ? "Joueur 2" : player2Name,
+                circle
+        );
 
         // Create list to hold both players
         List<Player> players = new ArrayList<>();
@@ -138,10 +144,10 @@ public class GameController {
             alert.setTitle("Partie terminée");
             alert.setHeaderText("Information");
             alert.setContentText("PARTIE FINIE");
-            
+
             // Display the alert and wait for user to close it
             alert.showAndWait();
-            
+
             // Execute the finish callback if provided (e.g., return to menu)
             if (onFinish != null) onFinish.run();
         });
