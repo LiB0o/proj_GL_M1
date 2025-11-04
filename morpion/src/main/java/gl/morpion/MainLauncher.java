@@ -9,7 +9,7 @@ public class MainLauncher extends Application {
     @Override
     public void start(Stage stage) {
         MainMenuController controller = new MainMenuController(stage);
-        controller.showMainMenu();              // setScene(menu) via le contrôleur
+        controller.showMainMenu();
         stage.setTitle("Morpion – GL M1");
         stage.show();
     }
