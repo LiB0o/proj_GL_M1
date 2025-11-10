@@ -1,0 +1,30 @@
+.dialog-pane {
+    -fx-background-color: linear-gradient(to bottom right, #1e1e2e, #252540);
+    /*-fx-border-color: gold;*/
+    -fx-border-width: 3px;
+    -fx-border-radius: 12px;
+    /*-fx-background-radius: 12px;*/
+}
+
+.dialog-pane .header-panel .label {
+    /*-fx-text-fill: gold;*/
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+
+}
+
+.dialog-pane .content.label {
+    -fx-text-fill: white;
+    -fx-font-size: 26px;
+}
+
+.button {
+    -fx-background-color: rgba(255, 255, 255, 0.12);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8px;
+}
+
+.button:hover {
+    -fx-background-color: rgba(255,255,255,0.25);
+}

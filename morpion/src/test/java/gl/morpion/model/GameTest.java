@@ -62,7 +62,7 @@ class GameTest {
         players.add(pBot);
         players.add(phum);
         gameBoard = new RectangleBoard(10, 10);
-        game = new Game(gameBoard, players);
+        game = new Game(gameBoard, null, null, null);// a cooriger
     }
 
     @Test

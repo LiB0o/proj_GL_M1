@@ -8,8 +8,10 @@ import java.util.List;
 
 public class RectangleBoard extends GameBoard {
 
-	private int DEFAULT_COLUMN = 30;
-	private int DEFAULT_ROW = 30;
+	//private int DEFAULT_COLUMN = 30;
+	//private int DEFAULT_ROW = 30;
+
+	public static final int DEFAULT_ROW = 10, DEFAULT_COLUMN = 10; //TODO:  probleme si ROW defferent COL
 
 	public int getDEFAULT_COLUMN() {
 		return this.DEFAULT_COLUMN;

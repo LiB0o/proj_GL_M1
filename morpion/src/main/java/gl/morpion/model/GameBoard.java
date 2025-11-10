@@ -109,8 +109,6 @@ public abstract class GameBoard {
 	public boolean isEmptyCase(int x, int y) {
 
 		Symbol[] line = this.symbols.get(x);
-		//System.out.println("GameBoard isEmptyCase :"+line[y]); //test
-
         return (line[y] == null);
 	}
 
@@ -128,5 +126,27 @@ public abstract class GameBoard {
 
 	public Pair<Integer, Integer> getPair(int x, int y){
 		return new Pair<>(x, y);
+	}
+
+	//---------------------------------debug-------------------
+	public String debugSymbol(Symbol symbol){
+		if(symbol != null){
+			if(symbol.getTypeOfSymbol() == TypeOfSymbol.CROSS){
+				return "CROSS";
+			}else if(symbol.getTypeOfSymbol() == TypeOfSymbol.CIRCLE){
+				return "CIRCLE";
+			}
+		}
+		return "NONE";
+	}
+	public void debugGameBoard() {
+		int rows = this.getRow();
+		int cols = this.getColumn();
+		for(int i= 0; i < rows; i++){
+			for(int j = 0; j < cols; j++){
+				System.out.print("("+i+", "+j+" - "+ this.debugSymbol(this.getSymbolInCase(i, j))+")");
+			}
+			System.out.println();
+		}
 	}
 }
