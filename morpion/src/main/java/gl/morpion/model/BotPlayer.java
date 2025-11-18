@@ -27,10 +27,10 @@ public class BotPlayer extends Player {
 	/**
 	 * Create a Bot to play with
 	 *
-	 * @param name
-	 * @param point
-	 * @param coef
-	 * @param symbol
+	 * @param name name of the bot
+	 * @param point how many point does the bot have
+	 * @param coef the bot level
+	 * @param symbol the symbol the bot will be using to play
 	 * @param limit the winning condition
 	 */
 	public BotPlayer(String name,
@@ -49,7 +49,7 @@ public class BotPlayer extends Player {
 	/**
 	 * Generate what the Bot will use to visualise where every symbol are placed
 	 * This procedure just initialize the Board
-	 * @param usableCases
+	 * @param usableCases the playable cases
 	 */
 	public void setBotBoard(List<Pair<Integer, Integer>> usableCases){
 		for(Pair<Integer,Integer> p : usableCases){
@@ -57,26 +57,40 @@ public class BotPlayer extends Player {
 		}
 	}
 
+	/**
+	 * @return the full_coeff used for the Bot
+	 */
 	public float getLevel(){
 		return this.full_coef;
 	}
 
-
+	/**
+	 * change the level of the bot
+	 * @param coef the new coef of the bot
+	 */
 	public void setLevel(float coef){
 		this.full_coef = coef;
 	}
 
-	//Calcul vertical d'une case
-
+	/**
+	 * This function will ONLY calculate the vertical value of the chosen position in a float format
+	 * This value does not represent the entire value of the position.
+	 * At minimum the value would be of 1
+	 *
+	 * @param position the position that will be tested
+	 * @return the vertical value of the position
+	 */
 	private float verticalValueOfCase(Pair<Integer, Integer> position){
 
 		float value = 0.0f; //cannot be 1.0f for calculing the value of the case
 
 		//Check the possibilities before and after the chosen point
 		for(int i = (position.getValue()-(this.win_condition+1)); i < position.getValue()+1; i++){
-			int nb_bot_symbol = 0; //number of time where the symbol of the bot is present
-			int nb_adverse_symbol = 0; //number of time where the symbol of the enemy is present
-			if(this.boardView.containsKey(position)){ //If the case is present
+			int nb_bot_symbol = 0; //number of time when the symbol of the bot is present
+			int nb_adverse_symbol = 0; //number of time when the symbol of the enemy is present
+
+			Pair<Integer, Integer> neighbour = new Pair<>(position.getKey(), i);
+			if(this.boardView.containsKey(neighbour)){ //If the case is present
 
 				for(int j = 0; j <= this.win_condition; j++){
 					Pair<Integer, Integer> testCase = new Pair<>(position.getKey(),i+j);
@@ -126,14 +140,21 @@ public class BotPlayer extends Player {
 		return value;
 	}
 
-	//Calcul horizontal d'une case
+	/**
+	 * This function will ONLY calculate the horizontal value of the chosen position in a float format
+	 * This value does not represent the entire value of the position.
+	 * At minimum the value would be of 1
+	 *
+	 * @param position the position that will be tested
+	 * @return the horizontal value of the position
+	 */
 	private float horizontalValueOfCase(Pair<Integer, Integer> position){
 		float value = 0.0f; //cannot be 1.0f for calculing the value of the case
 
 		//Check the possibilities before and after the chosen point
 		for(int i = (position.getKey()-(this.win_condition+1)); i < position.getKey()+1; i++){
-			int nb_bot_symbol = 0; //number of time where the symbol of the bot is present
-			int nb_adverse_symbol = 0; //number of time where the symbol of the enemy is present
+			int nb_bot_symbol = 0; //number of time when the symbol of the bot is present
+			int nb_adverse_symbol = 0; //number of time when the symbol of the enemy is present
 
 			if(this.boardView.containsKey(position)) { //If the case is present
 
@@ -185,7 +206,35 @@ public class BotPlayer extends Player {
 	}
 
 
-	//Calcul diagonal d'une case
+	//Calcul diagonal bas vers haut d'une case
+
+	private float diagonalDownToUpValueOfCase(Pair<Integer, Integer> position){
+
+		float value = 0.0f; //cannot be 1.0f for calculing the value of the case
+
+
+
+		if(value == 0.0f){ //mostly for the start of the game
+			value = 1.0f;
+		}
+		return value;
+	}
+
+
+
+	//Calcul diagonal haut vers bas d'une case
+
+	private float diagonalUpToDownValueOfCase(Pair<Integer, Integer> position){
+
+		float value = 0.0f; //cannot be 1.0f for calculing the value of the case
+
+
+
+		if(value == 0.0f){ //mostly for the start of the game
+			value = 1.0f;
+		}
+		return value;
+	}
 
 
 	//Calcul de tout le plateau
