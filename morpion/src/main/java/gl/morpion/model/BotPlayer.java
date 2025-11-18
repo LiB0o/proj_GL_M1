@@ -84,43 +84,44 @@ public class BotPlayer extends Player {
 	 * @param position the position that will be tested
 	 * @return the vertical value of the position
 	 */
-	private float verticalValueOfCase(@NotNull Pair<Integer, Integer> position){
+	public float verticalValueOfCase(@NotNull Pair<Integer, Integer> position){
 
 		float value = 0.0f; //cannot be 1.0f for calculing the value of the case
 
 		//Check the possibilities before and after the chosen point
-		for(int i = (position.getValue()-(this.win_condition+1)); i < position.getValue()+1; i++){
+		for(int i = ((position.getValue()-this.win_condition)+1); i < position.getValue()+1; i++){
 			int nb_bot_symbol = 0; //number of time when the symbol of the bot is present
 			int nb_adverse_symbol = 0; //number of time when the symbol of the enemy is present
 
 			Pair<Integer, Integer> neighbour = new Pair<>(position.getKey(), i);
-			if(this.boardView.containsKey(neighbour)){ //If the case is present
 
-				for(int j = 0; j <= this.win_condition; j++){
-					Pair<Integer, Integer> testCase = new Pair<>(position.getKey(),i+j);
+			if(this.boardView.containsKey(neighbour)){ //If the case is present
+				//System.out.println("Case"+neighbour.getKey()+","+neighbour.getValue());
+				for(int j = 0; j < this.win_condition; j++){
+					Pair<Integer, Integer> testCase = new Pair<>(neighbour.getKey(),i+j);
 
 					if(this.boardView.containsKey(testCase)){
-						if(this.boardView.get(testCase) == -1){ //If the case has a symbol from the adverser
-							nb_adverse_symbol += 1.0f;
+						if(this.boardView.get(testCase) == -1.0f){ //If the case has a symbol from the adverser
+							nb_adverse_symbol += 1;
 						}
 						if(this.boardView.get(testCase) == 0.0f){ //If the case has a symbol from the bot
 							nb_bot_symbol += 1;
 						}
 					}
-
-					/*if(nb_bot_symbol != 0 && nb_adverse_symbol !=0){ //if closed add nothing to value and check the next posibility
-						j = this.win_condition*2; //to stop the for
-					}*/
+					else{
+						nb_adverse_symbol += 1;
+						nb_bot_symbol += 1;
+					}
 				}
 				if(nb_bot_symbol != 0 && nb_adverse_symbol !=0){ //if closed add nothing to value and check the next posibility
 					value = value;
 				}
 				else{
 					if(nb_bot_symbol !=0){
-
+						System.out.println("Vertical symbol bot:"+nb_bot_symbol);
 						float add = 3.0f;
 
-						for(int compt = 0; compt<nb_bot_symbol; compt++){
+						for(int compt = 1; compt<nb_bot_symbol; compt++){
 							add = add * this.full_coef;
 						}
 
@@ -129,7 +130,7 @@ public class BotPlayer extends Player {
 					else if(nb_adverse_symbol !=0){
 						float add = 2.0f;
 
-						for(int compt = 0; compt<nb_adverse_symbol; compt++){
+						for(int compt = 1; compt<nb_adverse_symbol; compt++){
 							add = add * this.full_coef;
 						}
 
@@ -144,9 +145,7 @@ public class BotPlayer extends Player {
 			}
 		}
 
-		if(value == 0.0f){ //mostly for the beginning of the game
-			value = 1.0f;
-		}
+
 		return value;
 	}
 
@@ -158,7 +157,7 @@ public class BotPlayer extends Player {
 	 * @param position the position that will be tested
 	 * @return the horizontal value of the position
 	 */
-	private float horizontalValueOfCase(@NotNull Pair<Integer, Integer> position){
+	public float horizontalValueOfCase(@NotNull Pair<Integer, Integer> position){
 		float value = 0.0f; //cannot be 1.0f for calculing the value of the case
 
 		//Check the possibilities before and after the chosen point
@@ -181,16 +180,21 @@ public class BotPlayer extends Player {
 							nb_bot_symbol += 1;
 						}
 					}
+					else{
+						nb_adverse_symbol += 1;
+						nb_bot_symbol += 1;
+					}
 				}
 
 				if(nb_bot_symbol != 0 && nb_adverse_symbol !=0){ //if closed add nothing to value and check the next posibility
+					//System.out.println("Horizontal : Je suis fermé ou trop petit");
 					value = value;
 				}
 				else{
 					if(nb_bot_symbol !=0){
 
 						float add = 3.0f;
-						for(int compt = 0; compt<nb_bot_symbol; compt++){
+						for(int compt = 1; compt<nb_bot_symbol; compt++){
 							add = add * this.full_coef;
 						}
 
@@ -198,14 +202,14 @@ public class BotPlayer extends Player {
 					}
 					else if(nb_adverse_symbol !=0){
 						float add = 2.0f;
-						for(int compt = 0; compt<nb_adverse_symbol; compt++){
+						for(int compt = 1; compt<nb_adverse_symbol; compt++){
 							add = add * this.full_coef;
 						}
 
 						value = value + add;
 					}
 					else{ // empty line
-						value +=1;
+						value +=1.0f;
 					}
 				}
 
@@ -214,9 +218,7 @@ public class BotPlayer extends Player {
 
 		}
 
-		if(value == 0.0f){ //mostly for the start of the game
-			value = 1.0f;
-		}
+
 
 		return value;
 	}
@@ -224,7 +226,7 @@ public class BotPlayer extends Player {
 
 	//Calcul diagonal bas vers haut d'une case
 
-	private float diagonalDownToUpValueOfCase(Pair<Integer, Integer> position){
+	public float diagonalDownToUpValueOfCase(Pair<Integer, Integer> position){
 
 		float value = 0.0f; //cannot be 1.0f for calculing the value of the case
 
@@ -262,6 +264,10 @@ public class BotPlayer extends Player {
 							nb_bot_symbol += 1;
 						}
 					}
+					else{
+						nb_adverse_symbol += 1;
+						nb_bot_symbol += 1;
+					}
 
 				}
 
@@ -272,7 +278,7 @@ public class BotPlayer extends Player {
 					if(nb_bot_symbol !=0){
 
 						float add = 3.0f;
-						for(int compt = 0; compt<nb_bot_symbol; compt++){
+						for(int compt = 1; compt<nb_bot_symbol; compt++){
 							add = add * this.full_coef;
 						}
 
@@ -280,7 +286,7 @@ public class BotPlayer extends Player {
 					}
 					else if(nb_adverse_symbol != 0){
 						float add = 2.0f;
-						for(int compt = 0; compt<nb_adverse_symbol; compt++){
+						for(int compt = 1; compt<nb_adverse_symbol; compt++){
 							add = add * this.full_coef;
 						}
 
@@ -296,9 +302,7 @@ public class BotPlayer extends Player {
 
 		}
 
-		if(value == 0.0f){ //mostly for the start of the game
-			value = 1.0f;
-		}
+
 		return value;
 	}
 
@@ -306,7 +310,7 @@ public class BotPlayer extends Player {
 
 	//Calcul diagonal haut vers bas d'une case
 
-	private float diagonalUpToDownValueOfCase(Pair<Integer, Integer> position){
+	public float diagonalUpToDownValueOfCase(Pair<Integer, Integer> position){
 
 		float value = 0.0f; //cannot be 1.0f for calculing the value of the case
 
@@ -337,12 +341,16 @@ public class BotPlayer extends Player {
 					Pair<Integer, Integer> testCase = new Pair<>(neighbour.getKey()+j, neighbour.getValue()+j);
 
 					if(this.boardView.containsKey(testCase)){
-						if(this.boardView.get(testCase) == -1){ //If the case has a symbol from the adverser
+						if(this.boardView.get(testCase) == -1.0f){ //If the case has a symbol from the adverser
 							nb_adverse_symbol += 1;
 						}
-						if(this.boardView.get(testCase) == 0){ //If the case has a symbol from the bot
+						if(this.boardView.get(testCase) == 0.0f){ //If the case has a symbol from the bot
 							nb_bot_symbol += 1;
 						}
+					}
+					else{
+						nb_adverse_symbol += 1;
+						nb_bot_symbol += 1;
 					}
 				}
 
@@ -351,9 +359,9 @@ public class BotPlayer extends Player {
 				}
 				else{
 					if(nb_bot_symbol !=0){
-
+						System.out.println("Horizontal symbol bot:"+nb_bot_symbol);
 						float add = 3.0f;
-						for(int compt = 0; compt<nb_bot_symbol; compt++){
+						for(int compt = 1; compt<nb_bot_symbol; compt++){
 							add = add * this.full_coef;
 						}
 
@@ -361,7 +369,7 @@ public class BotPlayer extends Player {
 					}
 					else if(nb_adverse_symbol != 0){
 						float add = 2.0f;
-						for(int compt = 0; compt<nb_adverse_symbol; compt++){
+						for(int compt = 1; compt<nb_adverse_symbol; compt++){
 							add = add * this.full_coef;
 						}
 
@@ -377,9 +385,6 @@ public class BotPlayer extends Player {
 
 		}
 
-		if(value == 0.0f){ //mostly for the start of the game
-			value = 1.0f;
-		}
 		return value;
 	}
 
@@ -391,6 +396,10 @@ public class BotPlayer extends Player {
 						verticalValueOfCase(position)+
 						diagonalUpToDownValueOfCase(position)+
 						diagonalDownToUpValueOfCase(position);
+
+		if(value == 0.0f){ //mostly for the start of the game
+			value = 1.0f;
+		}
 
 		return value;
 	}
