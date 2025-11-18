@@ -7,11 +7,6 @@ import java.util.List;
 
 public class BotPlayer extends Player {
 
-	//private float level;
-	private float coef_attack; // Used to calculate the best move offensively
-	private float coef_defence; //Used to calculate the best move defensively
-
-
 	private float full_coef;
 
 	public int win_condition;
@@ -30,31 +25,14 @@ public class BotPlayer extends Player {
 	////////////////////////////////////////////////////////////////////////////////////////////
 
 	/**
-	 * Create the Bot with 2 different coeff
-	 * Please DO NOT use this version for the game
+	 * Create a Bot to play with
 	 *
 	 * @param name
 	 * @param point
-	 * @param attack
-	 * @param defence
+	 * @param coef
 	 * @param symbol
-	 * @param limit
+	 * @param limit the winning condition
 	 */
-	public BotPlayer(String name,
-					 int point,
-					 float attack,
-					 float defence,
-					 Symbol symbol,
-					 int limit) {
-		super(name, point,symbol);
-
-		this.coef_defence = defence;
-		this.coef_attack = attack;
-
-		this.win_condition = limit;
-		this.boardView = new HashMap<Pair<Integer,Integer>,Integer>(); //Init with function setBotBoard
-	}
-
 	public BotPlayer(String name,
 					 int point,
 					 float coef,
@@ -68,25 +46,21 @@ public class BotPlayer extends Player {
 		this.boardView = new HashMap<Pair<Integer,Integer>,Integer>(); //Init with function setBotBoard
 	}
 
-
+	/**
+	 * Generate what the Bot will use to visualise where every symbol are placed
+	 * This procedure just initialize the Board
+	 * @param usableCases
+	 */
 	public void setBotBoard(List<Pair<Integer, Integer>> usableCases){
 		for(Pair<Integer,Integer> p : usableCases){
 			this.boardView.put(p,1); //Set all cases to 1
 		}
 	}
 
-	public Pair<Float,Float> getCoefs() {
-		return new Pair<>(coef_attack, coef_defence);
-	}
-
 	public float getLevel(){
 		return this.full_coef;
 	}
 
-	public void setLevels(float attack, float defence) {
-		this.coef_attack = attack;
-		this.coef_defence = defence;
-	}
 
 	public void setLevel(float coef){
 		this.full_coef = coef;
@@ -96,7 +70,7 @@ public class BotPlayer extends Player {
 
 	private float verticalValueOfCase(Pair<Integer, Integer> position){
 
-		float value = 1.0f;
+		float value = 0.0f; //cannot be 1.0f for calculing the value of the case
 
 		//Check the possibilities before and after the chosen point
 		for(int i = (position.getValue()-(this.win_condition+1)); i < position.getValue()+1; i++){
@@ -109,7 +83,7 @@ public class BotPlayer extends Player {
 					if(this.boardView.get(testCase) == -1){ //If the case has a symbol from the adverser
 						nb_adverse_symbol += 1;
 					}
-					if(this.boardView.get(testCase) == 0){ //If the case has a symbol from the adverser
+					if(this.boardView.get(testCase) == 0){ //If the case has a symbol from the bot
 						nb_bot_symbol += 1;
 					}
 
@@ -145,10 +119,70 @@ public class BotPlayer extends Player {
 				
 			}
 		}
+
+		if(value == 0.0f){ //mostly for the beginning of the game
+			value = 1.0f;
+		}
 		return value;
 	}
 
 	//Calcul horizontal d'une case
+	private float horizontalValueOfCase(Pair<Integer, Integer> position){
+		float value = 0.0f; //cannot be 1.0f for calculing the value of the case
+
+		//Check the possibilities before and after the chosen point
+		for(int i = (position.getKey()-(this.win_condition+1)); i < position.getKey()+1; i++){
+			int nb_bot_symbol = 0; //number of time where the symbol of the bot is present
+			int nb_adverse_symbol = 0; //number of time where the symbol of the enemy is present
+
+			if(this.boardView.containsKey(position)) { //If the case is present
+
+				for(int j = 0; j <= this.win_condition; j++){
+
+					Pair<Integer, Integer> testCase = new Pair<>(i+j, position.getValue());
+
+					if(this.boardView.get(testCase) == -1){ //If the case has a symbol from the adverser
+						nb_adverse_symbol += 1;
+					}
+					if(this.boardView.get(testCase) == 0){ //If the case has a symbol from the bot
+						nb_bot_symbol += 1;
+					}
+				}
+
+				if(nb_bot_symbol != 0 && nb_adverse_symbol !=0){ //if closed add nothing to value and check the next posibility
+					value = value;
+				}
+				else{
+					if(nb_bot_symbol !=0){
+
+						float add = 3.0f;
+						for(int compt = 0; compt<nb_bot_symbol; compt++){
+							add = add * this.full_coef;
+						}
+
+						value = value + add;
+					}
+					else{
+						float add = 2.0f;
+						for(int compt = 0; compt<nb_adverse_symbol; compt++){
+							add = add * this.full_coef;
+						}
+
+						value = value + add;
+					}
+				}
+
+			}
+
+
+		}
+
+		if(value == 0.0f){ //mostly for the start of the game
+			value = 1.0f;
+		}
+
+		return value;
+	}
 
 
 	//Calcul diagonal d'une case
