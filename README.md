@@ -48,7 +48,7 @@
 
 * ###    **Pre-installation Requirements**
 
-   Ensure **java** and **SDK javaFX** if installed.
+   Ensure **java** and **SDK javaFX** is installed.
 
    install **GIT** if you want to clone the repository
 
@@ -74,9 +74,9 @@ This creates a **my-project** folder containing all the code and history of the 
 
 * ###    **Getting Started**
 
-  Launch the program, and choose your game mode from player/player or player/AI (bot). You can also click on “custom” for more features.
+  Go to the file morpion/src/main/java/gl/morpion/MainLauncher.java and start it, choose your game mode from player/player or player/AI (bot). You can also click on “custom” for more features.
   After choosing your game mode, you can start playing by clicking on one of the squares on the grid to place a symbol. The first player to place 5 symbols of the same type in a row vertically, horizontally, or diagonally wins the game.
-  You can go back at any time by clicking on the back buttons.
+  You can start a new game at any time by clicking on the back button.
 
 * ### **Navigation**
 
@@ -128,6 +128,10 @@ This creates a **my-project** folder containing all the code and history of the 
 |                  |  |  |
 |                  |  |  |
 
+## **8. Sidenotes**
+
+This project is not finished; some features may be changed or added in the future.
+Please also note that the infrastructure is not optimal and will be improve in the future.
 
 
 # **A few images to show the interface 🎨**
