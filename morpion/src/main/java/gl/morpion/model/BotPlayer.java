@@ -1,6 +1,7 @@
 package gl.morpion.model;
 
 import javafx.util.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +19,7 @@ public class BotPlayer extends Player {
 	* If the case is occupied by the symbol of the Adverser the value is equal to -1
 	* Before calculation, every case equal 1
 	* */
-	public HashMap<Pair<Integer, Integer>,Integer> boardView;
+	public HashMap<Pair<Integer, Integer>,Float> boardView;
 
 	//private GameBoard board; // May be needed to know with symbol is on every case is there is more than 2 symbols
 
@@ -44,8 +45,9 @@ public class BotPlayer extends Player {
 		this.full_coef = coef;
 
 		this.win_condition = limit;
-		this.boardView = new HashMap<Pair<Integer,Integer>,Integer>(); //Init with function setBotBoard
+		this.boardView = new HashMap<Pair<Integer,Integer>,Float>(); //Init with function setBotBoard
 		setBotBoard(usableCases);
+		computeAllValues();
 	}
 
 	/**
@@ -55,7 +57,7 @@ public class BotPlayer extends Player {
 	 */
 	public void setBotBoard(List<Pair<Integer, Integer>> usableCases){
 		for(Pair<Integer,Integer> p : usableCases){
-			this.boardView.put(p,1); //Set all cases to 1
+			this.boardView.put(p,1.0f); //Set all cases to 1
 		}
 	}
 
@@ -82,7 +84,7 @@ public class BotPlayer extends Player {
 	 * @param position the position that will be tested
 	 * @return the vertical value of the position
 	 */
-	private float verticalValueOfCase(Pair<Integer, Integer> position){
+	private float verticalValueOfCase(@NotNull Pair<Integer, Integer> position){
 
 		float value = 0.0f; //cannot be 1.0f for calculing the value of the case
 
@@ -150,7 +152,7 @@ public class BotPlayer extends Player {
 	 * @param position the position that will be tested
 	 * @return the horizontal value of the position
 	 */
-	private float horizontalValueOfCase(Pair<Integer, Integer> position){
+	private float horizontalValueOfCase(@NotNull Pair<Integer, Integer> position){
 		float value = 0.0f; //cannot be 1.0f for calculing the value of the case
 
 		//Check the possibilities before and after the chosen point
@@ -360,26 +362,96 @@ public class BotPlayer extends Player {
 	}
 
 
-	//Calcul de tout le plateau
+	//Calcul valeur total de la case
 
+	public float totalValueofCase(Pair<Integer, Integer>position){
+		float value = horizontalValueOfCase(position)+
+						verticalValueOfCase(position)+
+						diagonalUpToDownValueOfCase(position)+
+						diagonalDownToUpValueOfCase(position);
 
-	//Change symbol if Bot put a symbol
-
-	public void symbolPutByBot(Pair<Integer,Integer> position){
-		this.boardView.replace(position,0);
+		return value;
 	}
 
-	//Change symbol if Adverser put a symbol
+	//Calcul de tout le plateau
+	public void computeAllValues(){
+
+		for(Pair<Integer,Integer>coordinates : this.boardView.keySet()){ //go through every positions
+			this.boardView.replace(coordinates,totalValueofCase(coordinates)); //put new value
+		}
+	}
+
+	//Recalcul des cases impactés par
+	public void recomputeNeighbour(@NotNull Pair<Integer, Integer> position){
+
+		//Modify horizontal neighbours
+		for(int i = (position.getKey()-this.win_condition)+1; i<position.getKey()-this.win_condition+1;i++){
+			Pair<Integer, Integer> key = new Pair<>(i, position.getValue());
+			if(this.boardView.containsKey(key) &&
+					!key.equals(position)){//If we are on the board and are not the origin
+				this.boardView.replace(key,totalValueofCase(key));
+			}
+		}
+
+		//Modify vertical neighbours
+		for(int i = (position.getValue()-this.win_condition)+1; i<position.getValue()-this.win_condition+1;i++){
+			Pair<Integer, Integer> key = new Pair<>(position.getKey(),i);
+			if(this.boardView.containsKey(key)
+				&& !key.equals(position)){//If we are on the board and are not the origin
+				this.boardView.replace(key,totalValueofCase(key));
+			}
+		}
+		//Every diagonal start from the left
+
+		//Add first diagonal neighbours (DownToUp)
+		for(int i = (this.win_condition*2)-1; i<(this.win_condition*2)-1;i++){
+			Pair<Integer, Integer> key = new Pair<>(
+					((position.getKey()-this.win_condition)+1)+i,
+					((position.getValue()+this.win_condition)-1)-i
+			);
+			if(this.boardView.containsKey(key)
+				&& !key.equals(position)
+			){//If we are on the board and not the origin
+				this.boardView.replace(key,totalValueofCase(key));
+			}
+		}
+
+		//Add second diagonal neighbours (UpToDown)
+		for(int i = (this.win_condition*2)-1; i<(this.win_condition*2)-1;i++){
+			Pair<Integer, Integer> key = new Pair<>(
+					((position.getKey()-this.win_condition)+1)+i,
+					((position.getValue()-this.win_condition)+1)+i
+			);
+			if(this.boardView.containsKey(key)
+					&& !key.equals(position)
+			){//If we are on the board and not the origin
+				this.boardView.replace(key,totalValueofCase(key));
+			}
+		}
+
+	}
+
+
+	//Change value if Bot put a symbol
+
+	public void symbolPutByBot(Pair<Integer,Integer> position){
+		this.boardView.replace(position,0.0f);
+		recomputeNeighbour(position);
+	}
+
+	//Change value if Adverser put a symbol
 
 	public void symbolPutByPlayer(Pair<Integer, Integer> position){
-		this.boardView.replace(position,-1);
+		this.boardView.replace(position,-1.0f);
+		recomputeNeighbour(position);
 	}
 
 	//Reset case
 	public void resetValueCase(Pair<Integer,Integer> position){
-		this.boardView.replace(position,1);
+		this.boardView.replace(position,1.0f);
+		recomputeNeighbour(position);
 	}
 
-	//Recalcul des cases impactés par
+
 
 }
