@@ -37,13 +37,15 @@ public class BotPlayer extends Player {
 					 int point,
 					 float coef,
 					 Symbol symbol,
-					 int limit) {
+					 int limit,
+					 List<Pair<Integer, Integer>> usableCases) {
 		super(name, point,symbol);
 
 		this.full_coef = coef;
 
 		this.win_condition = limit;
 		this.boardView = new HashMap<Pair<Integer,Integer>,Integer>(); //Init with function setBotBoard
+		setBotBoard(usableCases);
 	}
 
 	/**
@@ -156,7 +158,8 @@ public class BotPlayer extends Player {
 			int nb_bot_symbol = 0; //number of time when the symbol of the bot is present
 			int nb_adverse_symbol = 0; //number of time when the symbol of the enemy is present
 
-			if(this.boardView.containsKey(position)) { //If the case is present
+			Pair<Integer, Integer> neighbour = new Pair<>(i, position.getValue());
+			if(this.boardView.containsKey(neighbour)) { //If the case is present
 
 				for(int j = 0; j <= this.win_condition; j++){
 
@@ -212,7 +215,67 @@ public class BotPlayer extends Player {
 
 		float value = 0.0f; //cannot be 1.0f for calculing the value of the case
 
+		//Check the possibilities before and after the chosen point
+		for(int i = 0 ; i< (this.win_condition*2)-1; i++){
 
+			int nb_bot_symbol = 0; //number of time when the symbol of the bot is present
+			int nb_adverse_symbol = 0; //number of time when the symbol of the enemy is present
+
+			/**
+			 * How it is calculated :
+			 * Sence of the reading : The diagonal is from the left down to the right up
+			 * Left to right: 0 = left, i = right
+			 * 		x = [initial position.x - (winning condition-1)] + variation i
+			 * Down to up: 0 = up, i = down
+			 * 		y = [initial position.y + (winning condition-1)] - variation i
+			 */
+
+			Pair<Integer, Integer> neighbour = new Pair<>(
+					((position.getKey()-this.win_condition)+1)+i,
+					((position.getValue()+this.win_condition)-1)-i
+			);
+
+			if(this.boardView.containsKey(neighbour)){
+
+				for(int j = 0; j <= this.win_condition; j++){
+
+					Pair<Integer, Integer> testCase = new Pair<>(neighbour.getKey()+j, neighbour.getValue()-j);
+
+					if(this.boardView.get(testCase) == -1){ //If the case has a symbol from the adverser
+						nb_adverse_symbol += 1;
+					}
+					if(this.boardView.get(testCase) == 0){ //If the case has a symbol from the bot
+						nb_bot_symbol += 1;
+					}
+				}
+
+				if(nb_bot_symbol != 0 && nb_adverse_symbol !=0){ //if closed add nothing to value and check the next posibility
+					value = value;
+				}
+				else{
+					if(nb_bot_symbol !=0){
+
+						float add = 3.0f;
+						for(int compt = 0; compt<nb_bot_symbol; compt++){
+							add = add * this.full_coef;
+						}
+
+						value = value + add;
+					}
+					else{
+						float add = 2.0f;
+						for(int compt = 0; compt<nb_adverse_symbol; compt++){
+							add = add * this.full_coef;
+						}
+
+						value = value + add;
+					}
+				}
+
+
+			}
+
+		}
 
 		if(value == 0.0f){ //mostly for the start of the game
 			value = 1.0f;
