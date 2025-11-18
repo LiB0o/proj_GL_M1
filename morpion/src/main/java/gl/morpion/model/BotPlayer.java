@@ -98,11 +98,14 @@ public class BotPlayer extends Player {
 
 				for(int j = 0; j <= this.win_condition; j++){
 					Pair<Integer, Integer> testCase = new Pair<>(position.getKey(),i+j);
-					if(this.boardView.get(testCase) == -1){ //If the case has a symbol from the adverser
-						nb_adverse_symbol += 1;
-					}
-					if(this.boardView.get(testCase) == 0){ //If the case has a symbol from the bot
-						nb_bot_symbol += 1;
+
+					if(this.boardView.containsKey(testCase)){
+						if(this.boardView.get(testCase) == -1){ //If the case has a symbol from the adverser
+							nb_adverse_symbol += 1.0f;
+						}
+						if(this.boardView.get(testCase) == 0.0f){ //If the case has a symbol from the bot
+							nb_bot_symbol += 1;
+						}
 					}
 
 					/*if(nb_bot_symbol != 0 && nb_adverse_symbol !=0){ //if closed add nothing to value and check the next posibility
@@ -123,7 +126,7 @@ public class BotPlayer extends Player {
 
 						value = value + add;
 					}
-					else{
+					else if(nb_adverse_symbol !=0){
 						float add = 2.0f;
 
 						for(int compt = 0; compt<nb_adverse_symbol; compt++){
@@ -131,6 +134,9 @@ public class BotPlayer extends Player {
 						}
 
 						value = value + add;
+					}
+					else{// empty line
+						value += 1;
 					}
 				}
 
@@ -167,11 +173,13 @@ public class BotPlayer extends Player {
 
 					Pair<Integer, Integer> testCase = new Pair<>(i+j, position.getValue());
 
-					if(this.boardView.get(testCase) == -1){ //If the case has a symbol from the adverser
-						nb_adverse_symbol += 1;
-					}
-					if(this.boardView.get(testCase) == 0){ //If the case has a symbol from the bot
-						nb_bot_symbol += 1;
+					if(this.boardView.containsKey(testCase)){
+						if(this.boardView.get(testCase) == -1){ //If the case has a symbol from the adverser
+							nb_adverse_symbol += 1;
+						}
+						if(this.boardView.get(testCase) == 0){ //If the case has a symbol from the bot
+							nb_bot_symbol += 1;
+						}
 					}
 				}
 
@@ -188,13 +196,16 @@ public class BotPlayer extends Player {
 
 						value = value + add;
 					}
-					else{
+					else if(nb_adverse_symbol !=0){
 						float add = 2.0f;
 						for(int compt = 0; compt<nb_adverse_symbol; compt++){
 							add = add * this.full_coef;
 						}
 
 						value = value + add;
+					}
+					else{ // empty line
+						value +=1;
 					}
 				}
 
@@ -243,12 +254,15 @@ public class BotPlayer extends Player {
 
 					Pair<Integer, Integer> testCase = new Pair<>(neighbour.getKey()+j, neighbour.getValue()-j);
 
-					if(this.boardView.get(testCase) == -1){ //If the case has a symbol from the adverser
-						nb_adverse_symbol += 1;
+					if(this.boardView.containsKey(testCase)){
+						if(this.boardView.get(testCase) == -1){ //If the case has a symbol from the adverser
+							nb_adverse_symbol += 1;
+						}
+						if(this.boardView.get(testCase) == 0){ //If the case has a symbol from the bot
+							nb_bot_symbol += 1;
+						}
 					}
-					if(this.boardView.get(testCase) == 0){ //If the case has a symbol from the bot
-						nb_bot_symbol += 1;
-					}
+
 				}
 
 				if(nb_bot_symbol != 0 && nb_adverse_symbol !=0){ //if closed add nothing to value and check the next posibility
@@ -264,13 +278,16 @@ public class BotPlayer extends Player {
 
 						value = value + add;
 					}
-					else{
+					else if(nb_adverse_symbol != 0){
 						float add = 2.0f;
 						for(int compt = 0; compt<nb_adverse_symbol; compt++){
 							add = add * this.full_coef;
 						}
 
 						value = value + add;
+					}
+					else{ //empty line
+						value +=1;
 					}
 				}
 
@@ -319,11 +336,13 @@ public class BotPlayer extends Player {
 
 					Pair<Integer, Integer> testCase = new Pair<>(neighbour.getKey()+j, neighbour.getValue()+j);
 
-					if(this.boardView.get(testCase) == -1){ //If the case has a symbol from the adverser
-						nb_adverse_symbol += 1;
-					}
-					if(this.boardView.get(testCase) == 0){ //If the case has a symbol from the bot
-						nb_bot_symbol += 1;
+					if(this.boardView.containsKey(testCase)){
+						if(this.boardView.get(testCase) == -1){ //If the case has a symbol from the adverser
+							nb_adverse_symbol += 1;
+						}
+						if(this.boardView.get(testCase) == 0){ //If the case has a symbol from the bot
+							nb_bot_symbol += 1;
+						}
 					}
 				}
 
@@ -340,13 +359,16 @@ public class BotPlayer extends Player {
 
 						value = value + add;
 					}
-					else{
+					else if(nb_adverse_symbol != 0){
 						float add = 2.0f;
 						for(int compt = 0; compt<nb_adverse_symbol; compt++){
 							add = add * this.full_coef;
 						}
 
 						value = value + add;
+					}
+					else{
+						value +=1;
 					}
 				}
 
