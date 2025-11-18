@@ -168,15 +168,15 @@ public class BotPlayer extends Player {
 			Pair<Integer, Integer> neighbour = new Pair<>(i, position.getValue());
 			if(this.boardView.containsKey(neighbour)) { //If the case is present
 
-				for(int j = 0; j <= this.win_condition; j++){
+				for(int j = 0; j < this.win_condition; j++){
 
 					Pair<Integer, Integer> testCase = new Pair<>(i+j, position.getValue());
 
 					if(this.boardView.containsKey(testCase)){
-						if(this.boardView.get(testCase) == -1){ //If the case has a symbol from the adverser
+						if(this.boardView.get(testCase) == -1.0f){ //If the case has a symbol from the adverser
 							nb_adverse_symbol += 1;
 						}
-						if(this.boardView.get(testCase) == 0){ //If the case has a symbol from the bot
+						if(this.boardView.get(testCase) == 0.0f){ //If the case has a symbol from the bot
 							nb_bot_symbol += 1;
 						}
 					}
@@ -231,7 +231,7 @@ public class BotPlayer extends Player {
 		float value = 0.0f; //cannot be 1.0f for calculing the value of the case
 
 		//Check the possibilities before and after the chosen point
-		for(int i = 0 ; i< (this.win_condition*2)-1; i++){
+		for(int i = 0 ; i< (this.win_condition)-1; i++){
 
 			int nb_bot_symbol = 0; //number of time when the symbol of the bot is present
 			int nb_adverse_symbol = 0; //number of time when the symbol of the enemy is present
@@ -257,10 +257,10 @@ public class BotPlayer extends Player {
 					Pair<Integer, Integer> testCase = new Pair<>(neighbour.getKey()+j, neighbour.getValue()-j);
 
 					if(this.boardView.containsKey(testCase)){
-						if(this.boardView.get(testCase) == -1){ //If the case has a symbol from the adverser
+						if(this.boardView.get(testCase) == -1.0f){ //If the case has a symbol from the adverser
 							nb_adverse_symbol += 1;
 						}
-						if(this.boardView.get(testCase) == 0){ //If the case has a symbol from the bot
+						if(this.boardView.get(testCase) == 0.0f){ //If the case has a symbol from the bot
 							nb_bot_symbol += 1;
 						}
 					}
@@ -315,7 +315,7 @@ public class BotPlayer extends Player {
 		float value = 0.0f; //cannot be 1.0f for calculing the value of the case
 
 		//Check the possibilities before and after the chosen point
-		for(int i = 0 ; i< (this.win_condition*2)-1; i++){
+		for(int i = 0 ; i< (this.win_condition)-1; i++){
 
 			int nb_bot_symbol = 0; //number of time when the symbol of the bot is present
 			int nb_adverse_symbol = 0; //number of time when the symbol of the enemy is present
@@ -333,6 +333,8 @@ public class BotPlayer extends Player {
 					((position.getKey()-this.win_condition)+1)+i,
 					((position.getValue()-this.win_condition)+1)+i
 			);
+
+			//System.out.println("position: "+position+" neighbour "+neighbour);
 
 			if(this.boardView.containsKey(neighbour)){
 
@@ -356,10 +358,11 @@ public class BotPlayer extends Player {
 
 				if(nb_bot_symbol != 0 && nb_adverse_symbol !=0){ //if closed add nothing to value and check the next posibility
 					value = value;
+					//System.out.println("Diagonal ligne fermé "+value);
 				}
 				else{
 					if(nb_bot_symbol !=0){
-						System.out.println("Horizontal symbol bot:"+nb_bot_symbol);
+						//System.out.println("Horizontal symbol bot:"+nb_bot_symbol);
 						float add = 3.0f;
 						for(int compt = 1; compt<nb_bot_symbol; compt++){
 							add = add * this.full_coef;
@@ -482,7 +485,19 @@ public class BotPlayer extends Player {
 		this.boardView.replace(position,1.0f);
 		recomputeNeighbour(position);
 	}
+public Pair<Integer, Integer> getMaxValue(){
+		Pair<Integer, Integer> maxVal = new Pair<>(-1,-1);
+		float max = 0.0f;
 
+		for(Pair<Integer,Integer>key : this.boardView.keySet()){
+			if(max < this.boardView.get(key)){
+				max = this.boardView.get(key);
+				maxVal = key;
+			}
+		}
+
+		return maxVal;
+}
 
 
 }
