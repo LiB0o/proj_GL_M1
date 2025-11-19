@@ -137,7 +137,7 @@ public class BotPlayer extends Player {
 						value = value + add;
 					}
 					else{// empty line
-						value += 1;
+						value += 1.0f;
 					}
 				}
 
@@ -293,7 +293,7 @@ public class BotPlayer extends Player {
 						value = value + add;
 					}
 					else{ //empty line
-						value +=1;
+						value +=1.0f;
 					}
 				}
 
@@ -315,7 +315,7 @@ public class BotPlayer extends Player {
 		float value = 0.0f; //cannot be 1.0f for calculing the value of the case
 
 		//Check the possibilities before and after the chosen point
-		for(int i = 0 ; i< (this.win_condition)-1; i++){
+		for(int i = 0 ; i< this.win_condition; i++){
 
 			int nb_bot_symbol = 0; //number of time when the symbol of the bot is present
 			int nb_adverse_symbol = 0; //number of time when the symbol of the enemy is present
@@ -338,9 +338,10 @@ public class BotPlayer extends Player {
 
 			if(this.boardView.containsKey(neighbour)){
 
-				for(int j = 0; j <= this.win_condition; j++){
+				for(int j = 0; j < this.win_condition; j++){
 
 					Pair<Integer, Integer> testCase = new Pair<>(neighbour.getKey()+j, neighbour.getValue()+j);
+					//System.out.println("position :"+(neighbour.getKey()+j)+","+(neighbour.getValue()+j));
 
 					if(this.boardView.containsKey(testCase)){
 						if(this.boardView.get(testCase) == -1.0f){ //If the case has a symbol from the adverser
@@ -362,7 +363,7 @@ public class BotPlayer extends Player {
 				}
 				else{
 					if(nb_bot_symbol !=0){
-						//System.out.println("Horizontal symbol bot:"+nb_bot_symbol);
+						//System.out.println("Diagonal symbol bot:"+nb_bot_symbol);
 						float add = 3.0f;
 						for(int compt = 1; compt<nb_bot_symbol; compt++){
 							add = add * this.full_coef;
@@ -371,6 +372,7 @@ public class BotPlayer extends Player {
 						value = value + add;
 					}
 					else if(nb_adverse_symbol != 0){
+						//System.out.println("Diagonal symbol player:"+nb_adverse_symbol);
 						float add = 2.0f;
 						for(int compt = 1; compt<nb_adverse_symbol; compt++){
 							add = add * this.full_coef;
@@ -379,7 +381,8 @@ public class BotPlayer extends Player {
 						value = value + add;
 					}
 					else{
-						value +=1;
+						//System.out.println("Ligne vide");
+						value +=1.0f;
 					}
 				}
 
@@ -469,7 +472,8 @@ public class BotPlayer extends Player {
 	//Change value if Bot put a symbol
 
 	public void symbolPutByBot(Pair<Integer,Integer> position){
-		this.boardView.replace(position,0.0f);
+		Float old = this.boardView.get(position);
+		this.boardView.replace(position,old,0.0f);
 		recomputeNeighbour(position);
 	}
 
@@ -485,6 +489,7 @@ public class BotPlayer extends Player {
 		this.boardView.replace(position,1.0f);
 		recomputeNeighbour(position);
 	}
+
 public Pair<Integer, Integer> getMaxValue(){
 		Pair<Integer, Integer> maxVal = new Pair<>(-1,-1);
 		float max = 0.0f;
