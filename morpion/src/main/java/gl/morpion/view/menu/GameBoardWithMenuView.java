@@ -1,5 +1,5 @@
 
-package gl.morpion.vue.menu;
+package gl.morpion.view.menu;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -24,7 +24,7 @@ public class GameBoardWithMenuView extends StackPane {
      */
     public GameBoardWithMenuView(Node gameBoardView, Runnable onBack) {
         // Set preferred size for the entire view (1200x800 pixels)
-        setPrefSize(1200, 800);
+        //setPrefSize(1200, 800);
 
         // Charger le CSS
         // Load the external CSS stylesheet for menu styling
@@ -41,7 +41,7 @@ public class GameBoardWithMenuView extends StackPane {
 
         // Bouton "Retour" stylisé
         // Create styled "Back" button with arrow icon
-        Button backButton = new Button("← Retour");
+        Button backButton = new Button("← Back");
         backButton.getStyleClass().add("pill-button");
         // Attach click handler that executes the onBack callback
         backButton.setOnAction(e -> { if (onBack != null) onBack.run(); });

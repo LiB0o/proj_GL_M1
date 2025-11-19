@@ -5,29 +5,31 @@ import javafx.util.Pair;
 import java.util.*;
 
 public class Game {
-
-	private int turn=0;
+	private int MaxNumberSymbolAlign = 5;
 	private HashMap<Pair<Integer,Integer>,Symbol> usedCase;
 	private GameBoard gameBoard;
 	List<Player> players;
-	private boolean fin=false;
+	private boolean end=false;
+	private Player currentPlayer, p1, p2;
 
 	/**
 	 * Create the instance of Game
 	 * @param board of type GameBoard
-	 * @param players as a List<Player>
 	 */
-	public Game(GameBoard board,List<Player> players){
+	public Game(GameBoard board, Player p1, Player p2, Player currentPlayer){
+		this.p1 = p1;
+		this.p2 = p2;
 		this.gameBoard = board;
 		this.players = new ArrayList<>();
-
-		this.players.addAll(players);
 		this.usedCase = new HashMap<>();
+		this.currentPlayer = currentPlayer;
 	}
-
+	public void addPlayer(Player player){
+		this.players.add(player);
+	}
 	/**
 	 * test every possibility for a case to check if there is a win
-	 * @param limit how many symbols are needed next to each other to win
+	 * @param limit: how many symbols are needed next to each other to win
 	 * @return a pair with a boolean and the symbol of the winner (if boolean == true)
 	 */
 	public Pair<Boolean,Symbol> checkClassicVictory(int limit) {
@@ -50,8 +52,6 @@ public class Game {
 				victory = false;
 			}
 		}
-		//Pair<Boolean,Symbol> result = new Pair<Boolean,Symbol>(victory,winner);
-		//System.out.println(result.getValue().getTypeOfSymbol());
 		return winnerPair;
 	}
 
@@ -309,70 +309,79 @@ public class Game {
 		return result;
 	}
 
+	public void swap(){
+		currentPlayer = currentPlayer == players.get(0) ?
+				players.get(1) :
+				players.get(0);
+	}
 
-	/*public void playTurn(GameBoard board, Player[] players, int limit) {
-		if(board != null && players != null){
-			int i = 0;
-			while(this.checkClassicVictory(limit) && i < 100){
-				for(Player p : players){
-					//Je fais quoi ?
+	/**
+	 *
+	 * @return : detect whether there is a draw
+	 */
+	public Boolean allCaseFilled(){//TODO: probleme
+		int rows = this.gameBoard.getRow();
+		int cols = this.gameBoard.getColumn();
+		for(int i = 0; i < rows; i++){
+			for(int j = 0; j < cols; j++){
+				if(this.gameBoard.isEmptyCase(i, j)){
+					return false;
 				}
 			}
 		}
-	}*/
-	public void playTurn(int x, int y) {
-		int i = 0;
-
-		while ( i <= gameBoard.getColumn()*gameBoard.getRow()) {
-			Player currentPlayer;
-
-			if (i % 2 == 0) { // i pair → joueur 1
-				currentPlayer = players.get(0);
-			} else { // i impair → joueur 2
-				currentPlayer = players.get(1);
-			}
-
-			if (this.gameBoard.placeSymbol(currentPlayer.getSymbol(), x, y)) {
-				this.gameBoard.symbols.get(x)[y] = currentPlayer.getSymbol();
-				i++; // coup joué → on change de joueur
-
-			}
-
-		}
+		return true;
 	}
-	public void plaayTurn(int x, int y) {
-		Player currentPlayer = players.get(turn % 2); // joueur actuel
 
+
+	/**
+	 * @param x: row
+	 * @param y : col
+	 * @return :
+	 */
+	public void playTurn(int x, int y) {
 		// Vérifier si la case est vide
-		if (this.gameBoard.symbols.get(x)[y] == null) {
-			// Placer le symbole dans la grille
-			this.gameBoard.symbols.get(x)[y] = currentPlayer.getSymbol();
-			Pair<Boolean, Symbol> victory =  this.checkClassicVictory(5);
+		if (this.gameBoard.isEmptyCase(x, y)) {
+			// Placer le symbole sur la case (x, y)
+			this.gameBoard.placeSymbol(currentPlayer.getSymbol(), x, y);
+			// check the victory
+			Pair<Boolean, Symbol> victory =  this.checkClassicVictory(this.MaxNumberSymbolAlign);
 			if(victory.getKey() && currentPlayer.getSymbol() == victory.getValue()){
 				System.out.println(victory.getValue());
 				currentPlayer.addPoint();
-				System.out.println("Points de   " + currentPlayer.getName()+" :"+ currentPlayer.getPoints());
-
-
-				System.out.println("Vicoire pour  " + currentPlayer.getName());
 			}
-
-			// Incrémenter le tour pour passer au joueur suivant
-			turn++;
-
+			if(!allCaseFilled()){
+				System.out.println("ça reste encore des cases à remplir");
+			}
+			if(this.allCaseFilled()){
+				System.out.println("Toute les case sont remplie donc pas de victoire!!!!");
+			}
 		} else {
 			System.out.println("Case déjà occupée !");
 		}
 		if( players.getFirst().getPoints()!=0 || players.getLast().getPoints()!=0){
-			this.fin=true;
+			this.end=true;
 		}
+
+	}
+
+	public Player getCurrentPlayer() {
+		return currentPlayer;
+	}
+
+	public void setCurrentPlayer(Player currentPlayer) {
+		this.currentPlayer = currentPlayer;
 	}
 
 	public GameBoard getGameBoard() {
 		return gameBoard;
 	}
-	public boolean getFin() {
-		return fin;
+
+	public List<Player> getPlayers() {
+		return players;
+	}
+
+	public boolean getEnd() {
+		return end;
 	}
 //Force Change
 
