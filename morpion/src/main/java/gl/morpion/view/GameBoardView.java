@@ -15,6 +15,11 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 
 
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.Priority;
+
+
 public class GameBoardView extends BorderPane {
     private int x;
     private int y;

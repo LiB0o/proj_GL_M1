@@ -86,8 +86,12 @@ public class GameController {
                     // Ignore clicks if game has already ended
                     if (ended) return; // si déjà fini, ignorer
                     // Execute the current player's turn at position (r, c)
-                    game.playTurn(r, c);// <-- ton API actuelle (orthographe assumée)
+                    boolean test =   game.playTurn(r, c);// <-- ton API actuelle (orthographe assumée)
                     // Update the visual board to reflect the new game state
+                    if (!test) return;
+
+
+
                     gameBoardView.update(game.getGameBoard(), game.getCurrentPlayer().getSymbol());
                     System.out.println("theEnd = "+this.game.getEnd());
                     if (game.getEnd()) {
@@ -95,14 +99,17 @@ public class GameController {
                         // Set flag to prevent further moves
                         ended = true;
                         showEndPopup(onFinish, this.game.getCurrentPlayer(), ended);
+                        return;
                     }
                     if(!game.getEnd() && game.allCaseFilled()){
                         showEndPopup(onFinish, this.game.getCurrentPlayer(), ended);
+                        return;
 
                     }
                     //swap player trick
+                    // active the current player
                     this.game.swap();
-                    this.gameBoardView.setActivePlayer(this.game.getCurrentPlayer());// active the current player
+                    this.gameBoardView.setActivePlayer(this.game.getCurrentPlayer());
                 });
             }
         }

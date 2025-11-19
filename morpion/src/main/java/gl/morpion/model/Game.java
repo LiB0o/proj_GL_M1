@@ -338,31 +338,36 @@ public class Game {
 	 * @param y : col
 	 * @return :
 	 */
-	public void playTurn(int x, int y) {
-		// Vérifier si la case est vide
-		if (this.gameBoard.isEmptyCase(x, y)) {
-			// Placer le symbole sur la case (x, y)
-			this.gameBoard.placeSymbol(currentPlayer.getSymbol(), x, y);
-			// check the victory
-			Pair<Boolean, Symbol> victory =  this.checkClassicVictory(this.MaxNumberSymbolAlign);
-			if(victory.getKey() && currentPlayer.getSymbol() == victory.getValue()){
-				System.out.println(victory.getValue());
-				currentPlayer.addPoint();
-			}
-			if(!allCaseFilled()){
-				System.out.println("ça reste encore des cases à remplir");
-			}
-			if(this.allCaseFilled()){
-				System.out.println("Toute les case sont remplie donc pas de victoire!!!!");
-			}
-		} else {
-			System.out.println("Case déjà occupée !");
-		}
-		if( players.getFirst().getPoints()!=0 || players.getLast().getPoints()!=0){
-			this.end=true;
-		}
+    public boolean playTurn(int x, int y) {
 
-	}
+        // Case déjà occupée → on ne joue PAS
+        if (!this.gameBoard.isEmptyCase(x, y)) {
+            System.out.println("Case déjà occupée !");
+            return false; // ❌ coup refusé
+        }
+
+        // Case libre → jouer le coup
+        this.gameBoard.placeSymbol(currentPlayer.getSymbol(), x, y);
+
+        // Vérifier la victoire
+        Pair<Boolean, Symbol> victory = this.checkClassicVictory(this.MaxNumberSymbolAlign);
+        if (victory.getKey() && currentPlayer.getSymbol() == victory.getValue()) {
+            currentPlayer.addPoint();
+            this.end = true;
+        }
+
+        if (this.allCaseFilled()) {
+            System.out.println("Toutes les cases sont remplies !");
+        }
+
+        // Si quelqu’un a des points, on considère que c’est fini
+        if (players.get(0).getPoints() != 0 || players.get(1).getPoints() != 0) {
+            this.end = true;
+        }
+
+        return true; // ✅ coup joué
+    }
+
 
 	public Player getCurrentPlayer() {
 		return currentPlayer;
