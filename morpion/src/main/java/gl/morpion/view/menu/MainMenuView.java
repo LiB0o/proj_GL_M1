@@ -1,4 +1,4 @@
-package gl.morpion.vue.menu;
+package gl.morpion.view.menu;
 
 import gl.morpion.controllers.menu.MainMenuController;
 import gl.morpion.util.JavaFXUtils;
@@ -18,7 +18,7 @@ import javafx.scene.text.FontWeight;
 public class MainMenuView extends StackPane {
 
     // Main menu buttons for different game modes
-    private Button vsBot, vsPlayer, custom;
+    private Button vsBot, vsPlayer, custom, QUIT;
 
     /**
      * Constructor: Creates the main menu UI with all components and styling.
@@ -81,9 +81,9 @@ public class MainMenuView extends StackPane {
         vsBot    = big("Player vs Bots",   () -> controller.showMode("Player vs Bots"));
         vsPlayer = big("Player vs Player", controller::startModePvp);
         custom   = big("Custom",           () -> controller.showMode("Custom"));
-
+        QUIT   = big("QUIT",           () -> controller.showMode("QUIT"));
         // Arrange buttons vertically with 14px spacing between them
-        VBox btnCol = new VBox(14, vsBot, vsPlayer, custom);
+        VBox btnCol = new VBox(14, vsBot, vsPlayer, custom, QUIT);
         btnCol.setAlignment(Pos.CENTER);
 
         // Combine title and buttons in a centered vertical layout with 24px spacing
