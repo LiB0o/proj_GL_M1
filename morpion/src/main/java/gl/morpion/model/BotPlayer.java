@@ -84,7 +84,7 @@ public class BotPlayer extends Player {
 	 * @param position the position that will be tested
 	 * @return the vertical value of the position
 	 */
-	public float verticalValueOfCase(@NotNull Pair<Integer, Integer> position){
+	private float verticalValueOfCase(@NotNull Pair<Integer, Integer> position){
 
 		float value = 0.0f; //cannot be 1.0f for calculing the value of the case
 
@@ -157,7 +157,7 @@ public class BotPlayer extends Player {
 	 * @param position the position that will be tested
 	 * @return the horizontal value of the position
 	 */
-	public float horizontalValueOfCase(@NotNull Pair<Integer, Integer> position){
+	private float horizontalValueOfCase(@NotNull Pair<Integer, Integer> position){
 		float value = 0.0f; //cannot be 1.0f for calculing the value of the case
 
 		//Check the possibilities before and after the chosen point
@@ -226,7 +226,7 @@ public class BotPlayer extends Player {
 
 	//Calcul diagonal bas vers haut d'une case
 
-	public float diagonalDownToUpValueOfCase(Pair<Integer, Integer> position){
+	private float diagonalDownToUpValueOfCase(Pair<Integer, Integer> position){
 
 		float value = 0.0f; //cannot be 1.0f for calculing the value of the case
 
@@ -310,7 +310,7 @@ public class BotPlayer extends Player {
 
 	//Calcul diagonal haut vers bas d'une case
 
-	public float diagonalUpToDownValueOfCase(Pair<Integer, Integer> position){
+	private float diagonalUpToDownValueOfCase(Pair<Integer, Integer> position){
 
 		float value = 0.0f; //cannot be 1.0f for calculing the value of the case
 
