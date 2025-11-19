@@ -1,7 +1,9 @@
 package gl.morpion.controllers;
 
 import gl.morpion.model.GameBoard;
-import gl.morpion.vue.GameBoardView;
+import gl.morpion.model.Symbol;
+import gl.morpion.model.TypeOfSymbol;
+import gl.morpion.view.GameBoardView;
 
 /**
  * Basic controller for managing the game board model and its associated view.
@@ -56,4 +58,6 @@ public class GameBoardController {
     public void setView(GameBoardView view) {
         this.view = view;
     }
+
+
 }
