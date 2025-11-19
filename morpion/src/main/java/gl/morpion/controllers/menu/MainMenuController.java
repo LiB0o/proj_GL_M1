@@ -4,9 +4,7 @@ import gl.morpion.model.Symbol;
 import gl.morpion.model.TypeOfSymbol;
 import gl.morpion.view.player.PlayerNamesView;
 import gl.morpion.controllers.GameController;
-import gl.morpion.view.menu.GameBoardWithMenuView;
-import gl.morpion.view.menu.MainMenuView;
-import gl.morpion.view.menu.ModePlaceholderView;
+import gl.morpion.view.menu.*;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
@@ -80,6 +78,15 @@ public class MainMenuController {
 
 
     public void openSettings() { /* à faire plus tard */ }
-    public void showRules()    { showMode("Rules"); }
+    public void showRules() {
+        RulesView view = new RulesView(this::showMainMenu);
+        Scene scene = new Scene(view, WIDTH, HEIGHT);
+
+        var css = getClass().getResource("/css/menu.css");
+        if (css != null) scene.getStylesheets().add(css.toExternalForm());
+
+        stage.setScene(scene);
+    }
+
     public void toggleLanguage(String code) { /* à faire plus tard */ }
 }

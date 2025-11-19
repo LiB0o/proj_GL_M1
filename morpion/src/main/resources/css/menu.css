@@ -102,3 +102,34 @@
 /* Espacement vertical léger entre les éléments (optionnel si tu ne veux pas gérer en code) */
 .v-gap-8 { -fx-padding: 4 0 4 0; }
 .v-gap-12 { -fx-padding: 6 0 6 0; }
+
+/* ----- Rules screen ----- */
+
+.rules-card {
+    -fx-background-color: rgba(10, 18, 26, 0.90);
+    -fx-background-radius: 18;
+    -fx-border-radius: 18;
+    -fx-border-color: rgba(120, 220, 255, 0.35);
+    -fx-border-width: 1.2;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.65), 20, 0.0, 0, 8);
+}
+
+.rules-section-title {
+    -fx-text-fill: #e8f6ff;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-padding: 14 0 4 0;
+}
+
+.rules-text {
+    -fx-fill: #e8f6ff;
+    -fx-font-size: 15px;
+    -fx-opacity: 0.96;
+}
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
