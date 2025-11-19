@@ -1,7 +1,7 @@
 package gl.morpion.controllers.menu;
-import gl.morpion.model.Player;
-import gl.morpion.model.Symbol;
-import gl.morpion.model.TypeOfSymbol;
+import gl.morpion.controllers.PvsBotController;
+import gl.morpion.model.*;
+import gl.morpion.view.GameBoardView;
 import gl.morpion.view.player.PlayerNamesView;
 import gl.morpion.controllers.GameController;
 import gl.morpion.view.menu.*;
@@ -75,6 +75,76 @@ public class MainMenuController {
 
         stage.setScene(scene);
     }
+
+    public void startModePvsBot() {
+        PlayerNamesView namesView = new PlayerNamesView(
+                true, // 👉 à condition d'avoir ajouté le constructeur vsBot dans PlayerNamesView
+                (name1, ignored) -> {
+                    // 1. Création du plateau
+                    RectangleBoard board = new RectangleBoard(
+                            RectangleBoard.DEFAULT_ROW,
+                            RectangleBoard.DEFAULT_COLUMN
+                    );
+
+                    // 2. Joueur humain (X)
+                    Player human = new Player(
+                            name1,
+                            0,
+                            new Symbol(getClass().getResource("/gl/morpion/croix.jpg").toExternalForm(),
+                                    TypeOfSymbol.CROSS)
+                    );
+
+                    // 3. Bot (O)
+                    Symbol botSymbol = new Symbol(
+                            getClass().getResource("/gl/morpion/cercle.png").toExternalForm(),
+                            TypeOfSymbol.CIRCLE
+                    );
+
+                    BotPlayer bot = new BotPlayer(
+                            "BOT",
+                            0,
+                            3.698f,           // niveau du bot (coef)
+                            botSymbol,
+                            5,              // condition de victoire (5 alignés comme ton Game)
+                            board.useCase   // cases jouables (déjà remplies dans RectangleBoard)
+                    );
+
+                    // 4. Game
+                    Game game = new Game(board, human, bot, human);
+                    game.addPlayer(human);
+                    game.addPlayer(bot);
+
+                    // 5. Vue de la grille
+                    GameBoardView boardView = new GameBoardView(board, human, bot);
+
+                    // 6. Contrôleur PvS Bot
+                    new PvsBotController(game, boardView, human, bot);
+
+                    // 7. Emballage dans GameBoardWithMenuView + scène
+                    GameBoardWithMenuView gameView = new GameBoardWithMenuView(
+                            boardView,
+                            this::showMainMenu
+                    );
+
+                    Scene scene = new Scene(gameView, WIDTH, HEIGHT);
+                    var css = getClass().getResource("/css/menu.css");
+                    if (css != null) scene.getStylesheets().add(css.toExternalForm());
+
+                    scene.setOnKeyPressed(e -> {
+                        if (e.getCode() == KeyCode.ESCAPE) showMainMenu();
+                    });
+
+                    stage.setScene(scene);
+                },
+                this::showMainMenu
+        );
+
+        Scene scene = new Scene(namesView, WIDTH, HEIGHT);
+        var css = getClass().getResource("/css/menu.css");
+        if (css != null) scene.getStylesheets().add(css.toExternalForm());
+        stage.setScene(scene);
+    }
+
 
 
     public void openSettings() { /* à faire plus tard */ }
