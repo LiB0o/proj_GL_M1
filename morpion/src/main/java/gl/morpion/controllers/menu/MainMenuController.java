@@ -1,7 +1,5 @@
 package gl.morpion.controllers.menu;
-import gl.morpion.model.Player;
-import gl.morpion.model.Symbol;
-import gl.morpion.model.TypeOfSymbol;
+import gl.morpion.model.*;
 import gl.morpion.view.player.PlayerNamesView;
 import gl.morpion.controllers.GameController;
 import gl.morpion.view.menu.*;
@@ -75,6 +73,75 @@ public class MainMenuController {
 
         stage.setScene(scene);
     }
+
+    public void startModePvsBot() {
+        PlayerNamesView namesView = new PlayerNamesView(
+                true, // vsBot = un seul joueur, Player 2 = "BOT"
+                (name1, ignored) -> {
+                    // 1. Créer le joueur humain (X)
+                    Player human = new Player(
+                            name1,
+                            0,
+                            new Symbol(
+                                    getClass().getResource("/gl/morpion/croix.jpg").toExternalForm(),
+                                    TypeOfSymbol.CROSS
+                            )
+                    );
+
+                    // 2. Créer le bot (O)
+                    Symbol botSymbol = new Symbol(
+                            getClass().getResource("/gl/morpion/cercle.png").toExternalForm(),
+                            TypeOfSymbol.CIRCLE
+                    );
+
+                    BotPlayer bot = new BotPlayer(
+                            "BOT",
+                            0,
+                            3.680f,                        // niveau du bot
+                            botSymbol,
+                            5,                           // nb symboles alignés pour gagner
+                            new RectangleBoard(
+                                    RectangleBoard.DEFAULT_ROW,
+                                    RectangleBoard.DEFAULT_COLUMN
+                            ).useCase                   // ⚠️ voir remarque ci-dessous
+                    );
+                    // ⚠ mieux : créer Board dans GameController, et passer useCase depuis là.
+                    // Pour faire simple au début, garde comme dans ton Bot actuel (ou adapte).
+
+                    // 3. Créer le GameController mode BOT
+                    GameController gameController = new GameController(human, bot, true, this::showMainMenu);
+
+
+                    // 4. Construire la vue avec menu comme en PvP
+                    GameBoardWithMenuView gameView = new GameBoardWithMenuView(
+                            gameController.getGameBoardView(),
+                            this::showMainMenu
+                    );
+
+                    Scene scene = new Scene(gameView, WIDTH, HEIGHT);
+
+                    var css = getClass().getResource("/css/menu.css");
+                    if (css != null) scene.getStylesheets().add(css.toExternalForm());
+
+                    scene.setOnKeyPressed(e -> {
+                        if (e.getCode() == KeyCode.ESCAPE) showMainMenu();
+                    });
+
+                    // Si tu veux gérer la fin via GameController :
+                    // gameController.handleGame(this::showMainMenu);
+
+                    stage.setScene(scene);
+                },
+                this::showMainMenu
+        );
+
+        Scene scene = new Scene(namesView, WIDTH, HEIGHT);
+        var css = getClass().getResource("/css/menu.css");
+        if (css != null) scene.getStylesheets().add(css.toExternalForm());
+        stage.setScene(scene);
+    }
+
+
 
 
     public void openSettings() { /* à faire plus tard */ }

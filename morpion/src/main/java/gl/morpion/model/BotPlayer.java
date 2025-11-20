@@ -122,7 +122,7 @@ public class BotPlayer extends Player {
 						float add = 3.0f;
 
 						for(int compt = 1; compt<nb_bot_symbol; compt++){
-							add = add * this.full_coef;
+							add = add * this.full_coef+(0.9f*compt);
 						}
 
 						value = value + add;
@@ -131,7 +131,7 @@ public class BotPlayer extends Player {
 						float add = 2.0f;
 
 						for(int compt = 1; compt<nb_adverse_symbol; compt++){
-							add = add * this.full_coef;
+							add = add * this.full_coef+(0.8f*compt);
 						}
 
 						value = value + add;
@@ -195,7 +195,7 @@ public class BotPlayer extends Player {
 
 						float add = 3.0f;
 						for(int compt = 1; compt<nb_bot_symbol; compt++){
-							add = add * this.full_coef;
+							add = add * this.full_coef+(0.9f*compt);
 						}
 
 						value = value + add;
@@ -203,7 +203,7 @@ public class BotPlayer extends Player {
 					else if(nb_adverse_symbol !=0){
 						float add = 2.0f;
 						for(int compt = 1; compt<nb_adverse_symbol; compt++){
-							add = add * this.full_coef;
+							add = add * this.full_coef+(0.8f*compt);
 						}
 
 						value = value + add;
@@ -279,7 +279,7 @@ public class BotPlayer extends Player {
 
 						float add = 3.0f;
 						for(int compt = 1; compt<nb_bot_symbol; compt++){
-							add = add * this.full_coef;
+							add = add * this.full_coef+(0.9f*compt);
 						}
 
 						value = value + add;
@@ -287,7 +287,7 @@ public class BotPlayer extends Player {
 					else if(nb_adverse_symbol != 0){
 						float add = 2.0f;
 						for(int compt = 1; compt<nb_adverse_symbol; compt++){
-							add = add * this.full_coef;
+							add = add * this.full_coef+(0.8f*compt);
 						}
 
 						value = value + add;
@@ -366,7 +366,7 @@ public class BotPlayer extends Player {
 						//System.out.println("Diagonal symbol bot:"+nb_bot_symbol);
 						float add = 3.0f;
 						for(int compt = 1; compt<nb_bot_symbol; compt++){
-							add = add * this.full_coef;
+							add = add * this.full_coef+(0.9f*compt);
 						}
 
 						value = value + add;
@@ -375,7 +375,7 @@ public class BotPlayer extends Player {
 						//System.out.println("Diagonal symbol player:"+nb_adverse_symbol);
 						float add = 2.0f;
 						for(int compt = 1; compt<nb_adverse_symbol; compt++){
-							add = add * this.full_coef;
+							add = add * this.full_coef+(0.8f*compt);
 						}
 
 						value = value + add;

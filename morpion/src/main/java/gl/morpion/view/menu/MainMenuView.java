@@ -78,7 +78,7 @@ public class MainMenuView extends StackPane {
         title.setTextFill(Color.web("#e8f6ff"));
 
         // Create three main game mode buttons with their respective actions
-        vsBot    = big("Player vs Bots",   () -> controller.showMode("Player vs Bots"));
+        vsBot    = big("Player vs Bots",   controller::startModePvsBot);
         vsPlayer = big("Player vs Player", controller::startModePvp);
         custom   = big("Custom",           () -> controller.showMode("Custom"));
         QUIT   = big("QUIT",           () -> controller.showMode("QUIT"));

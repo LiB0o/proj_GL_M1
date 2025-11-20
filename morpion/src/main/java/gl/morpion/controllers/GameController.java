@@ -26,10 +26,30 @@ public class GameController {
     private final GameBoardView gameBoardView;
     //private final int DEFAULT_ROW = 10, DEFAULT_COL = 10; //TODO:  probleme si ROW defferent COL
     // Secondary controller for board interactions (Player vs Player mode)
-    private final PvsPController gameBoardController; // ou GameBoardController si c'est lui
+    private PvsPController gameBoardController; // ou GameBoardController si c'est lui
     // Flag to prevent further moves after game ends (volatile for thread-safety)
     private volatile boolean ended = false;
     private GameBoard board;
+    private boolean vsBot = false;
+
+    public GameController(Player human, BotPlayer bot, boolean vsBot, Runnable onFinish) {
+        this.vsBot = true;
+
+        // utiliser le champ board, pas une variable locale
+        this.board = new RectangleBoard(
+                RectangleBoard.DEFAULT_ROW,
+                RectangleBoard.DEFAULT_COLUMN
+        );
+
+        this.game = new Game(board, human, bot, human);
+        this.game.addPlayer(human);
+        this.game.addPlayer(bot);
+
+        this.gameBoardView = new GameBoardView(board, human, bot);
+
+        // On passe this et onFinish au contrôleur bot
+        new PvsBotController(this, game, gameBoardView, human, bot, onFinish);
+    }
 
 
 
@@ -121,7 +141,7 @@ public class GameController {
      * 
      * @param onFinish Callback to execute after user closes the popup
      */
-    private void showEndPopup(Runnable onFinish, Player currentPlayer, Boolean ended) {
+    public void showEndPopup(Runnable onFinish, Player currentPlayer, Boolean ended) {
         // Ensure this runs on the JavaFX Application Thread for UI safety
         Platform.runLater(() -> {
             // Create an information alert dialog
