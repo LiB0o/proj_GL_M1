@@ -425,7 +425,10 @@ public class BotPlayer extends Player {
 		for(int i = (position.getKey()-(this.win_condition-1)); i<position.getKey()+this.win_condition;i++){
 			Pair<Integer, Integer> key = new Pair<>(i, position.getValue());
 			if(this.boardView.containsKey(key) &&
-					!key.equals(position)){//If we are on the board and are not the origin
+					!key.equals(position) && (
+							boardView.get(key) != 0.0f
+							&& boardView.get(key) != -1.0f
+			)){//If we are on the board and are not the origin and don't have a symbol on them
 				this.boardView.replace(key,totalValueofCase(key));
 			}
 		}
@@ -433,8 +436,10 @@ public class BotPlayer extends Player {
 		//Modify vertical neighbours
 		for(int i = (position.getValue()-(this.win_condition-1)); i<position.getValue()+this.win_condition;i++){
 			Pair<Integer, Integer> key = new Pair<>(position.getKey(),i);
-			if(this.boardView.containsKey(key)
-				&& !key.equals(position)){//If we are on the board and are not the origin
+			if(this.boardView.containsKey(key) &&
+					!key.equals(position) &&(
+					boardView.get(key) != 0.0f && boardView.get(key) != -1.0f
+			)){//If we are on the board and are not the origin
 				this.boardView.replace(key,totalValueofCase(key));
 			}
 		}
@@ -447,7 +452,9 @@ public class BotPlayer extends Player {
 					(position.getValue()+(this.win_condition-1))-i
 			);
 			if(this.boardView.containsKey(key)
-				&& !key.equals(position)
+				&& !key.equals(position) &&(
+					boardView.get(key) != 0.0f && boardView.get(key) != -1.0f
+				)
 			){//If we are on the board and not the origin
 				this.boardView.replace(key,totalValueofCase(key));
 			}
@@ -459,8 +466,10 @@ public class BotPlayer extends Player {
 					(position.getKey()-(this.win_condition-1))+i,
 					(position.getValue()-(this.win_condition-1))+i
 			);
-			if(this.boardView.containsKey(key)
-					&& !key.equals(position)
+			if(this.boardView.containsKey(key) &&
+					!key.equals(position) &&(
+					boardView.get(key) != 0.0f && boardView.get(key) != -1.0f
+				)
 			){//If we are on the board and not the origin
 				this.boardView.replace(key,totalValueofCase(key));
 			}
