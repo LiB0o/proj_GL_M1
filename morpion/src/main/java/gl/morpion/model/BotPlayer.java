@@ -13,12 +13,18 @@ import java.util.List;
  */
 
 public class BotPlayer extends Player {
+
+	/**
+	 * <h3 static X_LEVEL></h3>
+	 *
+	 * Three different automatically coefficient for the bot
+	 */
     public static final float EASY_LEVEL   = 2.0f;
     public static final float NORMAL_LEVEL = 3.0f;
     public static final float HARD_LEVEL   = 3.5f;
 
 	/**
-	 * <h3>full_coef</h3>
+	 * <h3>private full_coef</h3>
 	 *
 	 * Represent the coefficient the bot will use to calculate the importance of every case on the board
 	 */
@@ -29,9 +35,12 @@ public class BotPlayer extends Player {
 	 *
 	 * How many symbols align are needed to win
 	 */
-
 	public int win_condition;
-    // Niveau par défaut utilisé pour créer les bots
+
+	/**
+	 * <h3>private currentDefaultLevel</h3>
+	 * Define the default coefficient of the bot
+	 */
     private static float currentDefaultLevel = NORMAL_LEVEL;
 	
 	/**
@@ -608,15 +617,19 @@ public class BotPlayer extends Player {
 
 		return maxVal;
    }
-    public static float getCurrentDefaultLevel() {
+
+
+   public static float getCurrentDefaultLevel() {
         return currentDefaultLevel;
     }
 
-    /**
-     * Change le niveau global de difficulté de l'IA.
-     * Les prochains BotPlayer créés utiliseront ce level.
-     * @param difficultyKey "EASY", "NORMAL" ou "HARD"
-     */
+
+	/**
+	 * <h3>changeLevel</h3>
+	 *
+	 * Change the coefficient of the bot
+	 * @param difficultyKey "EASY", "NORMAL" or "HARD"
+	 */
     public static void changeLevel(String difficultyKey) {
         switch (difficultyKey) {
             case "EASY":
