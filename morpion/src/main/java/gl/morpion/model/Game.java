@@ -4,17 +4,52 @@ import javafx.util.Pair;
 
 import java.util.*;
 
+/**
+ * <h1>class Game</h1>
+ * <h2>Elements of Game</h2>
+ */
+
+
 public class Game {
+
+	/**
+	 * <h3>MaxNumberSymbolAlign</h3>
+	 * How many symbols align are needed to win
+	 */
 	private int MaxNumberSymbolAlign = 5;
+
+	/**
+	 * <h3>usedCase</h3>
+	 * Cases already played on with their position and symbol
+	 */
 	private HashMap<Pair<Integer,Integer>,Symbol> usedCase;
+
+	/**
+	 * <h3>gameBoard</h3>
+	 * The board played on
+	 */
 	private GameBoard gameBoard;
+
+	/**
+	 * <h3>players</h3>
+	 * List of every player
+	 */
 	List<Player> players;
+
+
 	private boolean end=false;
+
 	private Player currentPlayer, p1, p2;
 
 	/**
-	 * Create the instance of Game
-	 * @param board of type GameBoard
+	 * <h3>Game</h3>
+	 *
+	 * Create the game
+	 *
+	 * @param board the board
+	 * @param p1
+	 * @param p2
+	 * @param currentPlayer
 	 */
 	public Game(GameBoard board, Player p1, Player p2, Player currentPlayer){
 		this.p1 = p1;
@@ -24,13 +59,23 @@ public class Game {
 		this.usedCase = new HashMap<>();
 		this.currentPlayer = currentPlayer;
 	}
+
+	/**
+	 * <h3>addPlayer</h3>
+	 * Add a player in the list players
+	 * @param player the new player
+	 */
 	public void addPlayer(Player player){
 		this.players.add(player);
 	}
+
 	/**
-	 * test every possibility for a case to check if there is a win
-	 * @param limit: how many symbols are needed next to each other to win
-	 * @return a pair with a boolean and the symbol of the winner (if boolean == true)
+	 * <h3>checkClassicVictory</h3>
+	 *
+	 * Test every possibility for a win using the four functions below.
+	 *
+	 * @param limit the winning condition (how many symbols align to win)
+	 * @return a boolean and a symbol (if a win: true,symbol; if no win: false, null)
 	 */
 	public Pair<Boolean,Symbol> checkClassicVictory(int limit) {
 		boolean victory = false;
@@ -56,10 +101,12 @@ public class Game {
 	}
 
 	/**
+	 * <h3>private checkDiagonalUpLeft_DownRight</h3>
+	 *
 	 * check if you win with on a diagonal from up left to down right
 	 * @param key position of case, first Integer is x/line and the second Integer is y/column
 	 * @param limit how many symbols are needed next to each other to win
-	 * @return boolean
+	 * @return true or false
 	 */
 	private boolean checkDiagonalUpLeft_DownRight(Pair<Integer,Integer>key,int limit){
 		boolean result = false;
@@ -119,10 +166,12 @@ public class Game {
 	}
 
 	/**
+	 * <h3>private checkDiagonalUpRight_DownLeft</h3>
+	 *
 	 * check if you win with on a diagonal from down left to up right
 	 * @param key position of case, first Integer is x/line and the second Integer is y/column
 	 * @param limit how many symbols are needed next to each other to win
-	 * @return boolean
+	 * @return true or false
 	 */
 
 	private boolean checkDiagonalUpRight_DownLeft(Pair<Integer,Integer>key,int limit){
@@ -183,6 +232,7 @@ public class Game {
 	}
 
 	/**
+	 * <h3>private checkColumn</h3>
 	 * check if you win with on a column
 	 *
 	 * @param key position of case, first Integer is x/line and the second Integer is y/column
@@ -247,6 +297,8 @@ public class Game {
 	}
 
 	/**
+	 * <h3>private checkLine</h3>
+	 *
 	 * check if you win with on a line
 	 * @param key position of case, first Integer is x/line and the second Integer is y/column
 	 * @param limit how many symbols are needed next to each other to win
@@ -309,6 +361,7 @@ public class Game {
 		return result;
 	}
 
+	//ask Abdou
 	public void swap(){
 		currentPlayer = currentPlayer == players.get(0) ?
 				players.get(1) :
@@ -316,8 +369,10 @@ public class Game {
 	}
 
 	/**
+	 * <h3>allCaseFilled</h3>
 	 *
-	 * @return : detect whether there is a draw
+	 * detect whether there is a draw
+	 * @return true if it detects a draw
 	 */
 	public Boolean allCaseFilled(){//TODO: probleme
 		int rows = this.gameBoard.getRow();
@@ -333,23 +388,28 @@ public class Game {
 	}
 
 
+
 	/**
-	 * @param x: row
-	 * @param y : col
-	 * @return :
+	 * <h3>playTurn</h3>
+	 *
+	 * Manage a turn
+	 *
+	 * @param x : column
+	 * @param y : row
+	 * @return false if the turn need to reroll (no move) or true if need to stop/next turn
 	 */
     public boolean playTurn(int x, int y) {
 
-        // Case déjà occupée → on ne joue PAS
+        // Case already occupied → DON'T PLAY
         if (!this.gameBoard.isEmptyCase(x, y)) {
-            System.out.println("Case déjà occupée !");
-            return false; // ❌ coup refusé
+            System.out.println("Case has already a symbol !");
+            return false; // ❌ refuse move
         }
 
-        // Case libre → jouer le coup
+        // Free case → play the move
         this.gameBoard.placeSymbol(currentPlayer.getSymbol(), x, y);
 
-        // Vérifier la victoire
+        // Check victory
         Pair<Boolean, Symbol> victory = this.checkClassicVictory(this.MaxNumberSymbolAlign);
         if (victory.getKey() && currentPlayer.getSymbol() == victory.getValue()) {
             currentPlayer.addPoint();
@@ -357,15 +417,15 @@ public class Game {
         }
 
         if (this.allCaseFilled()) {
-            System.out.println("Toutes les cases sont remplies !");
+            System.out.println("All cases are full !");
         }
 
-        // Si quelqu’un a des points, on considère que c’est fini
+        // If someone have points, it is over
         if (players.get(0).getPoints() != 0 || players.get(1).getPoints() != 0) {
             this.end = true;
         }
 
-        return true; // ✅ coup joué
+        return true; // ✅ move played
     }
 
 

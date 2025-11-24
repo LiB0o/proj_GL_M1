@@ -23,14 +23,27 @@ public class PlayerNamesView extends BorderPane {
     private List<Player> players = new ArrayList<>();
 
     /**
-     * @param onStart callback appelé avec (name1, name2) quand on clique "Commencer"
-     * @param onBack  callback pour le bouton "Retour"
+     * Constructeur d'origine : mode Player vs Player
+     * => NE CHANGE PAS, on le garde pour ton startModePvp()
+     *
+     * @param onStart callback appelé avec (name1, name2) quand on clique "Start"
+     * @param onBack  callback pour le bouton "Back"
      */
     public PlayerNamesView(BiConsumer<String, String> onStart, Runnable onBack) {
+        this(false, onStart, onBack); // false = pas vsBot → mode PvP classique
+    }
+
+    /**
+     * Nouveau constructeur : permet de choisir si on est en mode vsBot ou non.
+     * vsBot = false → Player vs Player (2 champs)
+     * vsBot = true  → Player vs Bot (1 seul champ, Player 2 = "BOT")
+     */
+    public PlayerNamesView(boolean vsBot, BiConsumer<String, String> onStart, Runnable onBack) {
         // Fond identique au menu
         getStyleClass().add("main-menu-bg");
+
         // ------ Titre
-        Label title = new Label("Player vs Player");
+        Label title = new Label(vsBot ? "Player vs Bot" : "Player vs Player");
         title.getStyleClass().add("title-glow");
 
         // ------ Formulaire
@@ -48,16 +61,30 @@ public class PlayerNamesView extends BorderPane {
         player2NameField.getStyleClass().add("text-input");
         player2NameField.setMaxWidth(320);
 
+        // Si on est en mode BOT → on cache le champ du joueur 2
+        if (vsBot) {
+            p2Label.setVisible(false);
+            p2Label.setManaged(false);
+            player2NameField.setVisible(false);
+            player2NameField.setManaged(false);
+        }
+
         // ------ Boutons (réutilisation du style du menu)
         Button startBtn = new Button("Start");
         startBtn.getStyleClass().add("big-button");
         startBtn.setOnAction(e -> {
+            // En PvP : n1 & n2 saisis par les joueurs
+            // En vsBot : n1 saisi, n2 = "BOT"
             String n1 = safe(player1NameField.getText(), "PLayer 1");
-            String n2 = safe(player2NameField.getText(), "Player 2");
-            if (onStart != null){
+            String n2 = vsBot
+                    ? "BOT"
+                    : safe(player2NameField.getText(), "Player 2");
+
+            if (onStart != null) {
                 onStart.accept(n1, n2);
             }
         });
+
         Button backBtn = new Button("Back");
         backBtn.getStyleClass().add("pill-button");
         backBtn.setOnAction(e -> { if (onBack != null) onBack.run(); });
@@ -67,7 +94,9 @@ public class PlayerNamesView extends BorderPane {
                 title,
                 spacer(8),
                 p1Label, player1NameField,
-                p2Label, player2NameField,
+                // En mode vsBot on ne montre pas le label/champ 2
+                (vsBot ? spacer(0) : p2Label),
+                (vsBot ? spacer(0) : player2NameField),
                 spacer(8),
                 startBtn,
                 backBtn
@@ -78,7 +107,7 @@ public class PlayerNamesView extends BorderPane {
 
         setCenter(content);
         setPadding(new Insets(24));
-    }//end contructor
+    }//end constructor
 
     private String safe(String v, String def) {
         if (v == null) return def;
