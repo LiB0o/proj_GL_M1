@@ -7,11 +7,14 @@ import java.util.HashMap;
 import java.util.List;
 
 public class BotPlayer extends Player {
-
+    public static final float EASY_LEVEL   = 2.0f;
+    public static final float NORMAL_LEVEL = 3.0f;
+    public static final float HARD_LEVEL   = 3.5f;
 	private float full_coef;
 
 	public int win_condition;
-
+    // Niveau par défaut utilisé pour créer les bots
+    private static float currentDefaultLevel = NORMAL_LEVEL;
 	/*
 	* All cases on the board (even with a symbol)
 	* Each position (Pair<Integer, Integer>) get a value depending of the possible move on it
@@ -511,7 +514,30 @@ public Pair<Integer, Integer> getMaxValue(){
 		}
 
 		return maxVal;
-}
+   }
+    public static float getCurrentDefaultLevel() {
+        return currentDefaultLevel;
+    }
 
+    /**
+     * Change le niveau global de difficulté de l'IA.
+     * Les prochains BotPlayer créés utiliseront ce level.
+     * @param difficultyKey "EASY", "NORMAL" ou "HARD"
+     */
+    public static void changeLevel(String difficultyKey) {
+        switch (difficultyKey) {
+            case "EASY":
+                currentDefaultLevel = EASY_LEVEL;
+                break;
+            case "HARD":
+                currentDefaultLevel = HARD_LEVEL;
+                break;
+            default:
+                currentDefaultLevel = NORMAL_LEVEL;
+                break;
+        }
+        System.out.println("[BotPlayer] Difficulty set to " + difficultyKey +
+                " (coef=" + currentDefaultLevel + ")");
+    }
 
 }
