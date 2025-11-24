@@ -9,7 +9,6 @@ import javafx.scene.image.ImageView;
 import java.io.IOException;
 
 
-
 public class SaveBoard {
     private GameBoard board;
     private SymbolViewAdapter symbol;
@@ -19,29 +18,44 @@ public class SaveBoard {
         this.symbol = new SymbolViewAdapter();
     }
 
-    private void writeBoardColumn(JsonWriter writer, int row, int col, GameBoard board) throws IOException {
+    /**
+     * Write a column Write a column in JSON format
+     * @param writer
+     * @param row: line
+     * @param col:column
+     * @param imageUrl: image view url
+     * @throws IOException
+     */
+    private void writeBoardColumn(JsonWriter writer, int row, int col, String imageUrl) throws IOException {
         writer.beginObject();
         writer.name("row").value(row);
         writer.name("col").value(col);
-        if(board.isEmptyCase(row, col)){
+        if(board.isEmptyCase(row, col) || board.getSymbolInCase(row, col).getImage() == null){
             writer.name("symbol").value("None");
         }else {
-            writer.name("symbol").value(board.getSymbolInCase(row, col).getImage());
-
+            //writer.name("symbol").value(board.getSymbolInCase(row, col).getImage());
+            this.symbol.write(writer, imageUrl);
         }
         writer.endObject();
     }
 
-    public void writeBoard(JsonWriter writer, GameBoard board) {
-
-        int rows = board.getRow();
-        int cols = board.getColumn();
+    /**
+     * Write the entire board in JSON format.
+     * @param writer :
+     * @param board : game board
+     */
+    public void writeBoard(JsonWriter writer, GameBoardView board) {
+        int rows = board.getGameBoard().getRow();
+        int cols = board.getGameBoard().getColumn();
         try {
             writer.beginArray();
             for(int i = 0; i < rows; i++) {
                 for(int j = 0; j < cols; j++) {
-
-                    writeBoardColumn(writer, i, j, board);
+                    if(board.getGameBoard().getSymbolInCase(i, j) != null){
+                        writeBoardColumn(writer, i, j, board.getGameBoard().getSymbolInCase(i, j).getImage());
+                    }else {
+                        writeBoardColumn(writer,i, j,  null);
+                    }
                 }
             }
             writer.endArray();

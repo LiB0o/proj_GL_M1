@@ -34,8 +34,8 @@ public class MainMenuController {
         PlayerNamesView namesView = new PlayerNamesView(
                 // onStart: reçoit (name1, name2)
                 (name1, name2) -> {
-                    Player p1 = new Player(name1, 0, new Symbol(getClass().getResource("/gl/morpion/croix.jpg").toExternalForm(), TypeOfSymbol.CROSS));
-                    Player p2 = new Player(name2, 0, new Symbol(getClass().getResource("/gl/morpion/cercle.png").toExternalForm(), TypeOfSymbol.CIRCLE));
+                    Player p1 = new Player(name1, 0, new Symbol(getClass().getResource("/gl/morpion/croix.jpg").toString(), TypeOfSymbol.CROSS));
+                    Player p2 = new Player(name2, 0, new Symbol(getClass().getResource("/gl/morpion/cercle.png").toString(), TypeOfSymbol.CIRCLE));
                     // Créer le GameController avec les deux noms (voir point 3)
                     GameController gameController = new GameController(p1, p2); // le gzmr recupere le nom des joueurs;
                     //afficher la grille
@@ -64,7 +64,7 @@ public class MainMenuController {
                 this::showMainMenu
         );
 
-        System.out.println("PlayerNameView passe bien");
+        //System.out.println("PlayerNameView passe bien");
         //System.out.println("P1 = "+gameController.getListPlayers().get(0)+ "P2 = "+gameController.getListPlayers().get(2));
 
 

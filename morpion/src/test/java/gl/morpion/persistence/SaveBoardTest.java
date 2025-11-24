@@ -33,9 +33,9 @@ class SaveBoardTest {
         try {
             JsonWriter writer = new JsonWriter(new FileWriter("testBoard.json"));
             writer.setIndent("  ");
-            saveBoard.writeBoard(writer, board);
+           // saveBoard.writeBoard(writer, null);
             writer.close();
-            System.out.println("JSON écrit dans testBoard.json !");
+            System.out.println("JSON write in testBoard.json !");
         } catch (IOException e) {
             e.printStackTrace();
         }

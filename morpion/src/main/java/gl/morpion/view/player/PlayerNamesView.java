@@ -4,11 +4,10 @@ import gl.morpion.model.Game;
 import gl.morpion.model.Player;
 import gl.morpion.model.Symbol;
 import gl.morpion.model.TypeOfSymbol;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
@@ -58,9 +57,14 @@ public class PlayerNamesView extends BorderPane {
                 onStart.accept(n1, n2);
             }
         });
+        //return menu
         Button backBtn = new Button("Back");
         backBtn.getStyleClass().add("pill-button");
-        backBtn.setOnAction(e -> { if (onBack != null) onBack.run(); });
+        backBtn.setOnAction(e -> {
+            if (onBack != null) {
+                onBack.run();
+            }
+        });
 
         // Carte centrale (look propre + espacement)
         VBox content = new VBox(12,
@@ -79,6 +83,8 @@ public class PlayerNamesView extends BorderPane {
         setCenter(content);
         setPadding(new Insets(24));
     }//end contructor
+
+
 
     private String safe(String v, String def) {
         if (v == null) return def;

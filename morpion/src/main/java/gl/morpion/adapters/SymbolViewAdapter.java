@@ -3,33 +3,51 @@ package gl.morpion.adapters;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import gl.morpion.model.Symbol;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import java.io.IOException;
 
-import static java.lang.System.out;
-
-public class SymbolViewAdapter extends TypeAdapter<ImageView> {
-    @Override
-    public void write(JsonWriter jsonWriter, ImageView imageView) throws IOException {
-        if (imageView == null) {
+public class SymbolViewAdapter {
+    public void write(JsonWriter jsonWriter, String imageUrl) throws IOException {
+        if (imageUrl == null) {
             jsonWriter.name("symbol").value("None");
             return;
         }
-
-        Image image = imageView.getImage();
-        if (image == null) {
-            jsonWriter.name("symbol").value("None");
-            return;
-        }
-
         // Write the image URL in the JSON file
-        jsonWriter.value(image.getUrl());
+        //String imageUrl = imageView.getImage().getUrl();
+        if(imageUrl.contains("cercle.png")) {
+            jsonWriter.name("symbol").value("cercle.png");
+        }else if(imageUrl.contains("croix.jpg")) {
+            jsonWriter.name("symbol").value("croix.jpg");
+        }else {
+            jsonWriter.name("symbol").value("None");
+        }
     }
 
-    @Override
+    //TODO : load
     public ImageView read(JsonReader jsonReader) throws IOException {
-        return null;
+        String symbol = jsonReader.nextString();
+        return createImageViewFromSymbol(symbol);
+    }
+
+    private ImageView createImageViewFromSymbol(String symbol) {
+        ImageView imageView = new ImageView();
+
+        switch (symbol) {
+            case "croix.jpg":
+                imageView.setImage(new Image(symbol));
+                break;
+            case "cercle.png":
+                imageView.setImage(new Image(symbol));
+                break;
+            default:
+                imageView.setImage(null);
+        }
+
+        imageView.setFitWidth(40);
+        imageView.setFitHeight(40);
+        return imageView;
     }
 }

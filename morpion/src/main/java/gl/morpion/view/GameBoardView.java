@@ -1,8 +1,10 @@
 package gl.morpion.view;
 
+import com.google.gson.stream.JsonWriter;
 import gl.morpion.model.GameBoard;
 import gl.morpion.model.Player;
 import gl.morpion.model.Symbol;
+import gl.morpion.persistence.SaveBoard;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.ContentDisplay;
@@ -19,12 +21,16 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.Priority;
 
+import java.io.FileWriter;
+import java.io.IOException;
+
 
 public class GameBoardView extends BorderPane {
     private int x;
     private int y;
     private Label[][] cells;
     private GridPane grid;
+    private ImageView imageView;
 
     private HBox hBox = new HBox(100);
     private VBox vBox1 = new VBox(10);
@@ -32,13 +38,15 @@ public class GameBoardView extends BorderPane {
 
     private Player player1, player2;
     Polygon triangleVisible1, triangleVisible2;
+    private GameBoard gameBoard;
+    private SaveBoard save;
 
-    GameBoard gameBoard;
 
     public GameBoardView(GameBoard gameBoard, Player player1, Player player2) {
         this.player1 = player1;
         this.player2 = player2;
         this.gameBoard = gameBoard;
+        this.save = new SaveBoard(gameBoard);
         this.x = gameBoard.getColumn();
         this.y = gameBoard.getRow();
         this.grid = new GridPane();
@@ -141,8 +149,8 @@ public class GameBoardView extends BorderPane {
                 //if empty case, it show symbol in the gameBoard
                 if (!gameBoard.isEmptyCase(row, col)/*symbol != null*/) {
                      symbol = gameBoard.getSymbolInCase(row, col);
-                    ImageView img = symbolView(symbol);
-                    cells[row][col].setGraphic(img);
+                    this.imageView = symbolView(symbol);
+                    cells[row][col].setGraphic(imageView);
                 } else {
                     cells[row][col].setGraphic(null);
                 }
@@ -151,8 +159,8 @@ public class GameBoardView extends BorderPane {
         this.gameBoard.debugGameBoard();
     }
 
-    private ImageView symbolView(Symbol symbol){
-        ImageView img = new ImageView(symbol.getImage());
+    public ImageView symbolView(Symbol symbol){
+        ImageView img = new ImageView(new Image(symbol.getImage()));
         img.setFitWidth(40);
         img.setFitHeight(40);
         img.setPreserveRatio(true);
@@ -165,8 +173,47 @@ public class GameBoardView extends BorderPane {
         return img;
     }
 
+    public void write() {
+        try {
+            JsonWriter writer = new JsonWriter(new FileWriter("save.json"));
+            writer.setIndent("  ");
+            this.save.writeBoard(writer,this);
+            writer.close();
+            System.out.println("JSON write board in save.json !");
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public Label[][] getCells() {
         return cells;
     }
 
+    public Player getPlayer1() {
+        return player1;
+    }
+
+    public void setPlayer1(Player player1) {
+        this.player1 = player1;
+    }
+
+    public Player getPlayer2() {
+        return player2;
+    }
+
+    public void setPlayer2(Player player2) {
+        this.player2 = player2;
+    }
+
+    public GameBoard getGameBoard() {
+        return gameBoard;
+    }
+
+    public void setGameBoard(GameBoard gameBoard) {
+        this.gameBoard = gameBoard;
+    }
+
+    public ImageView getImageView() {
+        return imageView;
+    }
 }
