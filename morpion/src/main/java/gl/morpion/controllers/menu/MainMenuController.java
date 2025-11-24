@@ -1,5 +1,6 @@
 package gl.morpion.controllers.menu;
 import gl.morpion.model.*;
+import gl.morpion.view.player.BotDifficultyView;
 import gl.morpion.view.player.PlayerNamesView;
 import gl.morpion.controllers.GameController;
 import gl.morpion.view.menu.*;
@@ -97,7 +98,7 @@ public class MainMenuController {
                     BotPlayer bot = new BotPlayer(
                             "BOT",
                             0,
-                            3.680f,                        // niveau du bot
+                            BotPlayer.getCurrentDefaultLevel(),                        // niveau du bot
                             botSymbol,
                             5,                           // nb symboles alignés pour gagner
                             new RectangleBoard(
@@ -138,6 +139,25 @@ public class MainMenuController {
         Scene scene = new Scene(namesView, WIDTH, HEIGHT);
         var css = getClass().getResource("/css/menu.css");
         if (css != null) scene.getStylesheets().add(css.toExternalForm());
+        stage.setScene(scene);
+    }
+    public void startChooseBotDifficulty() {
+        BotDifficultyView view = new BotDifficultyView(
+                difficultyKey -> {
+                    // 1) Met à jour le niveau global de l'IA
+                    BotPlayer.changeLevel(difficultyKey);
+
+
+                    // 2) Ensuite on lance le flux normal Player vs Bot
+                    startModePvsBot();
+                },
+                this::showMainMenu
+        );
+
+        Scene scene = new Scene(view, WIDTH, HEIGHT);
+        var css = getClass().getResource("/css/menu.css");
+        if (css != null) scene.getStylesheets().add(css.toExternalForm());
+
         stage.setScene(scene);
     }
 
