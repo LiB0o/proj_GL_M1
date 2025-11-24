@@ -33,6 +33,10 @@ public abstract class GameBoard {
 	 */
 	public List<Pair<Integer, Integer>> useCase;
 
+	/**
+	 * <h2>Functions of GameBoard</h2>
+	 */
+
 	/*
 	 * <h3>getSymbolAt</h3>
 	 *

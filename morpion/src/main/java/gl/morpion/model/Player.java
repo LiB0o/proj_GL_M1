@@ -1,15 +1,40 @@
 package gl.morpion.model;
 
+/**
+ * <h1>class Player</h1>
+ * <h2>Element of Player</h2>
+ */
 
 public class Player {
 
+    /**
+     * <h3>private symbol</h3>
+     * Symbol assign to the player
+     */
     private Symbol symbol;
+    /**
+     * <h3>private name</h3>
+     * Name of the player
+     */
     private String name;
+    /**
+     * <h3>points</h3>
+     * Point the player get when they get an alignment (is initialised at 0)
+     */
     private int points;
+    /**
+     * <h3>private turn</h3>
+     * If it is the player to play
+     */
     private boolean turn;
 
     /**
-     * Gets the name of the player.
+     * <h2>Functions of Player</h2>
+     */
+
+
+    /**
+     * <h3>getName</h3>
      *
      * @return the player's name
      */
@@ -18,8 +43,8 @@ public class Player {
     }
 
     /**
+     * <h3>setName</h3>
      * Sets the name of the player.
-     *
      * @param name the new name of the player
      */
     public void setName(String name) {
@@ -27,7 +52,7 @@ public class Player {
     }
 
     /**
-     * Gets the current score of the player.
+     * <h3>getPoints</h3>
      *
      * @return the player's score
      */
@@ -36,8 +61,9 @@ public class Player {
     }
 
     /**
-     * Sets the score of the player.
+     * <h3>setPoints</h3>
      *
+     * Sets the score of the player.
      * @param points the new score
      */
     public void setPoints(int points) {
@@ -45,6 +71,7 @@ public class Player {
     }
 
     /**
+     * <h3>Player</h3>
      * Constructor with name, points, and symbol.
      *
      * @param name   the name of the player
@@ -58,6 +85,7 @@ public class Player {
     }
 
     /**
+     * <h3>Player</h3>
      * Constructor with name and symbol.
      * The player's initial score will be 0.
      *
@@ -70,8 +98,8 @@ public class Player {
     }
 
     /**
+     * <h3>addPoint</h3>
      * Adds a point to the player.
-     * Call this method when the player wins a game.
      */
     public void addPoint() {
         this.points = this.points + 1;
@@ -79,6 +107,7 @@ public class Player {
     }
 
     /**
+     * <h3>playTurn</h3>
      * Allows the player to take their turn.
      */
     public void playTurn() {
@@ -86,6 +115,7 @@ public class Player {
     }
 
     /**
+     * <h3>waitTurn</h3>
      * Forces the player to wait for their next turn.
      */
     public void waitTurn() {
@@ -93,6 +123,7 @@ public class Player {
     }
 
     /**
+     * <h3>isTurn</h3>
      * Checks if it is the player's turn.
      *
      * @return true if it is the player's turn, false otherwise
@@ -100,18 +131,17 @@ public class Player {
     public boolean isTurn() {
         return this.turn;
     }
+
+    /**
+     * <h3>getSymbol</h3>
+     * @return the symbol assign to the player
+     */
     public Symbol getSymbol() {
         return this.symbol;
     }
 
     /**
-     * Gets the player's symbol.
-     *
-     * @return the player's symbol
-     */
-
-
-    /**
+     * <h3>setSymbol</h3>
      * Sets the player's symbol.
      *
      * @param symbol the new symbol
