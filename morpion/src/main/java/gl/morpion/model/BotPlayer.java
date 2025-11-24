@@ -10,6 +10,7 @@ public class BotPlayer extends Player {
     public static final float EASY_LEVEL   = 2.0f;
     public static final float NORMAL_LEVEL = 3.0f;
     public static final float HARD_LEVEL   = 3.5f;
+
 	private float full_coef;
 
 	public int win_condition;
@@ -539,5 +540,16 @@ public Pair<Integer, Integer> getMaxValue(){
         System.out.println("[BotPlayer] Difficulty set to " + difficultyKey +
                 " (coef=" + currentDefaultLevel + ")");
     }
+    // --- RÈGLE CONFIGURABLE POUR LE BOT : même que Game ---
+    public int getWinCondition() {
+        return win_condition;
+    }
+
+    public void setWinCondition(int winCondition) {
+        if (winCondition < 3) winCondition = 3;
+        if (winCondition > 8) winCondition = 8;
+        this.win_condition = winCondition;
+    }
+
 
 }

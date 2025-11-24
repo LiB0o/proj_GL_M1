@@ -8,9 +8,22 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
+import gl.morpion.view.player.WinConditionView;
+
+import gl.morpion.model.BotPlayer;
+import gl.morpion.model.Player;
+import gl.morpion.model.Symbol;
+import gl.morpion.model.TypeOfSymbol;
+import gl.morpion.model.RectangleBoard;
+import gl.morpion.view.menu.GameBoardWithMenuView;
+
+
+
+
 public class MainMenuController {
     private final Stage stage;
     private final int WIDTH = 800, HEIGHT = 900;
+    private int currentWinCondition = Game.getDefaultMaxNumberSymbolAlign();
     public MainMenuController(Stage stage) {
         this.stage = stage;
     }
@@ -75,7 +88,7 @@ public class MainMenuController {
         stage.setScene(scene);
     }
 
-    public void startModePvsBot() {
+    public void startModePvsBot(int WIN_CONDITION) {
         PlayerNamesView namesView = new PlayerNamesView(
                 true, // vsBot = un seul joueur, Player 2 = "BOT"
                 (name1, ignored) -> {
@@ -99,8 +112,7 @@ public class MainMenuController {
                             "BOT",
                             0,
                             BotPlayer.getCurrentDefaultLevel(),                        // niveau du bot
-                            botSymbol,
-                            5,                           // nb symboles alignés pour gagner
+                            botSymbol, WIN_CONDITION,                           // nb symboles alignés pour gagner
                             new RectangleBoard(
                                     RectangleBoard.DEFAULT_ROW,
                                     RectangleBoard.DEFAULT_COLUMN
@@ -142,24 +154,49 @@ public class MainMenuController {
         stage.setScene(scene);
     }
     public void startChooseBotDifficulty() {
-        BotDifficultyView view = new BotDifficultyView(
-                difficultyKey -> {
-                    // 1) Met à jour le niveau global de l'IA
-                    BotPlayer.changeLevel(difficultyKey);
+        // 1) On commence par afficher l'écran pour choisir le nombre de symboles
+        WinConditionView winView = new WinConditionView(
+                currentWinCondition,          // valeur actuelle (ex: 5)
+                value -> {
 
 
-                    // 2) Ensuite on lance le flux normal Player vs Bot
-                    startModePvsBot();
+                    // on mémorise dans le contrôleur
+                    currentWinCondition = value;
+
+                    // 🔹 très important : on pousse la valeur dans le modèle Game
+                    // (assume que tu as ajouté Game.setDefaultMaxNumberSymbolAlign(int))
+                    Game.setDefaultMaxNumberSymbolAlign(value);
+
+                    // 2) Une fois validé, on passe à l'écran de difficulté du bot
+                    BotDifficultyView diffView = new BotDifficultyView(
+                            difficultyKey -> {
+                                // a) changer le niveau global de l'IA
+                                BotPlayer.changeLevel(difficultyKey);
+
+                                // b) lancer le mode Player vs Bot avec cette winCondition
+                                startModePvsBot(currentWinCondition);
+                            },
+                            this::showMainMenu
+                    );
+
+                    Scene scene2 = new Scene(diffView, WIDTH, HEIGHT);
+                    var css2 = getClass().getResource("/css/menu.css");
+                    if (css2 != null) scene2.getStylesheets().add(css2.toExternalForm());
+
+                    stage.setScene(scene2);
                 },
                 this::showMainMenu
         );
 
-        Scene scene = new Scene(view, WIDTH, HEIGHT);
-        var css = getClass().getResource("/css/menu.css");
-        if (css != null) scene.getStylesheets().add(css.toExternalForm());
+        // 1ère scène : choix du nombre de symboles
+        Scene scene1 = new Scene(winView, WIDTH, HEIGHT);
+        var css1 = getClass().getResource("/css/menu.css");
+        if (css1 != null) scene1.getStylesheets().add(css1.toExternalForm());
 
-        stage.setScene(scene);
+        stage.setScene(scene1);
     }
+
+
 
 
 
