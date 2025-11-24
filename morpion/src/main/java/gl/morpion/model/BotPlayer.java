@@ -6,19 +6,39 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.List;
 
+
+/**
+ * <h1>class BotPlayer</h1>
+ * <h2>Elements of BotPlayer</h2>
+ */
+
 public class BotPlayer extends Player {
 
+	/**
+	 * <h3>full_coef</h3>
+	 *
+	 * Represent the coefficient the bot will use to calculate the importance of every case on the board
+	 */
 	private float full_coef;
+
+	/**
+	 * <h3>win_condition</h3>
+	 *
+	 * How many symbols align are needed to win
+	 */
 
 	public int win_condition;
 
-	/*
-	* All cases on the board (even with a symbol)
-	* Each position (Pair<Integer, Integer>) get a value depending of the possible move on it
-	* If the case is occupied by the symbol of the Bot the value is equal to 0
-	* If the case is occupied by the symbol of the Adverser the value is equal to -1
-	* Before calculation, every case equal 1
-	* */
+	/**
+	 * <h3>boardView</h3>
+	 *
+	 * Represent all cases on the board (even with a symbol)
+	 * Each position (Pair<Integer, Integer>) get a value depending of the possible move on it :
+	 * - If the case is occupied by the symbol of the Bot the value is equal to 0
+	 * - If the case is occupied by the symbol of the Adverser the value is equal to -1
+	 * - Before calculation / When initialised, every case equal 1
+	 * - If it is different from -1, 0 ot 1 then it is the value of the case for the bot
+	*/
 	public HashMap<Pair<Integer, Integer>,Float> boardView;
 
 	//private GameBoard board; // May be needed to know with symbol is on every case is there is more than 2 symbols
@@ -26,6 +46,14 @@ public class BotPlayer extends Player {
 	////////////////////////////////////////////////////////////////////////////////////////////
 
 	/**
+	 * <h2>Functions of BotPlayer</h2>
+	 */
+
+
+
+
+	/**
+	 * <h3>BotPlayer</h3>
 	 * Create a Bot to play with
 	 *
 	 * @param name name of the bot
@@ -51,8 +79,8 @@ public class BotPlayer extends Player {
 	}
 
 	/**
-	 * Generate what the Bot will use to visualise where every symbol are placed
-	 * This procedure just initialize the Board
+	 * <h3>setBotBoard</h3>
+	 * This procedure just initialize the Board and is just called by the constructor BotPlayer
 	 * @param usableCases the playable cases
 	 */
 	public void setBotBoard(List<Pair<Integer, Integer>> usableCases){
@@ -62,24 +90,27 @@ public class BotPlayer extends Player {
 	}
 
 	/**
-	 * @return the full_coeff used for the Bot
+	 * <h3>getLevel</h3>
+	 * @return the coefficient used for the Bot
 	 */
 	public float getLevel(){
 		return this.full_coef;
 	}
 
 	/**
-	 * change the level of the bot
-	 * @param coef the new coef of the bot
+	 * <h3>setLevel</h3>
+	 * change the coefficient of the bot
+	 * @param coef the new coefficient of the bot
 	 */
 	public void setLevel(float coef){
 		this.full_coef = coef;
 	}
 
 	/**
+	 * <h3>private verticalValueOfCase</h3>
 	 * This function will ONLY calculate the vertical value of the chosen position in a float format
 	 * This value does not represent the entire value of the position.
-	 * At minimum the value would be of 1
+	 * At "worst" the value will be at 0.0 (closed line)
 	 *
 	 * @param position the position that will be tested
 	 * @return the vertical value of the position
@@ -150,9 +181,10 @@ public class BotPlayer extends Player {
 	}
 
 	/**
+	 * <h3>private horizontalValueOfCase</h3>
 	 * This function will ONLY calculate the horizontal value of the chosen position in a float format
 	 * This value does not represent the entire value of the position.
-	 * At minimum the value would be of 1
+	 * At "worst" the value will be at 0.0 (closed line)
 	 *
 	 * @param position the position that will be tested
 	 * @return the horizontal value of the position
@@ -224,8 +256,15 @@ public class BotPlayer extends Player {
 	}
 
 
-	//Calcul diagonal bas vers haut d'une case
-
+	/**
+	 * <h3>private diagonalDownToUpValueOfCase</h3>
+	 * This function will ONLY calculate half of the diagonal value of the chosen position in a float format
+	 * This value does not represent the entire value of the position.
+	 * At "worst" the value will be at 0.0 (closed line)
+	 *
+	 * @param position the position that will be tested
+	 * @return the first half of the diagonal value of the position
+	 */
 	private float diagonalDownToUpValueOfCase(Pair<Integer, Integer> position){
 
 		float value = 0.0f; //cannot be 1.0f for calculing the value of the case
@@ -308,7 +347,15 @@ public class BotPlayer extends Player {
 
 
 
-	//Calcul diagonal haut vers bas d'une case
+	/**
+	 * <h3>private diagonalUpToDownValueOfCase</h3>
+	 * This function will ONLY calculate half of the diagonal value of the chosen position in a float format
+	 * This value does not represent the entire value of the position.
+	 * At "worst" the value will be at 0.0 (closed line)
+	 *
+	 * @param position the position that will be tested
+	 * @return the second half of the diagonal value of the position
+	 */
 
 	private float diagonalUpToDownValueOfCase(Pair<Integer, Integer> position){
 
@@ -395,7 +442,15 @@ public class BotPlayer extends Player {
 	}
 
 
-	//Calcul valeur total de la case
+	/**
+	 * <h3>totalValueofCase</h3>
+	 *
+	 * This function will calculate the full value of the chosen position in a float format
+	 * using the four functions above.
+	 *
+	 * @param position the position that will be tested
+	 * @return the complete value of the position
+	 */
 
 	public float totalValueofCase(Pair<Integer, Integer>position){
 		float value = horizontalValueOfCase(position)+
@@ -410,7 +465,12 @@ public class BotPlayer extends Player {
 		return value;
 	}
 
-	//Calcul de tout le plateau
+	/**
+	 * <h3>computeAllValues</h3>
+	 *
+	 * Calculate the value of every case on the board.
+	 * Warning: will destroy the old values of board that represent the placed symbols, use this function only at the start.
+	 */
 	public void computeAllValues(){
 
 		for(Pair<Integer,Integer>coordinates : this.boardView.keySet()){ //go through every positions
@@ -418,7 +478,13 @@ public class BotPlayer extends Player {
 		}
 	}
 
-	//Recalcul des cases impactés par
+	/**
+	 * <h3>recomputeNeighbour</h3>
+	 *
+	 * Recalculate the value of every case impacted by the modified case but not the modified case itself.
+	 *
+	 * @param position case that got modify
+	 */
 	public void recomputeNeighbour(@NotNull Pair<Integer, Integer> position){
 
 		//Modify horizontal neighbours
@@ -478,7 +544,13 @@ public class BotPlayer extends Player {
 	}
 
 
-	//Change value if Bot put a symbol
+	/**
+	 * <h3>symbolPutByBot</h3>
+	 *
+	 * Change the value to the case to 0.0 (aka the bot symbol)
+	 *
+	 * @param position case that get modify
+	 */
 
 	public void symbolPutByBot(Pair<Integer,Integer> position){
 		Float old = this.boardView.get(position);
@@ -486,20 +558,39 @@ public class BotPlayer extends Player {
 		recomputeNeighbour(position);
 	}
 
-	//Change value if Adverser put a symbol
+	/**
+	 * <h3>symbolPutByPlayer</h3>
+	 *
+	 * Change the value to the case to -1.0 (aka the adverser symbol)
+	 *
+	 * @param position case that get modify
+	 */
 
 	public void symbolPutByPlayer(Pair<Integer, Integer> position){
 		this.boardView.replace(position,-1.0f);
 		recomputeNeighbour(position);
 	}
 
-	//Reset case
+	/**
+	 * <h3>resetValueCase</h3>
+	 *
+	 * Change the value to the case to 1.0 (aka the adverser symbol)
+	 * Warning: does not recompute the value of the case yet
+	 *
+	 * @param position case that get modify
+	 */
 	public void resetValueCase(Pair<Integer,Integer> position){
 		this.boardView.replace(position,1.0f);
 		recomputeNeighbour(position);
 	}
 
-public Pair<Integer, Integer> getMaxValue(){
+	/**
+	 * <h3>getMaxValue</h3>
+	 * @return the position were the bot will play
+	 * Warning: if there is more than one case with the max value, the function will return the first case it had crossed
+	 */
+
+	public Pair<Integer, Integer> getMaxValue(){
 		Pair<Integer, Integer> maxVal = new Pair<>(-1,-1);
 		float max = 0.0f;
 
