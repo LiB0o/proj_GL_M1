@@ -8,25 +8,61 @@ import gl.morpion.view.GameBoardView;
 import javafx.scene.control.Label;
 import javafx.util.Pair;
 
+/**
+ * <h1>controller PvsBotController</h1>
+ *
+ * Manage a game against a humain and a bot
+ * <h2>Elements of PvsBotController</h2>
+ */
+
 public class PvsBotController {
 
+    /**
+     * <h3>private gameController</h3>
+     * The GameController used
+     */
     private final GameController gameController;
+    /**
+     * <h3>game</h3>
+     * The Game
+     */
     private final Game game;
+    /**
+     * <h3>boardView</h3>
+     * The board for the game
+     */
     private final GameBoardView boardView;
+    /**
+     * <h3>private human</h3>
+     * The human player
+     */
     private final Player human;
+    /**
+     * <h3>private bot</h3>
+     * The bot player
+     */
     private final BotPlayer bot;
+    /**
+     * <h3>private onFinish</h3>
+     */
     private final Runnable onFinish;
 
-    // Pour bloquer les clics après la fin de partie
+    /**
+     * <h3>private ended</h3>
+     * To block action after the end of the game
+     */
     private volatile boolean ended = false;
 
     /**
-     * @param gameController contrôleur principal (pour réutiliser showEndPopup)
-     * @param game           instance de Game
-     * @param boardView      vue de la grille
-     * @param human          joueur humain
+     * <h3>PvsBotController</h3>
+     *
+     * constructor of the controller
+     * @param gameController main controller (reused in showEndPopup)
+     * @param game           instance of Game
+     * @param boardView      view of the board
+     * @param human          human player
      * @param bot            bot
-     * @param onFinish       callback (ex: retour au menu)
+     * @param onFinish       callback (ex: return to menu)
      */
     public PvsBotController(GameController gameController,
                             Game game,
@@ -46,7 +82,9 @@ public class PvsBotController {
     }
 
     /**
-     * Initialise les clics du joueur humain sur la grille.
+     * <h3>private initCellEvents</h3>
+     *
+     * Initialise clicks of human player on the board
      */
     private void initCellEvents() {
         Label[][] cells = boardView.getCells();
@@ -86,7 +124,9 @@ public class PvsBotController {
     }
 
     /**
-     * Le bot choisit et joue automatiquement un coup.
+     * <h3>private botPlay</h3>
+     *
+     * Bot choose and play its move
      */
     private void botPlay() {
         if (ended) return;
@@ -130,8 +170,10 @@ public class PvsBotController {
     }
 
     /**
-     * Vérifie si la partie est terminée après un coup (victoire ou match nul)
-     * et appelle le popup déjà présent dans GameController.
+     * <h3>private checkGameEnd</h3>
+     *
+     * Check if the game is over after a move (win/draw)
+     * call a pop-up already in GameController.
      */
     private boolean checkGameEnd() {
         if (game.getEnd()) {
