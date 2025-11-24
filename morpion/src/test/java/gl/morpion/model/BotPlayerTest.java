@@ -58,6 +58,8 @@ class BotPlayerTest {
         Float init_value = bot.totalValueofCase(new Pair<>(0,0)); //3.0f
         bot.symbolPutByBot(new Pair<>(1,0));
         assertNotEquals(init_value,bot.totalValueofCase(new Pair<>(0,0)));
+        bot.recomputeNeighbour(new Pair<>(0,0));
+        assertEquals(0.0f, bot.boardView.get(new Pair<>(1,0)));
     }
 
     @Test
@@ -88,4 +90,6 @@ class BotPlayerTest {
         //System.out.println(bot.boardView);
         assertEquals(new Pair<Integer,Integer>(5,4), bot.getMaxValue());
     }
+
+
 }

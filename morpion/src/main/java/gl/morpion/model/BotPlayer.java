@@ -122,7 +122,7 @@ public class BotPlayer extends Player {
 						float add = 3.0f;
 
 						for(int compt = 1; compt<nb_bot_symbol; compt++){
-							add = add * this.full_coef+(0.9f*compt);
+							add = add * this.full_coef;
 						}
 
 						value = value + add;
@@ -131,7 +131,7 @@ public class BotPlayer extends Player {
 						float add = 2.0f;
 
 						for(int compt = 1; compt<nb_adverse_symbol; compt++){
-							add = add * this.full_coef+(0.8f*compt);
+							add = add * this.full_coef;
 						}
 
 						value = value + add;
@@ -195,7 +195,7 @@ public class BotPlayer extends Player {
 
 						float add = 3.0f;
 						for(int compt = 1; compt<nb_bot_symbol; compt++){
-							add = add * this.full_coef+(0.9f*compt);
+							add = add * this.full_coef;
 						}
 
 						value = value + add;
@@ -203,7 +203,7 @@ public class BotPlayer extends Player {
 					else if(nb_adverse_symbol !=0){
 						float add = 2.0f;
 						for(int compt = 1; compt<nb_adverse_symbol; compt++){
-							add = add * this.full_coef+(0.8f*compt);
+							add = add * this.full_coef;
 						}
 
 						value = value + add;
@@ -279,7 +279,7 @@ public class BotPlayer extends Player {
 
 						float add = 3.0f;
 						for(int compt = 1; compt<nb_bot_symbol; compt++){
-							add = add * this.full_coef+(0.9f*compt);
+							add = add * this.full_coef;
 						}
 
 						value = value + add;
@@ -287,7 +287,7 @@ public class BotPlayer extends Player {
 					else if(nb_adverse_symbol != 0){
 						float add = 2.0f;
 						for(int compt = 1; compt<nb_adverse_symbol; compt++){
-							add = add * this.full_coef+(0.8f*compt);
+							add = add * this.full_coef;
 						}
 
 						value = value + add;
@@ -366,7 +366,7 @@ public class BotPlayer extends Player {
 						//System.out.println("Diagonal symbol bot:"+nb_bot_symbol);
 						float add = 3.0f;
 						for(int compt = 1; compt<nb_bot_symbol; compt++){
-							add = add * this.full_coef+(0.9f*compt);
+							add = add * this.full_coef;
 						}
 
 						value = value + add;
@@ -375,7 +375,7 @@ public class BotPlayer extends Player {
 						//System.out.println("Diagonal symbol player:"+nb_adverse_symbol);
 						float add = 2.0f;
 						for(int compt = 1; compt<nb_adverse_symbol; compt++){
-							add = add * this.full_coef+(0.8f*compt);
+							add = add * this.full_coef;
 						}
 
 						value = value + add;
@@ -422,45 +422,54 @@ public class BotPlayer extends Player {
 	public void recomputeNeighbour(@NotNull Pair<Integer, Integer> position){
 
 		//Modify horizontal neighbours
-		for(int i = (position.getKey()-this.win_condition)+1; i<position.getKey()-this.win_condition+1;i++){
+		for(int i = (position.getKey()-(this.win_condition-1)); i<position.getKey()+this.win_condition;i++){
 			Pair<Integer, Integer> key = new Pair<>(i, position.getValue());
 			if(this.boardView.containsKey(key) &&
-					!key.equals(position)){//If we are on the board and are not the origin
+					!key.equals(position) && (
+							boardView.get(key) != 0.0f
+							&& boardView.get(key) != -1.0f
+			)){//If we are on the board and are not the origin and don't have a symbol on them
 				this.boardView.replace(key,totalValueofCase(key));
 			}
 		}
 
 		//Modify vertical neighbours
-		for(int i = (position.getValue()-this.win_condition)+1; i<position.getValue()-this.win_condition+1;i++){
+		for(int i = (position.getValue()-(this.win_condition-1)); i<position.getValue()+this.win_condition;i++){
 			Pair<Integer, Integer> key = new Pair<>(position.getKey(),i);
-			if(this.boardView.containsKey(key)
-				&& !key.equals(position)){//If we are on the board and are not the origin
+			if(this.boardView.containsKey(key) &&
+					!key.equals(position) &&(
+					boardView.get(key) != 0.0f && boardView.get(key) != -1.0f
+			)){//If we are on the board and are not the origin
 				this.boardView.replace(key,totalValueofCase(key));
 			}
 		}
 		//Every diagonal start from the left
 
 		//Add first diagonal neighbours (DownToUp)
-		for(int i = (this.win_condition*2)-1; i<(this.win_condition*2)-1;i++){
+		for(int i = 0; i<(this.win_condition*2);i++){
 			Pair<Integer, Integer> key = new Pair<>(
-					((position.getKey()-this.win_condition)+1)+i,
-					((position.getValue()+this.win_condition)-1)-i
+					(position.getKey()-(this.win_condition-1))+i,
+					(position.getValue()+(this.win_condition-1))-i
 			);
 			if(this.boardView.containsKey(key)
-				&& !key.equals(position)
+				&& !key.equals(position) &&(
+					boardView.get(key) != 0.0f && boardView.get(key) != -1.0f
+				)
 			){//If we are on the board and not the origin
 				this.boardView.replace(key,totalValueofCase(key));
 			}
 		}
 
 		//Add second diagonal neighbours (UpToDown)
-		for(int i = (this.win_condition*2)-1; i<(this.win_condition*2)-1;i++){
+		for(int i = 0; i<(this.win_condition*2);i++){
 			Pair<Integer, Integer> key = new Pair<>(
-					((position.getKey()-this.win_condition)+1)+i,
-					((position.getValue()-this.win_condition)+1)+i
+					(position.getKey()-(this.win_condition-1))+i,
+					(position.getValue()-(this.win_condition-1))+i
 			);
-			if(this.boardView.containsKey(key)
-					&& !key.equals(position)
+			if(this.boardView.containsKey(key) &&
+					!key.equals(position) &&(
+					boardView.get(key) != 0.0f && boardView.get(key) != -1.0f
+				)
 			){//If we are on the board and not the origin
 				this.boardView.replace(key,totalValueofCase(key));
 			}
