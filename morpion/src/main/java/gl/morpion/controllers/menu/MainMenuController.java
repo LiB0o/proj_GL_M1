@@ -1,98 +1,191 @@
 package gl.morpion.controllers.menu;
-import gl.morpion.model.*;
-import gl.morpion.view.player.BotDifficultyView;
-import gl.morpion.view.player.PlayerNamesView;
+
 import gl.morpion.controllers.GameController;
-import gl.morpion.view.menu.*;
-import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
-import javafx.stage.Stage;
-
-import gl.morpion.view.player.WinConditionView;
-
 import gl.morpion.model.BotPlayer;
+import gl.morpion.model.Game;
 import gl.morpion.model.Player;
+import gl.morpion.model.RectangleBoard;
 import gl.morpion.model.Symbol;
 import gl.morpion.model.TypeOfSymbol;
-import gl.morpion.model.RectangleBoard;
+import gl.morpion.view.GameBoardView;
 import gl.morpion.view.menu.GameBoardWithMenuView;
-
-
-
+import gl.morpion.view.menu.MainMenuView;
+import gl.morpion.view.menu.ModePlaceholderView;
+import gl.morpion.view.menu.RulesView;
+import gl.morpion.view.player.BotDifficultyView;
+import gl.morpion.view.player.PlayerNamesView;
+import gl.morpion.view.player.WinConditionView;
+import javafx.scene.Node;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 
 public class MainMenuController {
+
     private final Stage stage;
-    private final int WIDTH = 800, HEIGHT = 900;
+    private final StackPane root;   // 🔹 conteneur racine de la Scene unique
+
+    private static final int WIDTH = 1200;
+    private static final int HEIGHT = 800;
+
+    // nb de symboles alignés pour gagner
     private int currentWinCondition = Game.getDefaultMaxNumberSymbolAlign();
-    public MainMenuController(Stage stage) {
+
+    public MainMenuController(Stage stage, StackPane root) {
         this.stage = stage;
+        this.root = root;
     }
+
+    // 🔁 Change le contenu de la même Scene
+    private void setView(Node view) {
+        root.getChildren().setAll(view);
+    }
+
+    // ========== MENU PRINCIPAL ==========
+
     public void showMainMenu() {
+        System.out.println("Je suis dans : MENU PRINCIPAL");
+
         MainMenuView menu = new MainMenuView(this);
-        stage.setScene(new Scene(menu, WIDTH, HEIGHT));
+        setView(menu);
     }
 
+    // appelé par MainMenuView pour les modes génériques (simulation)
     public void showMode(String modeName) {
-        if(modeName == "QUIT"){
-            Stage s = (Stage)stage.getScene().getWindow();
+        // ⚠️ en Java on compare les String avec equals
+        if ("QUIT".equals(modeName)) {
+            Stage s = (Stage) stage.getScene().getWindow();
             s.close();
+            return;
         }
-        ModePlaceholderView view = new ModePlaceholderView("Je suis dans " + modeName,
-                this::showMainMenu
+
+        System.out.println("Je suis dans : " + modeName);
+
+        ModePlaceholderView view = new ModePlaceholderView(
+                "Je suis dans " + modeName,
+                this::showMainMenu // bouton Back
         );
-        stage.setScene(new Scene(view, WIDTH, HEIGHT));
+
+        // 🔹 AVANT tu faisais : stage.setScene(new Scene(view, WIDTH, HEIGHT));
+        // 🔹 MAINTENANT : on reste sur la même Scene, on change juste le contenu
+        setView(view);
     }
+
+    public void openSettings() {
+        // à implémenter plus tard
+    }
+
+    public void toggleLanguage(String code) {
+        // à implémenter plus tard
+    }
+
+    // ========== MODE PLAYER vs PLAYER ==========
+
     public void startModePvp() {
-        PlayerNamesView namesView = new PlayerNamesView(
-                // onStart: reçoit (name1, name2)
-                (name1, name2) -> {
-                    Player p1 = new Player(name1, 0, new Symbol(getClass().getResource("/gl/morpion/croix.jpg").toExternalForm(), TypeOfSymbol.CROSS));
-                    Player p2 = new Player(name2, 0, new Symbol(getClass().getResource("/gl/morpion/cercle.png").toExternalForm(), TypeOfSymbol.CIRCLE));
-                    // Créer le GameController avec les deux noms (voir point 3)
-                    GameController gameController = new GameController(p1, p2); // le gzmr recupere le nom des joueurs;
-                    //afficher la grille
-                    GameBoardWithMenuView gameView = new GameBoardWithMenuView(
-                            gameController.getGameBoardView(),
-                            this::showMainMenu // bouton Retour intégré
+        System.out.println("Je suis dans : ÉCRAN CHOIX NB SYMBOLES (PVP)");
+
+        WinConditionView winView = new WinConditionView(
+                currentWinCondition,
+                value -> {
+                    // on mémorise la nouvelle condition de victoire
+                    currentWinCondition = value;
+
+                    // (optionnel) si tu as une méthode globale dans Game :
+                    // Game.setDefaultMaxNumberSymbolAlign(currentWinCondition);
+
+                    System.out.println("Je suis dans : MODE PLAYER VS PLAYER (NOMS)");
+
+                    // ⇨ maintenant on passe à l'écran pour taper les noms
+                    PlayerNamesView namesView = new PlayerNamesView(
+                            (name1, name2) -> {
+                                System.out.println("Je suis dans : MODE PLAYER VS PLAYER (JEU)");
+
+                                // Joueurs avec tes symboles
+                                Player p1 = new Player(
+                                        name1,
+                                        0,
+                                        new Symbol(
+                                                getClass().getResource("/gl/morpion/croix.jpg").toExternalForm(),
+                                                TypeOfSymbol.CROSS
+                                        )
+                                );
+                                Player p2 = new Player(
+                                        name2,
+                                        0,
+                                        new Symbol(
+                                                getClass().getResource("/gl/morpion/cercle.png").toExternalForm(),
+                                                TypeOfSymbol.CIRCLE
+                                        )
+                                );
+
+                                // Si tu as un constructeur qui prend la win condition :
+                                // GameController gameController = new GameController(p1, p2, currentWinCondition);
+                                // Sinon tu gardes celui-ci :
+                                GameController gameController = new GameController(p1, p2);
+
+                                GameBoardView boardView = gameController.getGameBoardView();
+
+                                GameBoardWithMenuView gameView = new GameBoardWithMenuView(
+                                        boardView,
+                                        this::showMainMenu
+                                );
+
+                                // callback de fin → retour au menu
+                                gameController.handleGame(this::showMainMenu);
+
+                                // on affiche la vue de jeu dans la MÊME scène
+                                setView(gameView);
+                            },
+                            this::showMainMenu   // bouton Back depuis PlayerNamesView
                     );
-                    Scene scene = new Scene(gameView, WIDTH, HEIGHT);
 
-                    // garder le même CSS !
-                    var css = getClass().getResource("/css/menu.css");
-                    if (css != null) scene.getStylesheets().add(css.toExternalForm());
-
-                    // Escape pour revenir au menu
-                    scene.setOnKeyPressed(e -> {
-                        if (e.getCode() == KeyCode.ESCAPE) showMainMenu();
-                    });
-
-                    // logiques de fin de partie → retour au menu
-                    gameController.handleGame(this::showMainMenu);
-                    //gameController.initializeGame();
-
-                    stage.setScene(scene);
+                    // on affiche PlayerNamesView dans la même scène
+                    setView(namesView);
                 },
-                // onBack → retour au menu principal
+                this::showMainMenu   // bouton Back depuis WinConditionView
+        );
+
+        // on affiche WinConditionView
+        setView(winView);
+    }
+
+
+    // ========== MODE PLAYER vs BOT : choix nb symboles & difficulté ==========
+
+    public void startChooseBotDifficulty() {
+        System.out.println("Je suis dans : ÉCRAN CHOIX NB SYMBOLES");
+
+        WinConditionView winView = new WinConditionView(
+                currentWinCondition,
+                value -> {
+                    currentWinCondition = value;
+
+                    System.out.println("Je suis dans : CHOIX DIFFICULTÉ BOT");
+
+                    BotDifficultyView diffView = new BotDifficultyView(
+                            difficultyKey -> {
+                                BotPlayer.changeLevel(difficultyKey);
+                                startModePvsBot(currentWinCondition);
+                            },
+                            this::showMainMenu
+                    );
+
+                    setView(diffView);
+                },
                 this::showMainMenu
         );
 
-        System.out.println("PlayerNameView passe bien");
-        //System.out.println("P1 = "+gameController.getListPlayers().get(0)+ "P2 = "+gameController.getListPlayers().get(2));
-
-
-        Scene scene = new Scene(namesView, WIDTH, HEIGHT);
-        // garder le même CSS !
-        var css = getClass().getResource("/css/menu.css");
-        if (css != null) scene.getStylesheets().add(css.toExternalForm());
-
-        stage.setScene(scene);
+        setView(winView);
     }
 
-    public void startModePvsBot(int WIN_CONDITION) {
+    // ========== MODE PLAYER vs BOT : nom + lancement ==========
+
+    public void startModePvsBot(int winCondition) {
+        System.out.println("Je suis dans : MODE PLAYER VS BOT (winCondition = " + winCondition + ")");
+
         PlayerNamesView namesView = new PlayerNamesView(
-                true, // vsBot = un seul joueur, Player 2 = "BOT"
+                true,   // vsBot : un seul champ pour le joueur humain
                 (name1, ignored) -> {
-                    // 1. Créer le joueur humain (X)
+                    // Joueur humain (X)
                     Player human = new Player(
                             name1,
                             0,
@@ -102,115 +195,50 @@ public class MainMenuController {
                             )
                     );
 
-                    // 2. Créer le bot (O)
+                    // Symbole du bot (O)
                     Symbol botSymbol = new Symbol(
                             getClass().getResource("/gl/morpion/cercle.png").toExternalForm(),
                             TypeOfSymbol.CIRCLE
                     );
 
+                    // BotPlayer (adapte si ton constructeur est différent)
                     BotPlayer bot = new BotPlayer(
                             "BOT",
                             0,
-                            BotPlayer.getCurrentDefaultLevel(),                        // niveau du bot
-                            botSymbol, WIN_CONDITION,                           // nb symboles alignés pour gagner
+                            BotPlayer.getCurrentDefaultLevel(),
+                            botSymbol,
+                            winCondition,
                             new RectangleBoard(
                                     RectangleBoard.DEFAULT_ROW,
                                     RectangleBoard.DEFAULT_COLUMN
-                            ).useCase                   // ⚠️ voir remarque ci-dessous
+                            ).useCase
                     );
-                    // ⚠ mieux : créer Board dans GameController, et passer useCase depuis là.
-                    // Pour faire simple au début, garde comme dans ton Bot actuel (ou adapte).
 
-                    // 3. Créer le GameController mode BOT
-                    GameController gameController = new GameController(human, bot, true, this::showMainMenu);
+                    // Contrôleur de jeu VS BOT
+                    // ⚠️ Si ton GameController n'a pas ce constructeur,
+                    //     adapte-le (par ex. new GameController(human, bot))
+                    GameController gameController =
+                            new GameController(human, bot, true, this::showMainMenu);
 
-
-                    // 4. Construire la vue avec menu comme en PvP
                     GameBoardWithMenuView gameView = new GameBoardWithMenuView(
                             gameController.getGameBoardView(),
                             this::showMainMenu
                     );
 
-                    Scene scene = new Scene(gameView, WIDTH, HEIGHT);
-
-                    var css = getClass().getResource("/css/menu.css");
-                    if (css != null) scene.getStylesheets().add(css.toExternalForm());
-
-                    scene.setOnKeyPressed(e -> {
-                        if (e.getCode() == KeyCode.ESCAPE) showMainMenu();
-                    });
-
-                    // Si tu veux gérer la fin via GameController :
-                    // gameController.handleGame(this::showMainMenu);
-
-                    stage.setScene(scene);
+                    setView(gameView);
                 },
                 this::showMainMenu
         );
 
-        Scene scene = new Scene(namesView, WIDTH, HEIGHT);
-        var css = getClass().getResource("/css/menu.css");
-        if (css != null) scene.getStylesheets().add(css.toExternalForm());
-        stage.setScene(scene);
-    }
-    public void startChooseBotDifficulty() {
-        // 1) On commence par afficher l'écran pour choisir le nombre de symboles
-        WinConditionView winView = new WinConditionView(
-                currentWinCondition,          // valeur actuelle (ex: 5)
-                value -> {
-
-
-                    // on mémorise dans le contrôleur
-                    currentWinCondition = value;
-
-                    // 🔹 très important : on pousse la valeur dans le modèle Game
-                    // (assume que tu as ajouté Game.setDefaultMaxNumberSymbolAlign(int))
-                    Game.setDefaultMaxNumberSymbolAlign(value);
-
-                    // 2) Une fois validé, on passe à l'écran de difficulté du bot
-                    BotDifficultyView diffView = new BotDifficultyView(
-                            difficultyKey -> {
-                                // a) changer le niveau global de l'IA
-                                BotPlayer.changeLevel(difficultyKey);
-
-                                // b) lancer le mode Player vs Bot avec cette winCondition
-                                startModePvsBot(currentWinCondition);
-                            },
-                            this::showMainMenu
-                    );
-
-                    Scene scene2 = new Scene(diffView, WIDTH, HEIGHT);
-                    var css2 = getClass().getResource("/css/menu.css");
-                    if (css2 != null) scene2.getStylesheets().add(css2.toExternalForm());
-
-                    stage.setScene(scene2);
-                },
-                this::showMainMenu
-        );
-
-        // 1ère scène : choix du nombre de symboles
-        Scene scene1 = new Scene(winView, WIDTH, HEIGHT);
-        var css1 = getClass().getResource("/css/menu.css");
-        if (css1 != null) scene1.getStylesheets().add(css1.toExternalForm());
-
-        stage.setScene(scene1);
+        setView(namesView);
     }
 
+    // ========== RÈGLES ==========
 
-
-
-
-
-    public void openSettings() { /* à faire plus tard */ }
     public void showRules() {
+        System.out.println("Je suis dans : ÉCRAN DES RÈGLES");
+
         RulesView view = new RulesView(this::showMainMenu);
-        Scene scene = new Scene(view, WIDTH, HEIGHT);
-
-        var css = getClass().getResource("/css/menu.css");
-        if (css != null) scene.getStylesheets().add(css.toExternalForm());
-
-        stage.setScene(scene);
+        setView(view);
     }
-
-    public void toggleLanguage(String code) { /* à faire plus tard */ }
 }
