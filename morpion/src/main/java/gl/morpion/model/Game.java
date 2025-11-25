@@ -390,4 +390,8 @@ public class Game {
 	}
 //Force Change
 
+
+	public HashMap<Pair<Integer, Integer>, Symbol> getUsedCase() {
+		return usedCase;
+	}
 }

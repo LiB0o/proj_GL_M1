@@ -13,6 +13,7 @@ public abstract class GameBoard {
 	private final int row;
 	public List<Pair<Integer, Integer>> useCase;
 
+
     public Symbol getSymbolAt(int x, int y) {
         return symbols.get(x)[y];
     }

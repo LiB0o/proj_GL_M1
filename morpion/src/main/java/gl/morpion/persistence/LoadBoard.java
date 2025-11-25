@@ -1,30 +1,51 @@
 package gl.morpion.persistence;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import gl.morpion.model.Game;
 import gl.morpion.model.GameBoard;
+import gl.morpion.model.Symbol;
+import javafx.util.Pair;
 
 import java.io.*;
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class LoadBoard {
-    private GameBoard gameBoard;
+    private Game game;
+    private HashMap<Pair<Integer, Integer>, Symbol> usedCase;
 
-    public LoadBoard(GameBoard gameBoard) {
-        this.gameBoard = gameBoard;
+    public LoadBoard(Game game) {
+        this.game= game;
+        this.usedCase = game.getUsedCase();
     }
-    public void readJson(String path) {
+    public void readJsonFromFile() {
         Gson gson = new Gson();
 
-        InputStream is = getClass().getResourceAsStream(path);
+        File file = new File(System.getProperty("user.dir") + "/save/save.json");
 
-        if (is == null) {
-            throw new RuntimeException(path+" introuvable dans src/main/resources");
+        if (!file.exists()) {
+            throw new RuntimeException("Fichier " + file.getAbsolutePath() + " introuvable !");
         }
-        try (Reader reader = new InputStreamReader(is)) {
 
-            CellData[] cellData = gson.fromJson(reader, CellData[].class);
+        try (Reader reader = new FileReader(file)) {
+            Type listType = new TypeToken<List<CellData>>() {}.getType();
+            List<CellData> cells = gson.fromJson(reader, listType);
 
-            for (CellData c : cellData) {
-                System.out.println("(" + c.getRow() + ", " + c.getCol() + ") - " + c.getSymbol());
+            this.usedCase = new HashMap<>();
+            for (CellData cell : cells) {
+                Pair<Integer, Integer> key = new Pair<>(cell.getRow(), cell.getCol());
+                Symbol value = Symbol.fromString(cell.getSymbol());
+                this.usedCase.put(key, value);
+            }
+
+            // test display
+            for (Map.Entry<Pair<Integer, Integer>, Symbol> entry : usedCase.entrySet()) {
+                Pair<Integer, Integer> key = entry.getKey();
+                Symbol value = entry.getValue();
+                System.out.println("Clé : (" + key.getKey() + ", " + key.getValue() + ") -> Valeur : " + value);
             }
 
         } catch (IOException e) {
@@ -45,11 +66,5 @@ public class LoadBoard {
             throw new RuntimeException(e);
         }
     }*/
-    public GameBoard getGameBoard() {
-        return gameBoard;
-    }
 
-    public void setGameBoard(GameBoard gameBoard) {
-        this.gameBoard = gameBoard;
-    }
 }

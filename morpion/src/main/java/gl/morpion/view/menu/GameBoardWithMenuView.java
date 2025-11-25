@@ -129,7 +129,7 @@ public class GameBoardWithMenuView extends StackPane {
                     );
                     alert.showAndWait().ifPresent(response -> {
                         if(response == buttonTypeYes){
-                            this.boardView.write();
+                            this.boardView.save();
                             onBack.run();
                             System.out.println("Save Yes");
                         }

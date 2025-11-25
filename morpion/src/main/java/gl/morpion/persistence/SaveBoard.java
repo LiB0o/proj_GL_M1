@@ -6,15 +6,17 @@ import gl.morpion.model.GameBoard;
 import gl.morpion.view.GameBoardView;
 import javafx.scene.image.ImageView;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 
 public class SaveBoard {
-    private GameBoard board;
+    private GameBoardView boardView;
     private SymbolViewAdapter symbol;
 
-    public SaveBoard(GameBoard board) {
-        this.board = board;
+    public SaveBoard(GameBoardView boardView) {
+        this.boardView = boardView;
         this.symbol = new SymbolViewAdapter();
     }
 
@@ -30,7 +32,7 @@ public class SaveBoard {
         writer.beginObject();
         writer.name("row").value(row);
         writer.name("col").value(col);
-        if(board.isEmptyCase(row, col) || board.getSymbolInCase(row, col).getImage() == null){
+        if(boardView.getGameBoard().isEmptyCase(row, col) || boardView.getGameBoard().getSymbolInCase(row, col).getImage() == null){
             writer.name("symbol").value("None");
         }else {
             //writer.name("symbol").value(board.getSymbolInCase(row, col).getImage());
@@ -64,12 +66,25 @@ public class SaveBoard {
         }
     }
 
+    public void saveBoard() {
+        try {
+            String projectRoot = System.getProperty("user.dir");
+            File saveDir = new File(projectRoot, "save");
+            if (!saveDir.exists()) {
+                saveDir.mkdir();
+            }
 
-    public GameBoard getBoard() {
-        return board;
-    }
+            File saveFile = new File(saveDir, "save.json");
 
-    public void setBoard(GameBoard board) {
-        this.board = board;
+            // write JSON
+            JsonWriter writer = new JsonWriter(new FileWriter(saveFile));
+            writer.setIndent("  ");
+            this.writeBoard(writer, this.boardView);
+            writer.close();
+
+            System.out.println("JSON write board in save.json !");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

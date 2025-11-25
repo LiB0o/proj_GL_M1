@@ -17,6 +17,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -42,7 +43,7 @@ public class GameBoardView extends BorderPane {
         this.player1 = player1;
         this.player2 = player2;
         this.gameBoard = gameBoard;
-        this.save = new SaveBoard(gameBoard);
+        this.save = new SaveBoard(this);
         this.x = gameBoard.getColumn();
         this.y = gameBoard.getRow();
         this.grid = new GridPane();
@@ -71,6 +72,9 @@ public class GameBoardView extends BorderPane {
         this.setCenter(grid);
     }
 
+    public void save(){
+        this.save.saveBoard();
+    }
     private HBox createPlayerPanel(Player player1, Player player2){
         HBox hBox = new HBox(30); // space = 10
         hBox.setAlignment(Pos.CENTER);
@@ -169,17 +173,7 @@ public class GameBoardView extends BorderPane {
         return img;
     }
 
-    public void write() {
-        try {
-            JsonWriter writer = new JsonWriter(new FileWriter("gl/morpion/persistence/save.json"));
-            writer.setIndent("  ");
-            this.save.writeBoard(writer,this);
-            writer.close();
-            System.out.println("JSON write board in save.json !");
-        }catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+
 
     public Label[][] getCells() {
         return cells;

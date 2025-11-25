@@ -14,6 +14,16 @@ public class Symbol {
 		this.image = image;
 		this.typeOfSymbol = typeSymbol;
 	}
+
+	public static Symbol fromString(String symbolPath) {
+		if(symbolPath.contains("croix")) {
+			return new Symbol(symbolPath, TypeOfSymbol.CROSS);
+		} else if(symbolPath.contains("cercle")) {
+			return new Symbol(symbolPath, TypeOfSymbol.CIRCLE);
+		}
+		return null;
+	}
+
 	public String getImage() {
 		return this.image;
 	}

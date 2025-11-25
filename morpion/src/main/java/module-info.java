@@ -17,4 +17,6 @@ module gl.morpion {
     opens gl.morpion.controllers to javafx.fxml;
 
     opens gl.morpion.persistence;
+
+    opens gl.morpion.model to com.google.gson;
 }

@@ -25,7 +25,7 @@ class SaveBoardTest {
         board = new RectangleBoard(5, 5);
         board.placeSymbol(new Symbol("croix", TypeOfSymbol.CROSS), 0, 0);
         board.placeSymbol(new Symbol("croix", TypeOfSymbol.CROSS), 0, 1);
-        this.saveBoard = new SaveBoard(board);
+        //this.saveBoard = new SaveBoard(board);
     }
 
     @Test
