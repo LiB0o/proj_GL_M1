@@ -17,10 +17,6 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 
 
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.RowConstraints;
-import javafx.scene.layout.Priority;
-
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -175,7 +171,7 @@ public class GameBoardView extends BorderPane {
 
     public void write() {
         try {
-            JsonWriter writer = new JsonWriter(new FileWriter("save.json"));
+            JsonWriter writer = new JsonWriter(new FileWriter("gl/morpion/persistence/save.json"));
             writer.setIndent("  ");
             this.save.writeBoard(writer,this);
             writer.close();

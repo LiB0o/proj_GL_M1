@@ -8,7 +8,6 @@ import java.util.*;
  * This class is used to represent a game board. There can be different shapes of boards (square/rectangle, circle, triangle, etc.).
  */
 public abstract class GameBoard {
-
 	public List<Symbol[]> symbols;//la grille
 	private final int column;
 	private final int row;

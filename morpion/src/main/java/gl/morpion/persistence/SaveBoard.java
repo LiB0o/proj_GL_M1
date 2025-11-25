@@ -62,7 +62,6 @@ public class SaveBoard {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
 

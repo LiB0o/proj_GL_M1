@@ -32,20 +32,13 @@ public class SymbolViewAdapter {
         return createImageViewFromSymbol(symbol);
     }
 
-    private ImageView createImageViewFromSymbol(String symbol) {
+    private ImageView createImageViewFromSymbol(String symbolUrl) {
         ImageView imageView = new ImageView();
-
-        switch (symbol) {
-            case "croix.jpg":
-                imageView.setImage(new Image(symbol));
-                break;
-            case "cercle.png":
-                imageView.setImage(new Image(symbol));
-                break;
-            default:
-                imageView.setImage(null);
+        if(symbolUrl != null) {
+            imageView.setImage(new Image(symbolUrl));
+        } else {
+            imageView.setImage(null);
         }
-
         imageView.setFitWidth(40);
         imageView.setFitHeight(40);
         return imageView;
