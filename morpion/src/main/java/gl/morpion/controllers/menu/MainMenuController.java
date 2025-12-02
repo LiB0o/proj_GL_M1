@@ -5,6 +5,9 @@ import gl.morpion.model.Player;
 import gl.morpion.model.Symbol;
 import gl.morpion.model.TypeOfSymbol;
 import gl.morpion.persistence.GameData;
+import javafx.util.Pair;
+import java.util.HashMap;
+import java.util.Map;
 import gl.morpion.view.player.PlayerNamesView;
 import gl.morpion.controllers.GameController;
 import gl.morpion.view.menu.*;
@@ -45,9 +48,10 @@ public class MainMenuController {
             Stage s = (Stage)stage.getScene().getWindow();
             s.close();
         } else if(modeName == "Custom") {
-            // Display Custom view with load button
+            // Display Custom view with two load buttons (PvP and PvB)
             CustomView customView = new CustomView(
-                    this::loadGame,  // Action for "Load" button
+                    this::loadGamePvP,  // Action for "Load PvP" button
+                    this::loadGamePvB,  // Action for "Load PvB" button
                     this::showMainMenu  // Action for "Back" button
             );
             Scene scene = new Scene(customView, WIDTH, HEIGHT);
@@ -66,16 +70,58 @@ public class MainMenuController {
     }
     
     /**
+     * Loads a saved Player vs Player game.
+     * Restores player names, current player, and board state from save_pvp.json.
+     */
+    public void loadGamePvP() {
+        loadGame("save_pvp.json", false);
+    }
+    
+    /**
+     * Loads a saved Player vs Bot game.
+     * Restores player names, current player, bot difficulty, and board state from save_pvb.json.
+     */
+    public void loadGamePvB() {
+        loadGame("save_pvb.json", true);
+    }
+    
+    /**
      * Loads a saved board and starts the game.
      * Restores player names, current player, and board state from the save file.
+     * 
+     * @param fileName The name of the save file to load
+     * @param expectBotMode Whether to expect bot mode (true) or player vs player (false)
      */
-    public void loadGame() {
+    private void loadGame(String fileName, boolean expectBotMode) {
         try {
             // First read metadata from file to get player names
-            GameData gameData = readGameDataFromFile();
+            GameData gameData = readGameDataFromFile(fileName);
             
-            // Create players with loaded names or defaults
+            // Check if this is a bot game (use expectBotMode or check data)
+            Boolean p1IsBot = gameData != null ? gameData.getPlayer1IsBot() : null;
+            Boolean p2IsBot = gameData != null ? gameData.getPlayer2IsBot() : null;
+            boolean isBotMode = expectBotMode || (p1IsBot != null && p1IsBot) || (p2IsBot != null && p2IsBot);
+            
+            // Create board first (will be loaded with saved data)
+            RectangleBoard board = new RectangleBoard(
+                RectangleBoard.DEFAULT_ROW,
+                RectangleBoard.DEFAULT_COLUMN
+            );
+            
+            // Create temporary players to load the board
+            Player tempP1 = new Player("temp1", 0, 
+                    new Symbol(getClass().getResource("/gl/morpion/croix.jpg").toString(), TypeOfSymbol.CROSS));
+            Player tempP2 = new Player("temp2", 0, 
+                    new Symbol(getClass().getResource("/gl/morpion/cercle.png").toString(), TypeOfSymbol.CIRCLE));
+            Game tempGame = new Game(board, tempP1, tempP2, tempP1);
+            
+            // Load the board state first
+            LoadBoard loadBoard = new LoadBoard(tempGame);
+            loadBoard.readJsonFromFile(fileName);
+            
+            // Now create the real players with loaded data
             Player p1, p2;
+            
             if (gameData != null && gameData.getPlayer1Name() != null && gameData.getPlayer2Name() != null) {
                 // Use loaded players
                 String symbol1Url = convertSymbolToUrl(gameData.getPlayer1Symbol() != null ? 
@@ -83,10 +129,45 @@ public class MainMenuController {
                 String symbol2Url = convertSymbolToUrl(gameData.getPlayer2Symbol() != null ? 
                         gameData.getPlayer2Symbol() : "cercle.png");
                 
-                p1 = new Player(gameData.getPlayer1Name(), 0, 
-                        new Symbol(symbol1Url, TypeOfSymbol.CROSS));
-                p2 = new Player(gameData.getPlayer2Name(), 0, 
-                        new Symbol(symbol2Url, TypeOfSymbol.CIRCLE));
+                if (isBotMode) {
+                    // Create human player
+                    Player human = (p1IsBot != null && p1IsBot) ? 
+                        new Player(gameData.getPlayer2Name(), 0, new Symbol(symbol2Url, TypeOfSymbol.CIRCLE)) :
+                        new Player(gameData.getPlayer1Name(), 0, new Symbol(symbol1Url, TypeOfSymbol.CROSS));
+                    
+                    // Create bot player with saved difficulty and win condition
+                    Float botDifficulty = gameData.getBotDifficulty() != null ? 
+                        gameData.getBotDifficulty() : BotPlayer.NORMAL_LEVEL;
+                    Integer winCondition = gameData.getWinCondition() != null ? 
+                        gameData.getWinCondition() : Game.getDefaultMaxNumberSymbolAlign();
+                    
+                    // Determine bot symbol
+                    TypeOfSymbol botSymbolType = (p1IsBot != null && p1IsBot) ? 
+                        TypeOfSymbol.CROSS : TypeOfSymbol.CIRCLE;
+                    String botSymbolUrl = (p1IsBot != null && p1IsBot) ? symbol1Url : symbol2Url;
+                    
+                    // Create bot player with the loaded board (important: use the board that was just loaded)
+                    BotPlayer bot = new BotPlayer(
+                        (p1IsBot != null && p1IsBot) ? gameData.getPlayer1Name() : gameData.getPlayer2Name(),
+                        0,
+                        botDifficulty,
+                        new Symbol(botSymbolUrl, botSymbolType),
+                        winCondition,
+                        board.useCase  // Use the board that was just loaded
+                    );
+                    
+                    // Update bot's boardView with loaded symbols
+                    updateBotBoardView(bot, tempGame);
+                    
+                    p1 = (p1IsBot != null && p1IsBot) ? bot : human;
+                    p2 = (p1IsBot != null && p1IsBot) ? human : bot;
+                } else {
+                    // Regular Player vs Player mode
+                    p1 = new Player(gameData.getPlayer1Name(), 0, 
+                            new Symbol(symbol1Url, TypeOfSymbol.CROSS));
+                    p2 = new Player(gameData.getPlayer2Name(), 0, 
+                            new Symbol(symbol2Url, TypeOfSymbol.CIRCLE));
+                }
             } else {
                 // Legacy format or missing data: use default players
                 p1 = new Player("Player 1", 0, 
@@ -95,12 +176,22 @@ public class MainMenuController {
                         new Symbol(getClass().getResource("/gl/morpion/cercle.png").toString(), TypeOfSymbol.CIRCLE));
             }
             
-            // Create GameController with players
-            GameController gameController = new GameController(p1, p2);
-            
-            // Load the board into the game
-            LoadBoard loadBoard = new LoadBoard(gameController.getGame());
-            loadBoard.readJsonFromFile();
+            // Create GameController with players (different constructor for bot mode)
+            GameController gameController;
+            if (isBotMode && (p1 instanceof BotPlayer || p2 instanceof BotPlayer)) {
+                BotPlayer bot = (p1 instanceof BotPlayer) ? (BotPlayer) p1 : (BotPlayer) p2;
+                Player human = (p1 instanceof BotPlayer) ? p2 : p1;
+                // Create GameController (it will create a new board, we'll copy the loaded data to it)
+                gameController = new GameController(human, bot, true, this::showMainMenu);
+                // Copy loaded board state to GameController's board
+                copyBoardState(board, gameController.getGame().getGameBoard());
+                // Update bot's boardView with loaded symbols
+                updateBotBoardView(bot, gameController.getGame());
+            } else {
+                gameController = new GameController(p1, p2);
+                // Copy loaded board state to GameController's board
+                copyBoardState(board, gameController.getGame().getGameBoard());
+            }
             
             // Restore current player if available
             if (gameData != null && gameData.getCurrentPlayerName() != null) {
@@ -135,7 +226,10 @@ public class MainMenuController {
             });
 
             // End game logic → return to menu
-            gameController.handleGame(this::showMainMenu);
+            if (!isBotMode) {
+                gameController.handleGame(this::showMainMenu);
+            }
+            // For bot mode, PvsBotController handles the game logic (already created in GameController constructor)
 
             stage.setScene(scene);
             
@@ -161,12 +255,13 @@ public class MainMenuController {
     /**
      * Reads metadata from the save file without loading the board.
      * 
+     * @param fileName The name of the save file to read
      * @return The GameData object containing player information, or null if file doesn't exist or is in legacy format
      */
-    private GameData readGameDataFromFile() {
+    private GameData readGameDataFromFile(String fileName) {
         try {
             java.io.File projectRoot = getProjectRoot();
-            java.io.File file = new java.io.File(projectRoot, "save/save.json");
+            java.io.File file = new java.io.File(projectRoot, "save/" + fileName);
             
             if (!file.exists()) {
                 return null;
@@ -211,6 +306,56 @@ public class MainMenuController {
             return getClass().getResource("/gl/morpion/cercle.png").toString();
         }
         return getClass().getResource("/gl/morpion/croix.jpg").toString();
+    }
+    
+    /**
+     * Copies board state from source board to destination board.
+     * This is used to transfer loaded board data to the GameController's board.
+     * 
+     * @param source The source board with loaded data
+     * @param destination The destination board to copy to
+     */
+    private void copyBoardState(GameBoard source, GameBoard destination) {
+        // Copy all symbols from source to destination
+        for (int i = 0; i < source.getRow(); i++) {
+            for (int j = 0; j < source.getColumn(); j++) {
+                if (source.isValidCase(i, j)) {
+                    Symbol symbol = source.getSymbolInCase(i, j);
+                    if (symbol != null && !source.isEmptyCase(i, j)) {
+                        destination.placeSymbol(symbol, i, j);
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * Updates the bot's boardView to reflect the loaded game state.
+     * This synchronizes the bot's internal board representation with the actual loaded board.
+     * 
+     * @param bot The bot player to update
+     * @param game The game containing the loaded board state
+     */
+    private void updateBotBoardView(BotPlayer bot, Game game) {
+        // Get all used cases from the game
+        HashMap<Pair<Integer, Integer>, Symbol> usedCase = game.getUsedCase();
+        
+        // Update bot's boardView based on loaded symbols
+        for (Map.Entry<Pair<Integer, Integer>, Symbol> entry : usedCase.entrySet()) {
+            Pair<Integer, Integer> position = entry.getKey();
+            Symbol symbol = entry.getValue();
+            
+            if (symbol != null) {
+                // Check if this symbol belongs to the bot
+                if (symbol.equals(bot.getSymbol())) {
+                    // Bot's symbol: set to 0.0f
+                    bot.symbolPutByBot(position);
+                } else {
+                    // Human's symbol: set to -1.0f
+                    bot.symbolPutByPlayer(position);
+                }
+            }
+        }
     }
     
     public void startModePvp() {

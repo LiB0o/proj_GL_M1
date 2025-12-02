@@ -41,6 +41,7 @@ public class LoadBoard {
     private GameData loadedGameData;
 
     /**
+     * <h3>LoadBoard</h3>
      * Constructs a LoadBoard instance for the given game.
      * 
      * @param game The game instance where the loaded board state will be restored
@@ -136,13 +137,14 @@ public class LoadBoard {
      *   <li>Updates the game's usedCase HashMap with loaded symbols</li>
      * </ul>
      * 
+     * @param fileName The name of the save file to load (e.g., "save_pvp.json" or "save_pvb.json")
      * @throws RuntimeException If the save file doesn't exist or if an I/O error occurs
      */
-    public void readJsonFromFile() {
+    public void readJsonFromFile(String fileName) {
         Gson gson = new Gson();
 
         File projectRoot = getProjectRoot();
-        File file = new File(projectRoot, "save/save.json");
+        File file = new File(projectRoot, "save/" + fileName);
 
         if (!file.exists()) {
             throw new RuntimeException("File " + file.getAbsolutePath() + " not found!");

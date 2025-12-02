@@ -10,6 +10,8 @@ import com.google.gson.Gson;
 import com.google.gson.stream.JsonWriter;
 
 import gl.morpion.adapters.SymbolViewAdapter;
+import gl.morpion.controllers.GameController;
+import gl.morpion.model.BotPlayer;
 import gl.morpion.model.Game;
 import gl.morpion.model.Player;
 import gl.morpion.model.Symbol;
@@ -122,13 +124,15 @@ public class SaveBoard {
      *   <li>Player symbols (croix.jpg or cercle.png)</li>
      * </ul>
      * 
-     * <p>The file is saved to {@code save/save.json} in the project root directory.
+     * <p>The file is saved to {@code save/save_pvp.json} or {@code save/save_pvb.json} 
+     * depending on the game mode, in the project root directory.
      * If the save directory doesn't exist, it will be created automatically.
      * 
      * @param game The game instance containing players and current player information.
      *              If null, only the board state will be saved (backward compatibility).
+     * @param gameController The game controller to check the game mode (can be null).
      */
-    public void saveBoard(Game game) {
+    public void saveBoard(Game game, GameController gameController) {
         try {
             File projectRoot = getProjectRoot();
             File saveDir = new File(projectRoot, "save");
@@ -136,7 +140,22 @@ public class SaveBoard {
                 saveDir.mkdir();
             }
 
-            File saveFile = new File(saveDir, "save.json");
+            // Determine save file name based on game mode
+            String fileName = "save_pvp.json"; // Default: Player vs Player
+            
+            // First check GameController for vsBot flag (most reliable)
+            if (gameController != null && gameController.isVsBot()) {
+                fileName = "save_pvb.json"; // Player vs Bot
+            } else if (game != null && game.getPlayers() != null && game.getPlayers().size() >= 2) {
+                // Fallback: check if any player is a bot
+                Player p1 = game.getPlayers().get(0);
+                Player p2 = game.getPlayers().get(1);
+                if (p1 instanceof BotPlayer || p2 instanceof BotPlayer) {
+                    fileName = "save_pvb.json"; // Player vs Bot
+                }
+            }
+            
+            File saveFile = new File(saveDir, fileName);
 
             // Create save data structure
             GameData gameData = new GameData();
@@ -187,6 +206,22 @@ public class SaveBoard {
                 gameData.setPlayer2Name(p2.getName());
                 gameData.setCurrentPlayerName(currentPlayer != null ? currentPlayer.getName() : p1.getName());
                 
+                // Check if players are bots and save bot information
+                boolean p1IsBot = p1 instanceof BotPlayer;
+                boolean p2IsBot = p2 instanceof BotPlayer;
+                gameData.setPlayer1IsBot(p1IsBot);
+                gameData.setPlayer2IsBot(p2IsBot);
+                
+                // Save bot difficulty and win condition if at least one player is a bot
+                if (p1IsBot || p2IsBot) {
+                    BotPlayer bot = p1IsBot ? (BotPlayer) p1 : (BotPlayer) p2;
+                    gameData.setBotDifficulty(bot.getLevel());
+                    gameData.setWinCondition(bot.getWinCondition());
+                } else {
+                    // For non-bot games, save win condition from Game
+                    gameData.setWinCondition(Game.getDefaultMaxNumberSymbolAlign());
+                }
+                
                 // Save player symbols
                 if (p1.getSymbol() != null && p1.getSymbol().getImage() != null) {
                     String symbol1 = p1.getSymbol().getImage();
@@ -212,17 +247,27 @@ public class SaveBoard {
                 gson.toJson(gameData, writer);
             }
 
-            System.out.println("Game board saved successfully to save.json!");
+            System.out.println("Game board saved successfully to " + fileName + "!");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
     
     /**
+     * Saves the game board state along with player information to a JSON file.
+     * Convenience method that calls {@link #saveBoard(Game, GameController)} with null GameController.
+     * 
+     * @param game The game instance containing players and current player information.
+     */
+    public void saveBoard(Game game) {
+        saveBoard(game, null);
+    }
+    
+    /**
      * Saves the board state without player information (backward compatibility method).
-     * This method calls {@link #saveBoard(Game)} with null as the game parameter.
+     * This method calls {@link #saveBoard(Game, GameController)} with null parameters.
      */
     public void saveBoard() {
-        saveBoard(null);
+        saveBoard((Game) null, (GameController) null);
     }
 }

@@ -144,7 +144,7 @@ public class GameBoardWithMenuView extends StackPane {
                         if(response == buttonTypeYes){
                             // Save with player information if available
                             if (gameController != null && gameController.getGame() != null) {
-                                this.boardView.save(gameController.getGame());
+                                this.boardView.save(gameController.getGame(), gameController);
                             } else {
                                 this.boardView.save();
                             }

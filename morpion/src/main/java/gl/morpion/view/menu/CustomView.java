@@ -18,12 +18,13 @@ import javafx.scene.text.FontWeight;
 public class CustomView extends StackPane {
 
     /**
-     * Constructor: Crée une vue Custom avec un bouton de chargement.
+     * Constructor: Crée une vue Custom avec deux boutons de chargement (PvP et PvB).
      * 
-     * @param onLoad Callback exécuté quand le bouton "Charger" est cliqué
+     * @param onLoadPvP Callback exécuté quand le bouton "Load PvP" est cliqué
+     * @param onLoadPvB Callback exécuté quand le bouton "Load PvB" est cliqué
      * @param onBack Callback exécuté quand le bouton "Retour" est cliqué
      */
-    public CustomView(Runnable onLoad, Runnable onBack) {
+    public CustomView(Runnable onLoadPvP, Runnable onLoadPvB, Runnable onBack) {
         // Taille préférée pour la vue (1200x800 pixels)
         setPrefSize(1200, 800);
 
@@ -45,30 +46,39 @@ public class CustomView extends StackPane {
         subMsg.setTextFill(Color.web("#e8f6ff"));
         subMsg.setFont(Font.font("Montserrat", FontWeight.NORMAL, 18));
 
-        // Créer le bouton de chargement avec style personnalisé
-        Button loadBtn = new Button("Load");
-        loadBtn.getStyleClass().add("big-button");
-        loadBtn.setOnAction(e -> {
-            if (onLoad != null) {
-                onLoad.run();
+        // Create load PvP button
+        Button loadPvPBtn = new Button("Load Player vs Player");
+        loadPvPBtn.getStyleClass().add("big-button");
+        loadPvPBtn.setOnAction(e -> {
+            if (onLoadPvP != null) {
+                onLoadPvP.run();
             }
         });
 
-        // Créer le bouton retour avec style personnalisé
+        // Create load PvB button
+        Button loadPvBBtn = new Button("Load Player vs Bot");
+        loadPvBBtn.getStyleClass().add("big-button");
+        loadPvBBtn.setOnAction(e -> {
+            if (onLoadPvB != null) {
+                onLoadPvB.run();
+            }
+        });
+
+        // Create back button
         Button back = new Button("← Back");
         back.setStyle(
                 "-fx-background-radius:12; -fx-background-color: rgba(255,255,255,0.10);" +
                         "-fx-text-fill: white; -fx-padding: 8 18 8 18; -fx-border-color: rgba(255,255,255,0.35); -fx-border-width:1.2; -fx-border-radius:12;"
         );
-        // Attacher le gestionnaire de clic qui exécute le callback onBack
+        // Attach click handler that executes the onBack callback
         back.setOnAction(e -> {
             if (onBack != null) {
                 onBack.run();
             }
         });
 
-        // Créer une boîte verticale pour centrer le message et les boutons avec espacement de 16px
-        VBox box = new VBox(16, msg, subMsg, loadBtn, back);
+        // Create a vertical box to center the message and buttons with 16px spacing
+        VBox box = new VBox(16, msg, subMsg, loadPvPBtn, loadPvBBtn, back);
         box.setAlignment(Pos.CENTER);
         box.setPadding(new Insets(16));
 

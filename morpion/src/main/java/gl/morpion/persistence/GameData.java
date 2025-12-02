@@ -39,6 +39,18 @@ public class GameData {
     
     /** Player 2's symbol filename (e.g., "croix.jpg" or "cercle.png") */
     private String player2Symbol;
+    
+    /** Indicates if player 1 is a bot */
+    private Boolean player1IsBot;
+    
+    /** Indicates if player 2 is a bot */
+    private Boolean player2IsBot;
+    
+    /** Bot difficulty level (EASY=2.0, NORMAL=3.0, HARD=3.5) - only used if player is a bot */
+    private Float botDifficulty;
+    
+    /** Win condition (number of aligned symbols needed to win) */
+    private Integer winCondition;
 
     /**
      * Default constructor for Gson deserialization.
@@ -152,6 +164,78 @@ public class GameData {
      */
     public void setPlayer2Symbol(String player2Symbol) {
         this.player2Symbol = player2Symbol;
+    }
+
+    /**
+     * Checks if player 1 is a bot.
+     * 
+     * @return true if player 1 is a bot, false otherwise
+     */
+    public Boolean getPlayer1IsBot() {
+        return player1IsBot;
+    }
+
+    /**
+     * Sets whether player 1 is a bot.
+     * 
+     * @param player1IsBot true if player 1 is a bot, false otherwise
+     */
+    public void setPlayer1IsBot(Boolean player1IsBot) {
+        this.player1IsBot = player1IsBot;
+    }
+
+    /**
+     * Checks if player 2 is a bot.
+     * 
+     * @return true if player 2 is a bot, false otherwise
+     */
+    public Boolean getPlayer2IsBot() {
+        return player2IsBot;
+    }
+
+    /**
+     * Sets whether player 2 is a bot.
+     * 
+     * @param player2IsBot true if player 2 is a bot, false otherwise
+     */
+    public void setPlayer2IsBot(Boolean player2IsBot) {
+        this.player2IsBot = player2IsBot;
+    }
+
+    /**
+     * Gets the bot difficulty level.
+     * 
+     * @return The bot difficulty level (EASY=2.0, NORMAL=3.0, HARD=3.5), or null if no bot
+     */
+    public Float getBotDifficulty() {
+        return botDifficulty;
+    }
+
+    /**
+     * Sets the bot difficulty level.
+     * 
+     * @param botDifficulty The bot difficulty level (EASY=2.0, NORMAL=3.0, HARD=3.5)
+     */
+    public void setBotDifficulty(Float botDifficulty) {
+        this.botDifficulty = botDifficulty;
+    }
+
+    /**
+     * Gets the win condition (number of aligned symbols needed to win).
+     * 
+     * @return The win condition, or null if not set
+     */
+    public Integer getWinCondition() {
+        return winCondition;
+    }
+
+    /**
+     * Sets the win condition (number of aligned symbols needed to win).
+     * 
+     * @param winCondition The win condition
+     */
+    public void setWinCondition(Integer winCondition) {
+        this.winCondition = winCondition;
     }
 }
 

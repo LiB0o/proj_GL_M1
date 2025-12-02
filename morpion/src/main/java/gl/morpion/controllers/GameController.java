@@ -186,5 +186,14 @@ public class GameController {
         return game;
     }
 
+    /**
+     * Checks if this is a Player vs Bot game mode.
+     * 
+     * @return true if this is a bot game, false otherwise
+     */
+    public boolean isVsBot() {
+        return vsBot;
+    }
+
 
 }
