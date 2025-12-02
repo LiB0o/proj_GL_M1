@@ -19,16 +19,9 @@ import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-
-import gl.morpion.model.CustomGameConfig;
-import gl.morpion.model.RectangleBoard;
-import gl.morpion.model.Game;
-import gl.morpion.model.Player;
-import gl.morpion.model.BotPlayer;
-import gl.morpion.model.Symbol;
-import gl.morpion.model.TypeOfSymbol;
+import gl.morpion.model.*;
 import gl.morpion.view.menu.CustomModeView;
-import gl.morpion.view.menu.GameBoardWithMenuView;
+
 
 public class MainMenuController {
 
@@ -275,7 +268,7 @@ public class MainMenuController {
                     );
 
                     if (!config.isVsBot()) {
-                        // ----- MODE PVP -----
+                        // ===== MODE PVP =====
                         Player p1 = new Player(config.getPlayer1Name(), 0, cross);
                         Player p2 = new Player(config.getPlayer2Name(), 0, circle);
 
@@ -287,30 +280,51 @@ public class MainMenuController {
 
                         gameController.handleGame(this::showMainMenu);
                         setView(gameView);
+
                     } else {
-                        // ----- MODE VS BOT -----
+                        // ===== MODE VS BOT =====
+                        // Joueur humain
                         Player human = new Player(config.getPlayer1Name(), 0, cross);
+
+                        // Nom du bot (optionnel → "BOT" si vide)
                         String botName = config.getPlayer2Name();
                         if (botName == null || botName.isBlank()) botName = "BOT";
 
-                        BotPlayer bot = new BotPlayer(
-                                botName,
-                                0,
-                                BotPlayer.getCurrentDefaultLevel(),
-                                circle,
-                                config.getWinCondition(),
-                                board.useCase    // cases jouables pour l'IA
-                        );
+                        RectangleBoard finalBoard = board;
+                        String finalBotName = botName;
+                        int winCond = config.getWinCondition();
 
-                        GameController gameController =
-                                new GameController(human, bot, true, this::showMainMenu, board);
+                        // 👉 On affiche l'écran de difficulté du bot
+                        BotDifficultyView diffView = new BotDifficultyView(
+                                difficultyKey -> {
+                                    // 1) on change le niveau global de l'IA
+                                    BotPlayer.changeLevel(difficultyKey);
 
-                        GameBoardWithMenuView gameView = new GameBoardWithMenuView(
-                                gameController.getGameBoardView(),
+                                    // 2) on crée le Bot avec CE niveau
+                                    BotPlayer bot = new BotPlayer(
+                                            finalBotName,
+                                            0,
+                                            BotPlayer.getCurrentDefaultLevel(),
+                                            circle,
+                                            winCond,
+                                            finalBoard.useCase   // cases jouables pour l'IA
+                                    );
+
+                                    // 3) on lance la partie custom VS BOT
+                                    GameController gameController =
+                                            new GameController(human, bot, true, this::showMainMenu, finalBoard);
+
+                                    GameBoardWithMenuView gameView = new GameBoardWithMenuView(
+                                            gameController.getGameBoardView(),
+                                            this::showMainMenu
+                                    );
+
+                                    setView(gameView);
+                                },
                                 this::showMainMenu
                         );
 
-                        setView(gameView);
+                        setView(diffView);
                     }
                 },
                 this::showMainMenu
@@ -318,6 +332,7 @@ public class MainMenuController {
 
         setView(view);
     }
+
 
     // ========== RÈGLES ==========
 
