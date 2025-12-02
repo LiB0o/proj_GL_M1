@@ -51,6 +51,34 @@ public class GameController {
         new PvsBotController(this, game, gameBoardView, human, bot, onFinish);
     }
 
+    // ---------- NOUVEAU : constructeur PVP avec plateau custom ----------
+    public GameController(Player player1, Player player2, RectangleBoard customBoard) {
+        this.board = customBoard;
+
+        this.game = new Game(customBoard, player1, player2, player1);
+        this.game.addPlayer(player1);
+        this.game.addPlayer(player2);
+
+        this.gameBoardView = new GameBoardView(customBoard, player1, player2);
+        this.gameBoardController = new PvsPController(gameBoardView, customBoard);
+
+        this.board.debugGameBoard();
+    }
+
+    // ---------- NOUVEAU : constructeur VS BOT avec plateau custom ----------
+    public GameController(Player human, BotPlayer bot, boolean vsBot, Runnable onFinish, RectangleBoard customBoard) {
+        this.vsBot = true;
+        this.board = customBoard;
+
+        this.game = new Game(customBoard, human, bot, human);
+        this.game.addPlayer(human);
+        this.game.addPlayer(bot);
+
+        this.gameBoardView = new GameBoardView(customBoard, human, bot);
+
+        // Contrôleur bot avec callback de fin
+        new PvsBotController(this, game, gameBoardView, human, bot, onFinish);
+    }
 
 
 

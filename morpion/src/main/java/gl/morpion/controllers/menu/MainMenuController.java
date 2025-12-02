@@ -19,6 +19,17 @@ import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
+
+import gl.morpion.model.CustomGameConfig;
+import gl.morpion.model.RectangleBoard;
+import gl.morpion.model.Game;
+import gl.morpion.model.Player;
+import gl.morpion.model.BotPlayer;
+import gl.morpion.model.Symbol;
+import gl.morpion.model.TypeOfSymbol;
+import gl.morpion.view.menu.CustomModeView;
+import gl.morpion.view.menu.GameBoardWithMenuView;
+
 public class MainMenuController {
 
     private final Stage stage;
@@ -51,24 +62,24 @@ public class MainMenuController {
 
     // appelé par MainMenuView pour les modes génériques (simulation)
     public void showMode(String modeName) {
-        // ⚠️ en Java on compare les String avec equals
         if ("QUIT".equals(modeName)) {
             Stage s = (Stage) stage.getScene().getWindow();
             s.close();
             return;
         }
+        if ("Custom".equalsIgnoreCase(modeName)) {
+            startModeCustom();
+            return;
+        }
 
         System.out.println("Je suis dans : " + modeName);
-
         ModePlaceholderView view = new ModePlaceholderView(
                 "Je suis dans " + modeName,
-                this::showMainMenu // bouton Back
+                this::showMainMenu
         );
-
-        // 🔹 AVANT tu faisais : stage.setScene(new Scene(view, WIDTH, HEIGHT));
-        // 🔹 MAINTENANT : on reste sur la même Scene, on change juste le contenu
         setView(view);
     }
+
 
     public void openSettings() {
         // à implémenter plus tard
@@ -231,6 +242,81 @@ public class MainMenuController {
         );
 
         setView(namesView);
+    }
+
+    public void startModeCustom() {
+        System.out.println("Je suis dans : MODE CUSTOM");
+
+        CustomModeView view = new CustomModeView(
+                config -> {
+                    // 1) win condition globale
+                    Game.setDefaultMaxNumberSymbolAlign(config.getWinCondition());
+
+                    // 2) plateau selon la forme (rectangle / carré)
+                    int rows = config.getRows();
+                    int cols = config.getCols();
+
+                    RectangleBoard board;
+                    if ("SQUARE".equals(config.getShape())) {
+                        int size = Math.min(rows, cols);
+                        board = new RectangleBoard(size, size);
+                    } else {
+                        board = new RectangleBoard(rows, cols);
+                    }
+
+                    // 3) symboles
+                    Symbol cross = new Symbol(
+                            getClass().getResource("/gl/morpion/croix.jpg").toExternalForm(),
+                            TypeOfSymbol.CROSS
+                    );
+                    Symbol circle = new Symbol(
+                            getClass().getResource("/gl/morpion/cercle.png").toExternalForm(),
+                            TypeOfSymbol.CIRCLE
+                    );
+
+                    if (!config.isVsBot()) {
+                        // ----- MODE PVP -----
+                        Player p1 = new Player(config.getPlayer1Name(), 0, cross);
+                        Player p2 = new Player(config.getPlayer2Name(), 0, circle);
+
+                        GameController gameController = new GameController(p1, p2, board);
+                        GameBoardWithMenuView gameView = new GameBoardWithMenuView(
+                                gameController.getGameBoardView(),
+                                this::showMainMenu
+                        );
+
+                        gameController.handleGame(this::showMainMenu);
+                        setView(gameView);
+                    } else {
+                        // ----- MODE VS BOT -----
+                        Player human = new Player(config.getPlayer1Name(), 0, cross);
+                        String botName = config.getPlayer2Name();
+                        if (botName == null || botName.isBlank()) botName = "BOT";
+
+                        BotPlayer bot = new BotPlayer(
+                                botName,
+                                0,
+                                BotPlayer.getCurrentDefaultLevel(),
+                                circle,
+                                config.getWinCondition(),
+                                board.useCase    // cases jouables pour l'IA
+                        );
+
+                        GameController gameController =
+                                new GameController(human, bot, true, this::showMainMenu, board);
+
+                        GameBoardWithMenuView gameView = new GameBoardWithMenuView(
+                                gameController.getGameBoardView(),
+                                this::showMainMenu
+                        );
+
+                        setView(gameView);
+                    }
+                },
+                this::showMainMenu
+        );
+
+        setView(view);
     }
 
     // ========== RÈGLES ==========
