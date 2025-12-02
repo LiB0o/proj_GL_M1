@@ -78,7 +78,7 @@ public class MainMenuView extends StackPane {
         title.setTextFill(Color.web("#e8f6ff"));
 
         // Create three main game mode buttons with their respective actions
-        vsBot    = big("Player vs Bots",   () -> controller.showMode("Player vs Bots"));
+        vsBot    = big("Player vs Bots",   controller::startChooseBotDifficulty);
         vsPlayer = big("Player vs Player", controller::startModePvp);
         custom   = big("Custom",           () -> controller.showMode("Custom"));
         QUIT   = big("QUIT",           () -> controller.showMode("QUIT"));
@@ -92,7 +92,7 @@ public class MainMenuView extends StackPane {
 
         // bottom: version left + rules right
         // Create version label for bottom-left corner
-        Label version = new Label("v1.0.2 (GL M1)");
+        Label version = new Label("v2.0.1 (GL M1)");
         version.getStyleClass().add("version-label");
 
         // Create rules button for bottom-right corner

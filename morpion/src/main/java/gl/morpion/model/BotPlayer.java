@@ -7,11 +7,15 @@ import java.util.HashMap;
 import java.util.List;
 
 public class BotPlayer extends Player {
+    public static final float EASY_LEVEL   = 2.0f;
+    public static final float NORMAL_LEVEL = 3.0f;
+    public static final float HARD_LEVEL   = 3.5f;
 
 	private float full_coef;
 
 	public int win_condition;
-
+    // Niveau par défaut utilisé pour créer les bots
+    private static float currentDefaultLevel = NORMAL_LEVEL;
 	/*
 	* All cases on the board (even with a symbol)
 	* Each position (Pair<Integer, Integer>) get a value depending of the possible move on it
@@ -137,7 +141,7 @@ public class BotPlayer extends Player {
 						value = value + add;
 					}
 					else{// empty line
-						value += 1;
+						value += 1.0f;
 					}
 				}
 
@@ -293,7 +297,7 @@ public class BotPlayer extends Player {
 						value = value + add;
 					}
 					else{ //empty line
-						value +=1;
+						value +=1.0f;
 					}
 				}
 
@@ -315,7 +319,7 @@ public class BotPlayer extends Player {
 		float value = 0.0f; //cannot be 1.0f for calculing the value of the case
 
 		//Check the possibilities before and after the chosen point
-		for(int i = 0 ; i< (this.win_condition)-1; i++){
+		for(int i = 0 ; i< this.win_condition; i++){
 
 			int nb_bot_symbol = 0; //number of time when the symbol of the bot is present
 			int nb_adverse_symbol = 0; //number of time when the symbol of the enemy is present
@@ -338,9 +342,10 @@ public class BotPlayer extends Player {
 
 			if(this.boardView.containsKey(neighbour)){
 
-				for(int j = 0; j <= this.win_condition; j++){
+				for(int j = 0; j < this.win_condition; j++){
 
 					Pair<Integer, Integer> testCase = new Pair<>(neighbour.getKey()+j, neighbour.getValue()+j);
+					//System.out.println("position :"+(neighbour.getKey()+j)+","+(neighbour.getValue()+j));
 
 					if(this.boardView.containsKey(testCase)){
 						if(this.boardView.get(testCase) == -1.0f){ //If the case has a symbol from the adverser
@@ -362,7 +367,7 @@ public class BotPlayer extends Player {
 				}
 				else{
 					if(nb_bot_symbol !=0){
-						//System.out.println("Horizontal symbol bot:"+nb_bot_symbol);
+						//System.out.println("Diagonal symbol bot:"+nb_bot_symbol);
 						float add = 3.0f;
 						for(int compt = 1; compt<nb_bot_symbol; compt++){
 							add = add * this.full_coef;
@@ -371,6 +376,7 @@ public class BotPlayer extends Player {
 						value = value + add;
 					}
 					else if(nb_adverse_symbol != 0){
+						//System.out.println("Diagonal symbol player:"+nb_adverse_symbol);
 						float add = 2.0f;
 						for(int compt = 1; compt<nb_adverse_symbol; compt++){
 							add = add * this.full_coef;
@@ -379,7 +385,8 @@ public class BotPlayer extends Player {
 						value = value + add;
 					}
 					else{
-						value +=1;
+						//System.out.println("Ligne vide");
+						value +=1.0f;
 					}
 				}
 
@@ -419,45 +426,54 @@ public class BotPlayer extends Player {
 	public void recomputeNeighbour(@NotNull Pair<Integer, Integer> position){
 
 		//Modify horizontal neighbours
-		for(int i = (position.getKey()-this.win_condition)+1; i<position.getKey()-this.win_condition+1;i++){
+		for(int i = (position.getKey()-(this.win_condition-1)); i<position.getKey()+this.win_condition;i++){
 			Pair<Integer, Integer> key = new Pair<>(i, position.getValue());
 			if(this.boardView.containsKey(key) &&
-					!key.equals(position)){//If we are on the board and are not the origin
+					!key.equals(position) && (
+							boardView.get(key) != 0.0f
+							&& boardView.get(key) != -1.0f
+			)){//If we are on the board and are not the origin and don't have a symbol on them
 				this.boardView.replace(key,totalValueofCase(key));
 			}
 		}
 
 		//Modify vertical neighbours
-		for(int i = (position.getValue()-this.win_condition)+1; i<position.getValue()-this.win_condition+1;i++){
+		for(int i = (position.getValue()-(this.win_condition-1)); i<position.getValue()+this.win_condition;i++){
 			Pair<Integer, Integer> key = new Pair<>(position.getKey(),i);
-			if(this.boardView.containsKey(key)
-				&& !key.equals(position)){//If we are on the board and are not the origin
+			if(this.boardView.containsKey(key) &&
+					!key.equals(position) &&(
+					boardView.get(key) != 0.0f && boardView.get(key) != -1.0f
+			)){//If we are on the board and are not the origin
 				this.boardView.replace(key,totalValueofCase(key));
 			}
 		}
 		//Every diagonal start from the left
 
 		//Add first diagonal neighbours (DownToUp)
-		for(int i = (this.win_condition*2)-1; i<(this.win_condition*2)-1;i++){
+		for(int i = 0; i<(this.win_condition*2);i++){
 			Pair<Integer, Integer> key = new Pair<>(
-					((position.getKey()-this.win_condition)+1)+i,
-					((position.getValue()+this.win_condition)-1)-i
+					(position.getKey()-(this.win_condition-1))+i,
+					(position.getValue()+(this.win_condition-1))-i
 			);
 			if(this.boardView.containsKey(key)
-				&& !key.equals(position)
+				&& !key.equals(position) &&(
+					boardView.get(key) != 0.0f && boardView.get(key) != -1.0f
+				)
 			){//If we are on the board and not the origin
 				this.boardView.replace(key,totalValueofCase(key));
 			}
 		}
 
 		//Add second diagonal neighbours (UpToDown)
-		for(int i = (this.win_condition*2)-1; i<(this.win_condition*2)-1;i++){
+		for(int i = 0; i<(this.win_condition*2);i++){
 			Pair<Integer, Integer> key = new Pair<>(
-					((position.getKey()-this.win_condition)+1)+i,
-					((position.getValue()-this.win_condition)+1)+i
+					(position.getKey()-(this.win_condition-1))+i,
+					(position.getValue()-(this.win_condition-1))+i
 			);
-			if(this.boardView.containsKey(key)
-					&& !key.equals(position)
+			if(this.boardView.containsKey(key) &&
+					!key.equals(position) &&(
+					boardView.get(key) != 0.0f && boardView.get(key) != -1.0f
+				)
 			){//If we are on the board and not the origin
 				this.boardView.replace(key,totalValueofCase(key));
 			}
@@ -469,7 +485,8 @@ public class BotPlayer extends Player {
 	//Change value if Bot put a symbol
 
 	public void symbolPutByBot(Pair<Integer,Integer> position){
-		this.boardView.replace(position,0.0f);
+		Float old = this.boardView.get(position);
+		this.boardView.replace(position,old,0.0f);
 		recomputeNeighbour(position);
 	}
 
@@ -485,6 +502,7 @@ public class BotPlayer extends Player {
 		this.boardView.replace(position,1.0f);
 		recomputeNeighbour(position);
 	}
+
 public Pair<Integer, Integer> getMaxValue(){
 		Pair<Integer, Integer> maxVal = new Pair<>(-1,-1);
 		float max = 0.0f;
@@ -497,7 +515,41 @@ public Pair<Integer, Integer> getMaxValue(){
 		}
 
 		return maxVal;
-}
+   }
+    public static float getCurrentDefaultLevel() {
+        return currentDefaultLevel;
+    }
+
+    /**
+     * Change le niveau global de difficulté de l'IA.
+     * Les prochains BotPlayer créés utiliseront ce level.
+     * @param difficultyKey "EASY", "NORMAL" ou "HARD"
+     */
+    public static void changeLevel(String difficultyKey) {
+        switch (difficultyKey) {
+            case "EASY":
+                currentDefaultLevel = EASY_LEVEL;
+                break;
+            case "HARD":
+                currentDefaultLevel = HARD_LEVEL;
+                break;
+            default:
+                currentDefaultLevel = NORMAL_LEVEL;
+                break;
+        }
+        System.out.println("[BotPlayer] Difficulty set to " + difficultyKey +
+                " (coef=" + currentDefaultLevel + ")");
+    }
+    // --- RÈGLE CONFIGURABLE POUR LE BOT : même que Game ---
+    public int getWinCondition() {
+        return win_condition;
+    }
+
+    public void setWinCondition(int winCondition) {
+        if (winCondition < 3) winCondition = 3;
+        if (winCondition > 8) winCondition = 8;
+        this.win_condition = winCondition;
+    }
 
 
 }

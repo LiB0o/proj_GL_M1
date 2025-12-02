@@ -5,12 +5,15 @@ import javafx.util.Pair;
 import java.util.*;
 
 public class Game {
-	private int MaxNumberSymbolAlign = 5;
+    private static int DEFAULT_MAX_SYMBOL_ALIGN = 5;
+	private int MaxNumberSymbolAlign = DEFAULT_MAX_SYMBOL_ALIGN;;
+
 	private HashMap<Pair<Integer,Integer>,Symbol> usedCase;
 	private GameBoard gameBoard;
 	List<Player> players;
 	private boolean end=false;
 	private Player currentPlayer, p1, p2;
+
 
 	/**
 	 * Create the instance of Game
@@ -23,6 +26,7 @@ public class Game {
 		this.players = new ArrayList<>();
 		this.usedCase = new HashMap<>();
 		this.currentPlayer = currentPlayer;
+        this.MaxNumberSymbolAlign = DEFAULT_MAX_SYMBOL_ALIGN;
 	}
 	public void addPlayer(Player player){
 		this.players.add(player);
@@ -367,6 +371,15 @@ public class Game {
 
         return true; // ✅ coup joué
     }
+    public static int getDefaultMaxNumberSymbolAlign() {
+        return DEFAULT_MAX_SYMBOL_ALIGN;
+    }
+
+    public static void setDefaultMaxNumberSymbolAlign(int value) {
+        if (value < 3) value = 3;
+        if (value > 8) value = 8;
+        DEFAULT_MAX_SYMBOL_ALIGN = value;
+    }
 
 
 	public Player getCurrentPlayer() {
@@ -389,6 +402,7 @@ public class Game {
 		return end;
 	}
 //Force Change
+
 
 
 	public HashMap<Pair<Integer, Integer>, Symbol> getUsedCase() {
