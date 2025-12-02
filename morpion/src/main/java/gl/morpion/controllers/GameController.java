@@ -110,8 +110,6 @@ public class GameController {
                     // Update the visual board to reflect the new game state
                     if (!test) return;
 
-
-
                     gameBoardView.update(game.getGameBoard(), game.getCurrentPlayer().getSymbol());
                     System.out.println("theEnd = "+this.game.getEnd());
                     if (game.getEnd()) {

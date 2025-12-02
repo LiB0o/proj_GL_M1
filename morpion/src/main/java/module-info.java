@@ -8,9 +8,15 @@ module gl.morpion {
     requires org.kordamp.bootstrapfx.core;
     requires java.desktop;
     requires javafx.base;
+    requires annotations;
+    requires com.google.gson;
 
     opens gl.morpion to javafx.fxml;
     exports gl.morpion;
     exports gl.morpion.controllers;
     opens gl.morpion.controllers to javafx.fxml;
+
+    opens gl.morpion.persistence;
+
+    opens gl.morpion.model to com.google.gson;
 }

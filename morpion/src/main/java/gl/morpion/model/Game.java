@@ -405,4 +405,7 @@ public class Game {
 
 
 
+	public HashMap<Pair<Integer, Integer>, Symbol> getUsedCase() {
+		return usedCase;
+	}
 }

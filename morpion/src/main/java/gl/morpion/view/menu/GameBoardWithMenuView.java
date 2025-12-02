@@ -1,10 +1,16 @@
 
 package gl.morpion.view.menu;
 
+import gl.morpion.controllers.GameController;
+import gl.morpion.view.GameBoardView;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -15,6 +21,8 @@ import javafx.scene.paint.Color;
  * Extends StackPane to layer background, game board, and UI elements.
  */
 public class GameBoardWithMenuView extends StackPane {
+    private GameBoardView boardView;
+    private GameController gameController;
 
     /**
      * Constructor: Creates a styled game board view with menu controls.
@@ -23,10 +31,22 @@ public class GameBoardWithMenuView extends StackPane {
      * @param onBack Callback function executed when the back button is clicked
      */
     public GameBoardWithMenuView(Node gameBoardView, Runnable onBack) {
+        this(gameBoardView, onBack, null);
+    }
+    
+    /**
+     * Constructor: Creates a styled game board view with menu controls and game controller.
+     * 
+     * @param gameBoardView The game board visual component to display
+     * @param onBack Callback function executed when the back button is clicked
+     * @param gameController The game controller (optional, for saving with player information)
+     */
+    public GameBoardWithMenuView(Node gameBoardView, Runnable onBack, GameController gameController) {
+        this.boardView = (GameBoardView) gameBoardView;
+        this.gameController = gameController;
         // Set preferred size for the entire view (1200x800 pixels)
         //setPrefSize(1200, 800);
 
-        // Charger le CSS
         // Load the external CSS stylesheet for menu styling
         var css = getClass().getResource("/css/menu.css");
         if (css != null) getStylesheets().add(css.toExternalForm());
@@ -41,10 +61,17 @@ public class GameBoardWithMenuView extends StackPane {
 
         // Bouton "Retour" stylisé
         // Create styled "Back" button with arrow icon
-        Button backButton = new Button("← Back");
+        Button backButton = new Button("← BackReturnSave");
         backButton.getStyleClass().add("pill-button");
         // Attach click handler that executes the onBack callback
-        backButton.setOnAction(e -> { if (onBack != null) onBack.run(); });
+        backButton.setOnAction(e -> {
+            if (onBack != null) {
+
+                // save game
+                this.showAskSavePopup(onBack);
+                //onBack.run();
+            }
+        });
 
         // Create spacer region to push button to the left
         Region spacer = new Region();
@@ -94,5 +121,41 @@ public class GameBoardWithMenuView extends StackPane {
 
         // Add all layers to this StackPane: background first, then layout on top
         getChildren().addAll(bg, layout);
+    }
+
+    public void showAskSavePopup(Runnable onBack) {
+        Platform.runLater(
+                () -> {
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setTitle("saving an unfinished part");
+                    alert.setHeaderText("Confirmations".toUpperCase());
+                    alert.setContentText("Would you like to save it ?");
+                    alert.getButtonTypes().clear();
+
+                    ButtonType buttonTypeYes = new ButtonType("YES", ButtonType.YES.getButtonData());
+                    ButtonType buttonTypeNo = new ButtonType("NO", ButtonType.YES.getButtonData());
+                    alert.getButtonTypes().addAll(buttonTypeYes, buttonTypeNo);
+                    //apply a styles css
+                    DialogPane dialogPane = alert.getDialogPane();
+                    dialogPane.getStylesheets().add(
+                            getClass().getResource("/css/alert-style.css").toExternalForm()
+                    );
+                    alert.showAndWait().ifPresent(response -> {
+                        if(response == buttonTypeYes){
+                            // Save with player information if available
+                            if (gameController != null && gameController.getGame() != null) {
+                                this.boardView.save(gameController.getGame());
+                            } else {
+                                this.boardView.save();
+                            }
+                            onBack.run();
+                            System.out.println("Save confirmed");
+                        }
+                        if(response == buttonTypeNo){
+                            System.out.println("Save cancelled");
+                        }
+                    });
+                }
+        );
     }
 }
