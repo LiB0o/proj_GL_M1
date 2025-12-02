@@ -75,6 +75,10 @@ public class GameBoardView extends BorderPane {
     public void save(){
         this.save.saveBoard();
     }
+    
+    public void save(gl.morpion.model.Game game){
+        this.save.saveBoard(game);
+    }
     private HBox createPlayerPanel(Player player1, Player player2){
         HBox hBox = new HBox(30); // space = 10
         hBox.setAlignment(Pos.CENTER);

@@ -1,6 +1,7 @@
 
 package gl.morpion.view.menu;
 
+import gl.morpion.controllers.GameController;
 import gl.morpion.view.GameBoardView;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -21,6 +22,7 @@ import javafx.scene.paint.Color;
  */
 public class GameBoardWithMenuView extends StackPane {
     private GameBoardView boardView;
+    private GameController gameController;
 
     /**
      * Constructor: Creates a styled game board view with menu controls.
@@ -29,11 +31,22 @@ public class GameBoardWithMenuView extends StackPane {
      * @param onBack Callback function executed when the back button is clicked
      */
     public GameBoardWithMenuView(Node gameBoardView, Runnable onBack) {
+        this(gameBoardView, onBack, null);
+    }
+    
+    /**
+     * Constructor: Creates a styled game board view with menu controls and game controller.
+     * 
+     * @param gameBoardView The game board visual component to display
+     * @param onBack Callback function executed when the back button is clicked
+     * @param gameController The game controller (optional, for saving with player information)
+     */
+    public GameBoardWithMenuView(Node gameBoardView, Runnable onBack, GameController gameController) {
         this.boardView = (GameBoardView) gameBoardView;
+        this.gameController = gameController;
         // Set preferred size for the entire view (1200x800 pixels)
         //setPrefSize(1200, 800);
 
-        // Charger le CSS
         // Load the external CSS stylesheet for menu styling
         var css = getClass().getResource("/css/menu.css");
         if (css != null) getStylesheets().add(css.toExternalForm());
@@ -129,12 +142,17 @@ public class GameBoardWithMenuView extends StackPane {
                     );
                     alert.showAndWait().ifPresent(response -> {
                         if(response == buttonTypeYes){
-                            this.boardView.save();
+                            // Save with player information if available
+                            if (gameController != null && gameController.getGame() != null) {
+                                this.boardView.save(gameController.getGame());
+                            } else {
+                                this.boardView.save();
+                            }
                             onBack.run();
-                            System.out.println("Save Yes");
+                            System.out.println("Save confirmed");
                         }
                         if(response == buttonTypeNo){
-                            System.out.println("Save No");
+                            System.out.println("Save cancelled");
                         }
                     });
                 }
