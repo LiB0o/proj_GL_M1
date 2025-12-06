@@ -149,4 +149,10 @@ public abstract class GameBoard {
 			System.out.println();
 		}
 	}
+    public void setSymbolAt(int x, int y, Symbol symbol) {
+        if (x >= 0 && x < row && y >= 0 && y < column) {
+            this.symbols.get(x)[y] = symbol;
+        }
+    }
+
 }

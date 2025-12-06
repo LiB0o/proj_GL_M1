@@ -115,6 +115,7 @@ public class SaveListView extends BorderPane {
         });
     }
 
+
     private void showAlert(String title, String msg) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);

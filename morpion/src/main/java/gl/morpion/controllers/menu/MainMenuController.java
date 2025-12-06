@@ -24,6 +24,8 @@ import gl.morpion.view.player.WinConditionView;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import gl.morpion.persistence.*;
+
 
 import java.util.List;
 
@@ -135,35 +137,89 @@ public class MainMenuController {
      * Ici on délègue à SaveManager la recréation du GameController & co.
      */
     private void loadCustomSave(SaveMetadata metadata) {
-        System.out.println("Loading save: " + metadata.getSaveName());
+        System.out.println("Loading save : " + metadata.getSaveName());
 
-        // 👉 ICI tu dois utiliser les méthodes de ton SaveManager
-        // pour reconstruire Game, GameBoard, GameController, etc.
-        //
-        // Exemple de design possible (à adapter à ton vrai SaveManager) :
-        //
-        // LoadedGame loaded = SaveManager.loadGame(metadata);
-        // GameController gameController = loaded.getGameController();
-        // GameMode mode = loaded.getGameMode();
-        // int winCond = loaded.getWinCondition();
-        // String botDiff = loaded.getBotDifficulty();
-        //
-        // GameBoardWithMenuView gameView = new GameBoardWithMenuView(
-        //         gameController.getGameBoardView(),
-        //         this::showMainMenu,
-        //         gameController,
-        //         mode,
-        //         winCond,
-        //         botDiff
-        // );
-        // setView(gameView);
-        //
-        // Pour l'instant, si ton SaveManager n'a pas encore ça,
-        // tu peux juste faire un placeholder :
-        ModePlaceholderView view = new ModePlaceholderView(
-                "LOAD NOT IMPLEMENTED YET\nSelected save: " + metadata.getSaveName(),
-                this::showCustomLoadMenu
+        // 1) On récupère le GameData à partir du fichier via SaveManager
+        GameData data = SaveManager.loadGameData(metadata.getFileName());
+        if (data == null) {
+            System.err.println("Impossible de charger GameData pour " + metadata.getFileName());
+            ModePlaceholderView errorView = new ModePlaceholderView(
+                    "Error while loading save.",
+                    this::showCustomLoadMenu
+            );
+            setView(errorView);
+            return;
+        }
+
+        // 2) On déduit la taille du plateau à partir des cellules (max row/col)
+        int maxRow = 0;
+        int maxCol = 0;
+        if (data.getBoard() != null) {
+            for (CellData cell : data.getBoard()) {
+                if (cell.getRow() > maxRow) maxRow = cell.getRow();
+                if (cell.getCol() > maxCol) maxCol = cell.getCol();
+            }
+        }
+
+        int rows = maxRow + 1;
+        int cols = maxCol + 1;
+
+        if (rows <= 0) rows = 3;  // fallback
+        if (cols <= 0) cols = 3;
+
+        // 3) On reconstruit un RectangleBoard avec cette taille
+        RectangleBoard board = new RectangleBoard(rows, cols);
+
+        // 4) On pose les symboles sur le plateau
+        if (data.getBoard() != null) {
+            for (CellData cell : data.getBoard()) {
+
+                // ⚠️ ADAPTE ICI le nom du getter si besoin :
+                // si dans CellData tu as getSymbol(), c'est parfait ;
+                // sinon ouvre CellData.java et remplace par le bon nom.
+                String symbolCode = cell.getSymbol();
+
+                Symbol s = createSymbolFromCode(symbolCode);
+                if (s == null) continue;
+
+                int r = cell.getRow();
+                int c = cell.getCol();
+                if (r < 0 || r >= rows || c < 0 || c >= cols) continue;
+
+                // 🔹 Ici on appelle une méthode utilitaire sur RectangleBoard
+                //    à TOI de l’implémenter (cf. étape 3) :
+                board.setSymbolAt(r, c, s);
+            }
+        }
+
+        // 5) On reconstruit les joueurs (simplifié : on ignore le bot pour l’instant)
+        Symbol cross = createSymbolFromCode("X");
+        Symbol circle = createSymbolFromCode("O");
+
+        String p1Name = (data.getPlayer1Name() != null && !data.getPlayer1Name().isBlank())
+                ? data.getPlayer1Name()
+                : "Player 1";
+
+        String p2Name = (data.getPlayer2Name() != null && !data.getPlayer2Name().isBlank())
+                ? data.getPlayer2Name()
+                : "Player 2";
+
+        Player p1 = new Player(p1Name, 0, cross);
+        Player p2 = new Player(p2Name, 0, circle);
+
+        // 6) Contrôleur de jeu en mode PVP "simple" avec ce plateau reconstruit
+        GameController controller = new GameController(p1, p2, board);
+
+        GameBoardWithMenuView view = new GameBoardWithMenuView(
+                controller.getGameBoardView(),
+                this::showMainMenu,
+                controller,
+                GameMode.PVP,                    // pour l’instant on traite comme un PVP générique
+                Game.getDefaultMaxNumberSymbolAlign(),   // winCondition par défaut
+                null                             // pas de bot pour l’instant
         );
+
+        controller.handleGame(this::showMainMenu);
         setView(view);
     }
 
@@ -429,6 +485,29 @@ public class MainMenuController {
 
         setView(view);
     }
+    // 🔹 Helper : transforme un code ("X", "O", "CROSS", "CIRCLE") en Symbol avec la bonne image
+    private Symbol createSymbolFromCode(String code) {
+        if (code == null) return null;
+
+        String upper = code.trim().toUpperCase();
+
+        if ("X".equals(upper) || "CROSS".equals(upper)) {
+            return new Symbol(
+                    getClass().getResource("/gl/morpion/croix.jpg").toExternalForm(),
+                    TypeOfSymbol.CROSS
+            );
+        }
+
+        if ("O".equals(upper) || "CIRCLE".equals(upper)) {
+            return new Symbol(
+                    getClass().getResource("/gl/morpion/cercle.png").toExternalForm(),
+                    TypeOfSymbol.CIRCLE
+            );
+        }
+
+        return null;
+    }
+
 
     // ========== RÈGLES ==========
 
@@ -438,4 +517,6 @@ public class MainMenuController {
         RulesView view = new RulesView(this::showMainMenu);
         setView(view);
     }
+
+
 }
