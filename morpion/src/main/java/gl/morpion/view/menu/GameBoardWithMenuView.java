@@ -1,16 +1,15 @@
-
 package gl.morpion.view.menu;
 
 import gl.morpion.controllers.GameController;
+import gl.morpion.model.Game;
+import gl.morpion.model.GameMode;
+import gl.morpion.persistence.SaveManager;
 import gl.morpion.view.GameBoardView;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.DialogPane;
+import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -21,84 +20,91 @@ import javafx.scene.paint.Color;
  * Extends StackPane to layer background, game board, and UI elements.
  */
 public class GameBoardWithMenuView extends StackPane {
-    private GameBoardView boardView;
-    private GameController gameController;
+
+    // ====== NOUVEAUX CHAMPS ======
+    private final GameBoardView boardView;
+    private final GameController gameController;
+    private final GameMode gameMode;
+    private final int winCondition;
+    private final String botDifficulty;
 
     /**
-     * Constructor: Creates a styled game board view with menu controls.
-     * 
-     * @param gameBoardView The game board visual component to display
-     * @param onBack Callback function executed when the back button is clicked
+     * Ancien constructeur "simple" (pour compatibilité).
+     * Par défaut on considère que c'est un PVP avec winCondition = 3.
      */
     public GameBoardWithMenuView(Node gameBoardView, Runnable onBack) {
-        this(gameBoardView, onBack, null);
+        this(gameBoardView, onBack, null, GameMode.PVP, 3, null);
     }
-    
+
     /**
-     * Constructor: Creates a styled game board view with menu controls and game controller.
-     * 
-     * @param gameBoardView The game board visual component to display
-     * @param onBack Callback function executed when the back button is clicked
-     * @param gameController The game controller (optional, for saving with player information)
+     * Ancien constructeur avec GameController (pour compatibilité).
+     * Par défaut on considère PVP avec winCondition = 3.
      */
-    public GameBoardWithMenuView(Node gameBoardView, Runnable onBack, GameController gameController) {
+    public GameBoardWithMenuView(Node gameBoardView,
+                                 Runnable onBack,
+                                 GameController gameController) {
+        this(gameBoardView, onBack, gameController, GameMode.PVP, 3, null);
+    }
+
+    /**
+     * Nouveau constructeur complet :
+     * - gameBoardView : la vue du plateau
+     * - onBack        : callback retour menu
+     * - gameController: pour accéder au Game (sauvegarde)
+     * - gameMode      : PVP / PVBOT / CUSTOM_PVP / CUSTOM_PVBOT…
+     * - winCondition  : nombre de symboles à aligner
+     * - botDifficulty : niveau du bot (ou null si pas de bot)
+     */
+    public GameBoardWithMenuView(Node gameBoardView,
+                                 Runnable onBack,
+                                 GameController gameController,
+                                 GameMode gameMode,
+                                 int winCondition,
+                                 String botDifficulty) {
         this.boardView = (GameBoardView) gameBoardView;
         this.gameController = gameController;
-        // Set preferred size for the entire view (1200x800 pixels)
-        //setPrefSize(1200, 800);
+        this.gameMode = gameMode;
+        this.winCondition = winCondition;
+        this.botDifficulty = botDifficulty;
 
         // Load the external CSS stylesheet for menu styling
         var css = getClass().getResource("/css/menu.css");
         if (css != null) getStylesheets().add(css.toExternalForm());
 
-        // Fond avec le même style que le menu
-        // Create background region with the same style as main menu
+        // Background
         Region bg = new Region();
         bg.getStyleClass().add("main-menu-bg");
-        // Bind background size to parent container dimensions
         bg.prefWidthProperty().bind(widthProperty());
         bg.prefHeightProperty().bind(heightProperty());
 
-        // Bouton "Retour" stylisé
-        // Create styled "Back" button with arrow icon
-        Button backButton = new Button("← BackReturnSave");
+        // Bouton "Back"
+        Button backButton = new Button("← Back");
         backButton.getStyleClass().add("pill-button");
-        // Attach click handler that executes the onBack callback
         backButton.setOnAction(e -> {
             if (onBack != null) {
-
-                // save game
+                // On passe toujours par le popup
                 this.showAskSavePopup(onBack);
-                //onBack.run();
             }
         });
 
-        // Create spacer region to push button to the left
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
-        
-        // Create top bar with back button aligned to the left
+
         HBox topBar = new HBox(10, backButton, spacer);
         topBar.setPadding(new Insets(16, 16, 0, 16));
         topBar.setAlignment(Pos.CENTER_LEFT);
 
-        // 🎨 CONTAINER STYLISÉ pour le plateau de jeu
-        // Create styled container for the game board
+        // Container pour le plateau
         StackPane gameContainer = new StackPane(gameBoardView);
-        gameContainer.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE); // Respecte la taille du plateau
-        // Center the game board within the container
+        gameContainer.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
         gameContainer.setAlignment(Pos.CENTER);
 
-        // Effet d'ombre portée (optionnel)
-        // Apply drop shadow effect to the game container for depth
         DropShadow shadow = new DropShadow();
-        shadow.setColor(Color.rgb(0, 0, 0, 0.5)); // Semi-transparent black shadow
-        shadow.setRadius(20); // Shadow blur radius
-        shadow.setOffsetY(5); // Vertical shadow offset
+        shadow.setColor(Color.rgb(0, 0, 0, 0.5));
+        shadow.setRadius(20);
+        shadow.setOffsetY(5);
         gameContainer.setEffect(shadow);
 
-        // Style du container (bordure arrondie, fond semi-transparent)
-        // Apply inline CSS styling: gradient background, rounded borders, semi-transparent
         gameContainer.setStyle(
                 "-fx-background-color: linear-gradient(to bottom, rgba(30, 40, 50, 0.95), rgba(20, 30, 40, 0.95));" +
                         "-fx-border-color: rgba(255, 255, 255, 0.15);" +
@@ -108,54 +114,88 @@ public class GameBoardWithMenuView extends StackPane {
                         "-fx-padding: 25;"
         );
 
-        // 🎯 Centre parfaitement le container dans la scène
-        // Wrap the game container in another StackPane to perfectly center it
         StackPane centerWrapper = new StackPane(gameContainer);
         centerWrapper.setAlignment(Pos.CENTER);
-        centerWrapper.setPadding(new Insets(80, 40, 40, 40)); // Espace autour (top, right, bottom, left spacing)
+        centerWrapper.setPadding(new Insets(80, 40, 40, 40));
 
-        // Create main layout using BorderPane (top bar + centered game board)
         BorderPane layout = new BorderPane();
-        layout.setTop(topBar); // Place back button at the top
-        layout.setCenter(centerWrapper); // Place game board in the center
+        layout.setTop(topBar);
+        layout.setCenter(centerWrapper);
 
-        // Add all layers to this StackPane: background first, then layout on top
         getChildren().addAll(bg, layout);
     }
 
+    /**
+     * Popup "Voulez-vous sauvegarder la partie ?" avant de quitter.
+     * Utilise SaveManager pour écrire une sauvegarde complète.
+     */
     public void showAskSavePopup(Runnable onBack) {
-        Platform.runLater(
-                () -> {
-                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-                    alert.setTitle("saving an unfinished part");
-                    alert.setHeaderText("Confirmations".toUpperCase());
-                    alert.setContentText("Would you like to save it ?");
-                    alert.getButtonTypes().clear();
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Saving an unfinished game");
+            alert.setHeaderText("CONFIRMATION");
+            alert.setContentText("Would you like to save it?");
+            alert.getButtonTypes().clear();
 
-                    ButtonType buttonTypeYes = new ButtonType("YES", ButtonType.YES.getButtonData());
-                    ButtonType buttonTypeNo = new ButtonType("NO", ButtonType.YES.getButtonData());
-                    alert.getButtonTypes().addAll(buttonTypeYes, buttonTypeNo);
-                    //apply a styles css
-                    DialogPane dialogPane = alert.getDialogPane();
-                    dialogPane.getStylesheets().add(
-                            getClass().getResource("/css/alert-style.css").toExternalForm()
-                    );
-                    alert.showAndWait().ifPresent(response -> {
-                        if(response == buttonTypeYes){
-                            // Save with player information if available
-                            if (gameController != null && gameController.getGame() != null) {
-                                this.boardView.save(gameController.getGame());
-                            } else {
-                                this.boardView.save();
+            ButtonType buttonTypeYes = new ButtonType("YES", ButtonType.YES.getButtonData());
+            ButtonType buttonTypeNo = new ButtonType("NO", ButtonType.NO.getButtonData());
+            alert.getButtonTypes().addAll(buttonTypeYes, buttonTypeNo);
+
+            DialogPane dialogPane = alert.getDialogPane();
+            dialogPane.getStylesheets().add(
+                    getClass().getResource("/css/alert-style.css").toExternalForm()
+            );
+
+            alert.showAndWait().ifPresent(response -> {
+                if (response == buttonTypeYes) {
+                    // On a accepté de sauvegarder
+                    if (gameController != null && gameController.getGame() != null) {
+                        Game game = gameController.getGame();
+
+                        // Demande du nom de sauvegarde
+                        String defaultName;
+                        try {
+                            String p1 = game.getPlayers().get(0).getName();
+                            String p2 = game.getPlayers().get(1).getName();
+                            defaultName = p1 + "_vs_" + p2;
+                        } catch (Exception ex) {
+                            defaultName = "My_game";
+                        }
+
+                        TextInputDialog nameDialog = new TextInputDialog(defaultName);
+                        nameDialog.setTitle("Save game");
+                        nameDialog.setHeaderText("Choose a name for this save");
+                        nameDialog.setContentText("Save name:");
+
+                        nameDialog.showAndWait().ifPresent(saveName -> {
+                            if (saveName != null && !saveName.isBlank()) {
+                                // Appel à ton SaveManager
+                                SaveManager.saveGame(
+                                        game,
+                                        boardView,
+                                        saveName.trim(),
+                                        gameMode,
+                                        botDifficulty,
+                                        winCondition
+                                );
+                                System.out.println("Game saved as: " + saveName);
                             }
+                            // dans tous les cas (nom donné ou pas) on retourne au menu
                             onBack.run();
-                            System.out.println("Save confirmed");
-                        }
-                        if(response == buttonTypeNo){
-                            System.out.println("Save cancelled");
-                        }
-                    });
+                        });
+
+                    } else {
+                        // fallback : ancien comportement si on n'a pas de GameController
+                        this.boardView.save();
+                        onBack.run();
+                    }
+
+                } else if (response == buttonTypeNo) {
+                    // Pas de sauvegarde, retour direct
+                    onBack.run();
+                    System.out.println("Save cancelled");
                 }
-        );
+            });
+        });
     }
 }

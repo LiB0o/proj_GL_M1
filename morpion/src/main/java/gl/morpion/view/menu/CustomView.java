@@ -7,73 +7,62 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 
 /**
- * Vue pour le mode Custom avec option de chargement d'un plateau sauvegardé.
- * Affiche un message et un bouton pour charger un plateau existant.
+ * Vue d'entrée pour le mode Custom :
+ * - New custom game (configurer une nouvelle partie)
+ * - Load saved game (charger une sauvegarde)
+ * - Back (retour au menu principal)
  */
 public class CustomView extends StackPane {
 
     /**
-     * Constructor: Crée une vue Custom avec un bouton de chargement.
-     * 
-     * @param onLoad Callback exécuté quand le bouton "Charger" est cliqué
-     * @param onBack Callback exécuté quand le bouton "Retour" est cliqué
+     * @param onNewGame callback quand on clique sur "New custom game"
+     * @param onLoad    callback quand on clique sur "Load saved game"
+     * @param onBack    callback quand on clique sur "Back"
      */
-    public CustomView(Runnable onLoad, Runnable onBack) {
-        // Taille préférée pour la vue (1200x800 pixels)
+    public CustomView(Runnable onNewGame, Runnable onLoad, Runnable onBack) {
         setPrefSize(1200, 800);
 
-        // Fond
-        // Créer une région de fond avec un style de dégradé
+        // Fond avec le même style que le menu principal
         Region bg = new Region();
-        bg.setStyle("-fx-background-color: linear-gradient(to bottom, #0a0f14, #14202a);");
-        // Lier les dimensions du fond à la taille du conteneur parent (responsive)
+        bg.getStyleClass().add("main-menu-bg");
         bg.prefWidthProperty().bind(widthProperty());
         bg.prefHeightProperty().bind(heightProperty());
 
-        // Contenu centré
-        // Créer un label de message avec texte blanc et police en gras
-        Label msg = new Label("Mode Custom");
-        msg.setTextFill(Color.WHITE);
-        msg.setFont(Font.font("Montserrat", FontWeight.BOLD, 36));
+        // Titre
+        Label title = new Label("Custom mode");
+        title.getStyleClass().add("title-glow");
 
-        Label subMsg = new Label("Load a saved board");
-        subMsg.setTextFill(Color.web("#e8f6ff"));
-        subMsg.setFont(Font.font("Montserrat", FontWeight.NORMAL, 18));
+        Label subMsg = new Label("Choose an option");
+        subMsg.getStyleClass().add("form-label");
 
-        // Créer le bouton de chargement avec style personnalisé
-        Button loadBtn = new Button("Load");
+        // Bouton "New custom game"
+        Button newGameBtn = new Button("New custom game");
+        newGameBtn.getStyleClass().add("big-button");
+        newGameBtn.setOnAction(e -> {
+            if (onNewGame != null) onNewGame.run();
+        });
+
+        // Bouton "Load saved game"
+        Button loadBtn = new Button("Load saved game");
         loadBtn.getStyleClass().add("big-button");
         loadBtn.setOnAction(e -> {
-            if (onLoad != null) {
-                onLoad.run();
-            }
+            if (onLoad != null) onLoad.run();
         });
 
-        // Créer le bouton retour avec style personnalisé
+        // Bouton "Back"
         Button back = new Button("← Back");
-        back.setStyle(
-                "-fx-background-radius:12; -fx-background-color: rgba(255,255,255,0.10);" +
-                        "-fx-text-fill: white; -fx-padding: 8 18 8 18; -fx-border-color: rgba(255,255,255,0.35); -fx-border-width:1.2; -fx-border-radius:12;"
-        );
-        // Attacher le gestionnaire de clic qui exécute le callback onBack
+        back.getStyleClass().add("pill-button");
         back.setOnAction(e -> {
-            if (onBack != null) {
-                onBack.run();
-            }
+            if (onBack != null) onBack.run();
         });
 
-        // Créer une boîte verticale pour centrer le message et les boutons avec espacement de 16px
-        VBox box = new VBox(16, msg, subMsg, loadBtn, back);
+        VBox box = new VBox(16, title, subMsg, newGameBtn, loadBtn, back);
         box.setAlignment(Pos.CENTER);
         box.setPadding(new Insets(16));
+        box.getStyleClass().add("form-card");
 
-        // Ajouter le fond et la boîte de contenu au graphe de scène (en couches)
         getChildren().addAll(bg, box);
     }
 }
-

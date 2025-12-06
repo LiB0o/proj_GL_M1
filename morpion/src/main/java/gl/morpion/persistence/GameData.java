@@ -4,154 +4,153 @@ import java.util.List;
 
 /**
  * Data class representing a complete saved game state.
- * 
- * <p>This class stores all information needed to restore a game:
- * <ul>
- *   <li>Board state: All cells with their symbols or empty state</li>
- *   <li>Player information: Names and symbols of both players</li>
- *   <li>Current player: The name of the player who should play next</li>
- * </ul>
- * 
- * <p>This class is used for JSON serialization/deserialization with Gson.
- * The structure allows for backward compatibility with older save files that only contain board data.
- * 
- * @author GL M1 Project Team
- * @version 1.0
- * @see SaveBoard
- * @see LoadBoard
- * @see CellData
+ *
+ * Stores:
+ *  - board state
+ *  - players (names + symbols)
+ *  - current player
+ *  - extra metadata: save name, mode, bot difficulty, board size, winCondition, timestamp
  */
 public class GameData {
-    /** The board state as a list of cell data */
+
+    // === ÉTAT DU JEU (déjà présent) ===
     private List<CellData> board;
-    
-    /** Player 1's name */
     private String player1Name;
-    
-    /** Player 2's name */
     private String player2Name;
-    
-    /** The name of the player who should play next */
     private String currentPlayerName;
-    
-    /** Player 1's symbol filename (e.g., "croix.jpg" or "cercle.png") */
     private String player1Symbol;
-    
-    /** Player 2's symbol filename (e.g., "croix.jpg" or "cercle.png") */
     private String player2Symbol;
 
-    /**
-     * Default constructor for Gson deserialization.
-     */
+    // === NOUVEAUX CHAMPS (métadonnées) ===
+    /** Nom de la sauvegarde choisi par l'utilisateur */
+    private String saveName;
+
+    /** Mode de jeu (PVP, PVBOT, CUSTOM_PVP, CUSTOM_PVBOT, etc.) */
+    private String mode;
+
+    /** Niveau / difficulté du bot (Easy, Medium, Hard, …) ou null si pas de bot */
+    private String botDifficulty;
+
+    /** Nombre de lignes du plateau */
+    private Integer rows;
+
+    /** Nombre de colonnes du plateau */
+    private Integer cols;
+
+    /** Nombre de symboles alignés pour gagner */
+    private Integer winCondition;
+
+    /** Date/heure de la sauvegarde au format ISO (ex: 2025-12-02T10:15:30) */
+    private String savedAt;
+
     public GameData() {
     }
 
-    /**
-     * Gets the board state.
-     * 
-     * @return The list of cell data representing the board state
-     */
+    // ===== getters / setters existants =====
+
     public List<CellData> getBoard() {
         return board;
     }
 
-    /**
-     * Sets the board state.
-     * 
-     * @param board The list of cell data representing the board state
-     */
     public void setBoard(List<CellData> board) {
         this.board = board;
     }
 
-    /**
-     * Gets player 1's name.
-     * 
-     * @return Player 1's name
-     */
     public String getPlayer1Name() {
         return player1Name;
     }
 
-    /**
-     * Sets player 1's name.
-     * 
-     * @param player1Name Player 1's name
-     */
     public void setPlayer1Name(String player1Name) {
         this.player1Name = player1Name;
     }
 
-    /**
-     * Gets player 2's name.
-     * 
-     * @return Player 2's name
-     */
     public String getPlayer2Name() {
         return player2Name;
     }
 
-    /**
-     * Sets player 2's name.
-     * 
-     * @param player2Name Player 2's name
-     */
     public void setPlayer2Name(String player2Name) {
         this.player2Name = player2Name;
     }
 
-    /**
-     * Gets the current player's name (who should play next).
-     * 
-     * @return The current player's name
-     */
     public String getCurrentPlayerName() {
         return currentPlayerName;
     }
 
-    /**
-     * Sets the current player's name (who should play next).
-     * 
-     * @param currentPlayerName The current player's name
-     */
     public void setCurrentPlayerName(String currentPlayerName) {
         this.currentPlayerName = currentPlayerName;
     }
 
-    /**
-     * Gets player 1's symbol filename.
-     * 
-     * @return Player 1's symbol filename (e.g., "croix.jpg" or "cercle.png")
-     */
     public String getPlayer1Symbol() {
         return player1Symbol;
     }
 
-    /**
-     * Sets player 1's symbol filename.
-     * 
-     * @param player1Symbol Player 1's symbol filename (e.g., "croix.jpg" or "cercle.png")
-     */
     public void setPlayer1Symbol(String player1Symbol) {
         this.player1Symbol = player1Symbol;
     }
 
-    /**
-     * Gets player 2's symbol filename.
-     * 
-     * @return Player 2's symbol filename (e.g., "croix.jpg" or "cercle.png")
-     */
     public String getPlayer2Symbol() {
         return player2Symbol;
     }
 
-    /**
-     * Sets player 2's symbol filename.
-     * 
-     * @param player2Symbol Player 2's symbol filename (e.g., "croix.jpg" or "cercle.png")
-     */
     public void setPlayer2Symbol(String player2Symbol) {
         this.player2Symbol = player2Symbol;
     }
-}
 
+    // ===== nouveaux getters / setters =====
+
+    public String getSaveName() {
+        return saveName;
+    }
+
+    public void setSaveName(String saveName) {
+        this.saveName = saveName;
+    }
+
+    public String getMode() {
+        return mode;
+    }
+
+    public void setMode(String mode) {
+        this.mode = mode;
+    }
+
+    public String getBotDifficulty() {
+        return botDifficulty;
+    }
+
+    public void setBotDifficulty(String botDifficulty) {
+        this.botDifficulty = botDifficulty;
+    }
+
+    public Integer getRows() {
+        return rows;
+    }
+
+    public void setRows(Integer rows) {
+        this.rows = rows;
+    }
+
+    public Integer getCols() {
+        return cols;
+    }
+
+    public void setCols(Integer cols) {
+        this.cols = cols;
+    }
+
+    public Integer getWinCondition() {
+        return winCondition;
+    }
+
+    public void setWinCondition(Integer winCondition) {
+        this.winCondition = winCondition;
+    }
+
+    public String getSavedAt() {
+        return savedAt;
+    }
+
+    public void setSavedAt(String savedAt) {
+        this.savedAt = savedAt;
+    }
+}
