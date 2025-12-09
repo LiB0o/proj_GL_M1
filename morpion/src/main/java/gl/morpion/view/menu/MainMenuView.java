@@ -80,7 +80,7 @@ public class MainMenuView extends StackPane {
         // Create three main game mode buttons with their respective actions
         vsBot    = big("Player vs Bots",   controller::startChooseBotDifficulty);
         vsPlayer = big("Player vs Player", controller::startModePvp);
-        custom   = big("Custom",           () -> controller.showMode("Custom"));
+        custom   = big("Custom",           controller::showCustomEntry);
         QUIT   = big("QUIT",           () -> controller.showMode("QUIT"));
         // Arrange buttons vertically with 14px spacing between them
         VBox btnCol = new VBox(14, vsBot, vsPlayer, custom, QUIT);

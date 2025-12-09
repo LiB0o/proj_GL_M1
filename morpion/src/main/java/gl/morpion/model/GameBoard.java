@@ -33,6 +33,10 @@ public abstract class GameBoard {
 	 */
 	public List<Pair<Integer, Integer>> useCase;
 
+
+    public Symbol getSymbolAt(int x, int y) {
+        return symbols.get(x)[y];
+    }
 	/**
 	 * <h2>Functions of GameBoard</h2>
 	 */
@@ -196,4 +200,10 @@ public abstract class GameBoard {
 			System.out.println();
 		}
 	}
+    public void setSymbolAt(int x, int y, Symbol symbol) {
+        if (x >= 0 && x < row && y >= 0 && y < column) {
+            this.symbols.get(x)[y] = symbol;
+        }
+    }
+
 }

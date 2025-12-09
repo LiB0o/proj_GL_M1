@@ -4,52 +4,20 @@ import javafx.util.Pair;
 
 import java.util.*;
 
-/**
- * <h1>class Game</h1>
- * <h2>Elements of Game</h2>
- */
-
-
 public class Game {
+    private static int DEFAULT_MAX_SYMBOL_ALIGN = 5;
+	private int MaxNumberSymbolAlign = DEFAULT_MAX_SYMBOL_ALIGN;;
 
-	/**
-	 * <h3>MaxNumberSymbolAlign</h3>
-	 * How many symbols align are needed to win
-	 */
-	private int MaxNumberSymbolAlign = 5;
-
-	/**
-	 * <h3>usedCase</h3>
-	 * Cases already played on with their position and symbol
-	 */
 	private HashMap<Pair<Integer,Integer>,Symbol> usedCase;
-
-	/**
-	 * <h3>gameBoard</h3>
-	 * The board played on
-	 */
 	private GameBoard gameBoard;
-
-	/**
-	 * <h3>players</h3>
-	 * List of every player
-	 */
 	List<Player> players;
-
-
 	private boolean end=false;
-
 	private Player currentPlayer, p1, p2;
 
+
 	/**
-	 * <h3>Game</h3>
-	 *
-	 * Create the game
-	 *
-	 * @param board the board
-	 * @param p1
-	 * @param p2
-	 * @param currentPlayer
+	 * Create the instance of Game
+	 * @param board of type GameBoard
 	 */
 	public Game(GameBoard board, Player p1, Player p2, Player currentPlayer){
 		this.p1 = p1;
@@ -58,24 +26,15 @@ public class Game {
 		this.players = new ArrayList<>();
 		this.usedCase = new HashMap<>();
 		this.currentPlayer = currentPlayer;
+        this.MaxNumberSymbolAlign = DEFAULT_MAX_SYMBOL_ALIGN;
 	}
-
-	/**
-	 * <h3>addPlayer</h3>
-	 * Add a player in the list players
-	 * @param player the new player
-	 */
 	public void addPlayer(Player player){
 		this.players.add(player);
 	}
-
 	/**
-	 * <h3>checkClassicVictory</h3>
-	 *
-	 * Test every possibility for a win using the four functions below.
-	 *
-	 * @param limit the winning condition (how many symbols align to win)
-	 * @return a boolean and a symbol (if a win: true,symbol; if no win: false, null)
+	 * test every possibility for a case to check if there is a win
+	 * @param limit: how many symbols are needed next to each other to win
+	 * @return a pair with a boolean and the symbol of the winner (if boolean == true)
 	 */
 	public Pair<Boolean,Symbol> checkClassicVictory(int limit) {
 		boolean victory = false;
@@ -101,12 +60,10 @@ public class Game {
 	}
 
 	/**
-	 * <h3>private checkDiagonalUpLeft_DownRight</h3>
-	 *
 	 * check if you win with on a diagonal from up left to down right
 	 * @param key position of case, first Integer is x/line and the second Integer is y/column
 	 * @param limit how many symbols are needed next to each other to win
-	 * @return true or false
+	 * @return boolean
 	 */
 	private boolean checkDiagonalUpLeft_DownRight(Pair<Integer,Integer>key,int limit){
 		boolean result = false;
@@ -166,12 +123,10 @@ public class Game {
 	}
 
 	/**
-	 * <h3>private checkDiagonalUpRight_DownLeft</h3>
-	 *
 	 * check if you win with on a diagonal from down left to up right
 	 * @param key position of case, first Integer is x/line and the second Integer is y/column
 	 * @param limit how many symbols are needed next to each other to win
-	 * @return true or false
+	 * @return boolean
 	 */
 
 	private boolean checkDiagonalUpRight_DownLeft(Pair<Integer,Integer>key,int limit){
@@ -232,7 +187,6 @@ public class Game {
 	}
 
 	/**
-	 * <h3>private checkColumn</h3>
 	 * check if you win with on a column
 	 *
 	 * @param key position of case, first Integer is x/line and the second Integer is y/column
@@ -297,8 +251,6 @@ public class Game {
 	}
 
 	/**
-	 * <h3>private checkLine</h3>
-	 *
 	 * check if you win with on a line
 	 * @param key position of case, first Integer is x/line and the second Integer is y/column
 	 * @param limit how many symbols are needed next to each other to win
@@ -361,7 +313,6 @@ public class Game {
 		return result;
 	}
 
-	//ask Abdou
 	public void swap(){
 		currentPlayer = currentPlayer == players.get(0) ?
 				players.get(1) :
@@ -369,10 +320,8 @@ public class Game {
 	}
 
 	/**
-	 * <h3>allCaseFilled</h3>
 	 *
-	 * detect whether there is a draw
-	 * @return true if it detects a draw
+	 * @return : detect whether there is a draw
 	 */
 	public Boolean allCaseFilled(){//TODO: probleme
 		int rows = this.gameBoard.getRow();
@@ -388,28 +337,23 @@ public class Game {
 	}
 
 
-
 	/**
-	 * <h3>playTurn</h3>
-	 *
-	 * Manage a turn
-	 *
-	 * @param x : column
-	 * @param y : row
-	 * @return false if the turn need to reroll (no move) or true if need to stop/next turn
+	 * @param x: row
+	 * @param y : col
+	 * @return :
 	 */
     public boolean playTurn(int x, int y) {
 
-        // Case already occupied → DON'T PLAY
+        // Case déjà occupée → on ne joue PAS
         if (!this.gameBoard.isEmptyCase(x, y)) {
-            System.out.println("Case has already a symbol !");
-            return false; // ❌ refuse move
+            System.out.println("Case déjà occupée !");
+            return false; // ❌ coup refusé
         }
 
-        // Free case → play the move
+        // Case libre → jouer le coup
         this.gameBoard.placeSymbol(currentPlayer.getSymbol(), x, y);
 
-        // Check victory
+        // Vérifier la victoire
         Pair<Boolean, Symbol> victory = this.checkClassicVictory(this.MaxNumberSymbolAlign);
         if (victory.getKey() && currentPlayer.getSymbol() == victory.getValue()) {
             currentPlayer.addPoint();
@@ -417,15 +361,24 @@ public class Game {
         }
 
         if (this.allCaseFilled()) {
-            System.out.println("All cases are full !");
+            System.out.println("Toutes les cases sont remplies !");
         }
 
-        // If someone have points, it is over
+        // Si quelqu’un a des points, on considère que c’est fini
         if (players.get(0).getPoints() != 0 || players.get(1).getPoints() != 0) {
             this.end = true;
         }
 
-        return true; // ✅ move played
+        return true; // ✅ coup joué
+    }
+    public static int getDefaultMaxNumberSymbolAlign() {
+        return DEFAULT_MAX_SYMBOL_ALIGN;
+    }
+
+    public static void setDefaultMaxNumberSymbolAlign(int value) {
+        if (value < 3) value = 3;
+        if (value > 8) value = 8;
+        DEFAULT_MAX_SYMBOL_ALIGN = value;
     }
 
 
@@ -450,4 +403,9 @@ public class Game {
 	}
 //Force Change
 
+
+
+	public HashMap<Pair<Integer, Integer>, Symbol> getUsedCase() {
+		return usedCase;
+	}
 }

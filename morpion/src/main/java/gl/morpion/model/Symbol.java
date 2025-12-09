@@ -33,6 +33,15 @@ public class Symbol {
 		this.typeOfSymbol = typeSymbol;
 	}
 
+	public static Symbol fromString(String symbolPath) {
+		if(symbolPath.contains("croix")) {
+			return new Symbol(symbolPath, TypeOfSymbol.CROSS);
+		} else if(symbolPath.contains("cercle")) {
+			return new Symbol(symbolPath, TypeOfSymbol.CIRCLE);
+		}
+		return null;
+	}
+
 	/**
 	 * <h3>getImage</h3>
 	 * @return the link of the picture
