@@ -11,27 +11,61 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * <h1>Controller GameController</h1>
  * Main controller for the morpion game.
  * Coordinates the game logic between model (Game, GameBoard, Player) and view (GameBoardView).
  * Handles player interactions and manages game flow from start to finish.
  */
+
+/**
+ * <h2>Elements of GameController</h2>
+ */
 public class GameController {
+
     /**
+     * <h3>private game</h3>
      * Core game logic model that manages turns, rules, and win conditions
      */
     private Game game;
     /**
+     * <h3>private GameBoardView</h3>
      * Visual representation of the game board (JavaFX UI component)
      */
     private final GameBoardView gameBoardView;
     //private final int DEFAULT_ROW = 10, DEFAULT_COL = 10; //TODO:  probleme si ROW defferent COL
-    // Secondary controller for board interactions (Player vs Player mode)
+
+    /**
+     * <h3>private gameBoardController</h3>
+     * Secondary controller for board interactions (Player vs Player mode)
+     */
     private PvsPController gameBoardController; // ou GameBoardController si c'est lui
-    // Flag to prevent further moves after game ends (volatile for thread-safety)
+
+    /**
+     * <h3>private ended</h3>
+     * Flag to prevent further moves after game ends (volatile for thread-safety)
+     */
     private volatile boolean ended = false;
+    /**
+     * <h3>private board</h3>
+     * Board use for the game
+     */
     private GameBoard board;
+
+    /**
+     * <h3>vsBot</h3>
+     * Permit to check if there is a bot
+     */
     private boolean vsBot = false;
 
+    /**
+     * <h3>GameController</h3>
+     * Constructor of GameController against a bot
+     *
+     * @param human the human player
+     * @param bot
+     * @param vsBot if you are against a bot
+     * @param onFinish method to execute in a Thread
+     */
     public GameController(Player human, BotPlayer bot, boolean vsBot, Runnable onFinish) {
         this.vsBot = true;
 
@@ -83,6 +117,7 @@ public class GameController {
 
 
     /**
+     * <h3>GameController</h3>
      * Constructor: Initializes the complete game setup including players, symbols, board, and views.
      * @param player1Name : player1's name
      * @param player2Name: player2's name
@@ -98,9 +133,11 @@ public class GameController {
     }
 
     /**
+     * <h3>initializeGame</h3>
      * initialize the game by creating the board, the players list and the current game
      *
-
+     * @param p1 Player 1
+     * @param p2 Player 2
      */
     public void initializeGame(Player p1, Player p2){
         //Player p1 = new Player(player1Name, 0, new Symbol(getClass().getResource("/gl/morpion/croix.jpg").toExternalForm(), TypeOfSymbol.CROSS));
@@ -112,9 +149,10 @@ public class GameController {
         this.game.addPlayer(p2);
     }
 
-    /** 
+    /**
+     * <h3>handleGame</h3>
+     *
      * Sets up click event handlers for all board cells and manages the game loop.
-     * Branchement des clics + callback de fin (retour au menu) 
      * 
      * @param onFinish: Callback function executed when game ends (typically returns to main menu)
      */
@@ -175,6 +213,7 @@ public class GameController {
 
 
     /**
+     * <h3>showEndPopup</h3>
      * Displays an information popup when the game ends and executes the finish callback.
      * Runs on JavaFX Application Thread to ensure proper UI updates.
      * 
@@ -210,6 +249,7 @@ public class GameController {
 
 
     /**
+     * <h3>getGameBoardView</h3>
      * Returns the game board view component.
      * Used to access the visual board for displaying in JavaFX scenes.
      * 
@@ -221,6 +261,7 @@ public class GameController {
 
 
     /**
+     * <h3>getGame</h3>
      * @return : the game instance
      */
     public Game getGame() {

@@ -23,6 +23,10 @@ import gl.morpion.persistence.*;
 
 import java.util.List;
 
+/**
+ * <h1>controller MainMenuController</h1>
+ * <h2>Elements of MainMenuController</h2>
+ */
 public class MainMenuController {
 
     private final Stage stage;
@@ -46,6 +50,10 @@ public class MainMenuController {
 
     // ========== MENU PRINCIPAL ==========
 
+    /**
+     * <h3>showMainMenu</h3>
+     * Show the window of the game
+     */
     public void showMainMenu() {
         System.out.println("Je suis dans : MENU PRINCIPAL");
 
@@ -53,6 +61,11 @@ public class MainMenuController {
         setView(menu);
     }
 
+    /**
+     * <h3>showMode</h3>
+     * Permit to go to the selected mode or to quit
+     * @param modeName name of the name (PvsP, PvsBot)
+     */
     public void showMode(String modeName) {
         if ("QUIT".equals(modeName)) {
             Stage s = (Stage) stage.getScene().getWindow();
@@ -428,6 +441,7 @@ public class MainMenuController {
                     GameController gameController =
                             new GameController(human, bot, true, this::showMainMenu);
 
+                    // 4. Construct view with menu like in PvP
                     GameBoardWithMenuView gameView = new GameBoardWithMenuView(
                             gameController.getGameBoardView(),
                             this::showMainMenu,
@@ -458,6 +472,8 @@ public class MainMenuController {
                     // 2) plateau selon la forme (rectangle / carré)
                     int rows = config.getRows();
                     int cols = config.getCols();
+                    // If you want to manage end with GameController
+                    // gameController.handleGame(this::showMainMenu);
 
                     RectangleBoard board;
                     if ("SQUARE".equals(config.getShape())) {
@@ -578,6 +594,13 @@ public class MainMenuController {
 
     // ========== RÈGLES ==========
 
+
+    public void openSettings() { /* todo later */ }
+
+    /**
+     * <h3>showRules</h3>
+     * Show the rules in the main menu
+     */
     public void showRules() {
         System.out.println("Je suis dans : ÉCRAN DES RÈGLES");
 
