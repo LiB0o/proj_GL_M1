@@ -119,47 +119,60 @@ public class GameController {
      * @param onFinish: Callback function executed when game ends (typically returns to main menu)
      */
     public void handleGame(Runnable onFinish) {
-        // Get all cell labels from the visual board
+        // En mode VS BOT, on ne branche pas les clics ici.
+        // C'est le contrôleur PvsBotController qui gère la logique des tours.
+        if (vsBot) {
+            return;
+        }
+
+        // Récupère toutes les cases de la vue
         Label[][] cells = gameBoardView.getCells();
-        // Get board dimensions (rows and columns)
+        // Dimensions du plateau
         int rows = game.getGameBoard().getRow();
         int cols = game.getGameBoard().getColumn();
-        // Loop through all cells to attach click handlers
+
+        // On attache un handler de clic sur chaque case
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                // Capture row and column indices for lambda expression
-                final int r = i, c = j;
-                // Attach mouse click event listener to each cell
-                cells[i][j].setOnMouseClicked(event -> {
-                    // Ignore clicks if game has already ended
-                    if (ended) return; // si déjà fini, ignorer
-                    // Execute the current player's turn at position (r, c)
-                    boolean test =   game.playTurn(r, c);// <-- ton API actuelle (orthographe assumée)
-                    // Update the visual board to reflect the new game state
-                    if (!test) return;
+                final int r = i;
+                final int c = j;
 
+                cells[i][j].setOnMouseClicked(event -> {
+                    // Si la partie est déjà finie, on ignore
+                    if (ended) return;
+
+                    // On joue le coup
+                    boolean played = game.playTurn(r, c);
+                    if (!played) {
+                        // Coup invalide (case déjà prise, etc.)
+                        return;
+                    }
+
+                    // On met à jour l'affichage en fonction de l'état du modèle
                     gameBoardView.update(game.getGameBoard(), game.getCurrentPlayer().getSymbol());
-                    System.out.println("theEnd = "+this.game.getEnd());
+                    System.out.println("theEnd = " + this.game.getEnd());
+
+                    // Vérifie victoire
                     if (game.getEnd()) {
-                        // Display end game popup and execute finish callback
-                        // Set flag to prevent further moves
                         ended = true;
                         showEndPopup(onFinish, this.game.getCurrentPlayer(), ended);
                         return;
                     }
-                    if(!game.getEnd() && game.allCaseFilled()){
+
+                    // Vérifie égalité (plateau plein)
+                    if (!game.getEnd() && game.allCaseFilled()) {
                         showEndPopup(onFinish, this.game.getCurrentPlayer(), ended);
                         return;
-
                     }
-                    //swap player trick
-                    // active the current player
+
+                    // Sinon, on passe au joueur suivant
                     this.game.swap();
                     this.gameBoardView.setActivePlayer(this.game.getCurrentPlayer());
                 });
             }
         }
     }
+
 
     /**
      * Displays an information popup when the game ends and executes the finish callback.
@@ -213,6 +226,23 @@ public class GameController {
     public Game getGame() {
         return game;
     }
+    /**
+     * Force la vue à se synchroniser avec l'état actuel du modèle (GameBoard).
+     * À utiliser après un chargement de partie.
+     */
+    public void refreshViewFromModel() {
+        if (game == null || gameBoardView == null) {
+            return;
+        }
+
+        // Redessine tout le plateau à partir du GameBoard actuel
+        gameBoardView.update(game.getGameBoard(), game.getCurrentPlayer().getSymbol());
+
+        // Met en avant le joueur courant (celui dont c'est le tour)
+        gameBoardView.setActivePlayer(game.getCurrentPlayer());
+    }
+
+
 
 
 }

@@ -9,11 +9,11 @@ import java.util.List;
  *  - board state
  *  - players (names + symbols)
  *  - current player
- *  - extra metadata: save name, mode, bot difficulty, board size, winCondition, timestamp
+ *  - metadata: save name, mode, bot difficulty, board size, winCondition, timestamp
  */
 public class GameData {
 
-    // === ÉTAT DU JEU (déjà présent) ===
+    // === ÉTAT DU JEU (board + joueurs) ===
     private List<CellData> board;
     private String player1Name;
     private String player2Name;
@@ -21,136 +21,56 @@ public class GameData {
     private String player1Symbol;
     private String player2Symbol;
 
-    // === NOUVEAUX CHAMPS (métadonnées) ===
-    /** Nom de la sauvegarde choisi par l'utilisateur */
-    private String saveName;
+    // === MÉTADONNÉES ===
+    private String saveName;       // Nom visible dans le menu
+    private String mode;           // PVP, PVBOT, CUSTOM_PVP, CUSTOM_PVBOT
+    private String botDifficulty;  // niveau bot (float string) ou null
+    private Integer rows;          // nb lignes
+    private Integer cols;          // nb colonnes
+    private Integer winCondition;  // nb symboles alignés nécessaires
+    private String savedAt;        // timestamp
 
-    /** Mode de jeu (PVP, PVBOT, CUSTOM_PVP, CUSTOM_PVBOT, etc.) */
-    private String mode;
+    public GameData() {}
 
-    /** Niveau / difficulté du bot (Easy, Medium, Hard, …) ou null si pas de bot */
-    private String botDifficulty;
+    // BOARD
+    public List<CellData> getBoard() { return board; }
+    public void setBoard(List<CellData> board) { this.board = board; }
 
-    /** Nombre de lignes du plateau */
-    private Integer rows;
+    // PLAYERS
+    public String getPlayer1Name() { return player1Name; }
+    public void setPlayer1Name(String player1Name) { this.player1Name = player1Name; }
 
-    /** Nombre de colonnes du plateau */
-    private Integer cols;
+    public String getPlayer2Name() { return player2Name; }
+    public void setPlayer2Name(String player2Name) { this.player2Name = player2Name; }
 
-    /** Nombre de symboles alignés pour gagner */
-    private Integer winCondition;
+    public String getCurrentPlayerName() { return currentPlayerName; }
+    public void setCurrentPlayerName(String currentPlayerName) { this.currentPlayerName = currentPlayerName; }
 
-    /** Date/heure de la sauvegarde au format ISO (ex: 2025-12-02T10:15:30) */
-    private String savedAt;
+    public String getPlayer1Symbol() { return player1Symbol; }
+    public void setPlayer1Symbol(String player1Symbol) { this.player1Symbol = player1Symbol; }
 
-    public GameData() {
-    }
+    public String getPlayer2Symbol() { return player2Symbol; }
+    public void setPlayer2Symbol(String player2Symbol) { this.player2Symbol = player2Symbol; }
 
-    // ===== getters / setters existants =====
+    // METADATA
+    public String getSaveName() { return saveName; }
+    public void setSaveName(String saveName) { this.saveName = saveName; }
 
-    public List<CellData> getBoard() {
-        return board;
-    }
+    public String getMode() { return mode; }
+    public void setMode(String mode) { this.mode = mode; }
 
-    public void setBoard(List<CellData> board) {
-        this.board = board;
-    }
+    public String getBotDifficulty() { return botDifficulty; }
+    public void setBotDifficulty(String botDifficulty) { this.botDifficulty = botDifficulty; }
 
-    public String getPlayer1Name() {
-        return player1Name;
-    }
+    public Integer getRows() { return rows; }
+    public void setRows(Integer rows) { this.rows = rows; }
 
-    public void setPlayer1Name(String player1Name) {
-        this.player1Name = player1Name;
-    }
+    public Integer getCols() { return cols; }
+    public void setCols(Integer cols) { this.cols = cols; }
 
-    public String getPlayer2Name() {
-        return player2Name;
-    }
+    public Integer getWinCondition() { return winCondition; }
+    public void setWinCondition(Integer winCondition) { this.winCondition = winCondition; }
 
-    public void setPlayer2Name(String player2Name) {
-        this.player2Name = player2Name;
-    }
-
-    public String getCurrentPlayerName() {
-        return currentPlayerName;
-    }
-
-    public void setCurrentPlayerName(String currentPlayerName) {
-        this.currentPlayerName = currentPlayerName;
-    }
-
-    public String getPlayer1Symbol() {
-        return player1Symbol;
-    }
-
-    public void setPlayer1Symbol(String player1Symbol) {
-        this.player1Symbol = player1Symbol;
-    }
-
-    public String getPlayer2Symbol() {
-        return player2Symbol;
-    }
-
-    public void setPlayer2Symbol(String player2Symbol) {
-        this.player2Symbol = player2Symbol;
-    }
-
-    // ===== nouveaux getters / setters =====
-
-    public String getSaveName() {
-        return saveName;
-    }
-
-    public void setSaveName(String saveName) {
-        this.saveName = saveName;
-    }
-
-    public String getMode() {
-        return mode;
-    }
-
-    public void setMode(String mode) {
-        this.mode = mode;
-    }
-
-    public String getBotDifficulty() {
-        return botDifficulty;
-    }
-
-    public void setBotDifficulty(String botDifficulty) {
-        this.botDifficulty = botDifficulty;
-    }
-
-    public Integer getRows() {
-        return rows;
-    }
-
-    public void setRows(Integer rows) {
-        this.rows = rows;
-    }
-
-    public Integer getCols() {
-        return cols;
-    }
-
-    public void setCols(Integer cols) {
-        this.cols = cols;
-    }
-
-    public Integer getWinCondition() {
-        return winCondition;
-    }
-
-    public void setWinCondition(Integer winCondition) {
-        this.winCondition = winCondition;
-    }
-
-    public String getSavedAt() {
-        return savedAt;
-    }
-
-    public void setSavedAt(String savedAt) {
-        this.savedAt = savedAt;
-    }
+    public String getSavedAt() { return savedAt; }
+    public void setSavedAt(String savedAt) { this.savedAt = savedAt; }
 }

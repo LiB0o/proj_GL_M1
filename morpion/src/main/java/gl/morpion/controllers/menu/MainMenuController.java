@@ -137,65 +137,72 @@ public class MainMenuController {
      * Ici on délègue à SaveManager la recréation du GameController & co.
      */
     private void loadCustomSave(SaveMetadata metadata) {
-        System.out.println("Loading save : " + metadata.getSaveName());
 
-        // 1) On récupère le GameData à partir du fichier via SaveManager
-        GameData data = SaveManager.loadGameData(metadata.getFileName());
+        // 1) Lire le fichier JSON complet
+        GameData data = SaveManager.loadGame(metadata.getFile());
         if (data == null) {
-            System.err.println("Impossible de charger GameData pour " + metadata.getFileName());
-            ModePlaceholderView errorView = new ModePlaceholderView(
-                    "Error while loading save.",
+            ErrorView errorView = new ErrorView(
+                    "Erreur",
+                    "Impossible de charger la sauvegarde.",
                     this::showCustomLoadMenu
             );
             setView(errorView);
             return;
         }
 
-        // 2) On déduit la taille du plateau à partir des cellules (max row/col)
-        int maxRow = 0;
-        int maxCol = 0;
-        if (data.getBoard() != null) {
-            for (CellData cell : data.getBoard()) {
-                if (cell.getRow() > maxRow) maxRow = cell.getRow();
-                if (cell.getCol() > maxCol) maxCol = cell.getCol();
+        // 2) Récupérer mode, taille, winCondition, difficulté du bot
+        GameMode mode = null;
+        try {
+            if (data.getMode() != null) {
+                mode = GameMode.valueOf(data.getMode());
             }
+        } catch (IllegalArgumentException e) {
+            System.err.println("Unknown mode in save: " + data.getMode());
+        }
+        if (mode == null) {
+            mode = GameMode.PVP; // fallback
         }
 
-        int rows = maxRow + 1;
-        int cols = maxCol + 1;
+        int rows = (data.getRows() != null) ? data.getRows() : RectangleBoard.DEFAULT_ROW;
+        int cols = (data.getCols() != null) ? data.getCols() : RectangleBoard.DEFAULT_COLUMN;
+        int winCondition = (data.getWinCondition() != null) ? data.getWinCondition()
+                : Game.getDefaultMaxNumberSymbolAlign();
 
-        if (rows <= 0) rows = 3;  // fallback
-        if (cols <= 0) cols = 3;
+        // On met à jour la win condition globale
+        Game.setDefaultMaxNumberSymbolAlign(winCondition);
 
-        // 3) On reconstruit un RectangleBoard avec cette taille
+        // 3) Recréer le plateau
         RectangleBoard board = new RectangleBoard(rows, cols);
 
-        // 4) On pose les symboles sur le plateau
+        // 4) Créer les Symbol (X / O)
+        Symbol cross = new Symbol(
+                getClass().getResource("/gl/morpion/croix.jpg").toExternalForm(),
+                TypeOfSymbol.CROSS
+        );
+        Symbol circle = new Symbol(
+                getClass().getResource("/gl/morpion/cercle.png").toExternalForm(),
+                TypeOfSymbol.CIRCLE
+        );
+
+        // 5) Replacer les symboles sur le plateau à partir de board[]
         if (data.getBoard() != null) {
             for (CellData cell : data.getBoard()) {
+                String sym = cell.getSymbol();
+                Symbol s = null;
 
-                // ⚠️ ADAPTE ICI le nom du getter si besoin :
-                // si dans CellData tu as getSymbol(), c'est parfait ;
-                // sinon ouvre CellData.java et remplace par le bon nom.
-                String symbolCode = cell.getSymbol();
-
-                Symbol s = createSymbolFromCode(symbolCode);
+                if ("croix.jpg".equals(sym)) s = cross;
+                if ("cercle.png".equals(sym)) s = circle;
                 if (s == null) continue;
 
                 int r = cell.getRow();
                 int c = cell.getCol();
                 if (r < 0 || r >= rows || c < 0 || c >= cols) continue;
 
-                // 🔹 Ici on appelle une méthode utilitaire sur RectangleBoard
-                //    à TOI de l’implémenter (cf. étape 3) :
                 board.setSymbolAt(r, c, s);
             }
         }
 
-        // 5) On reconstruit les joueurs (simplifié : on ignore le bot pour l’instant)
-        Symbol cross = createSymbolFromCode("X");
-        Symbol circle = createSymbolFromCode("O");
-
+        // 6) Recréer les joueurs
         String p1Name = (data.getPlayer1Name() != null && !data.getPlayer1Name().isBlank())
                 ? data.getPlayer1Name()
                 : "Player 1";
@@ -205,23 +212,77 @@ public class MainMenuController {
                 : "Player 2";
 
         Player p1 = new Player(p1Name, 0, cross);
-        Player p2 = new Player(p2Name, 0, circle);
+        Player p2;
 
-        // 6) Contrôleur de jeu en mode PVP "simple" avec ce plateau reconstruit
-        GameController controller = new GameController(p1, p2, board);
+        boolean vsBot = (mode == GameMode.PVBOT || mode == GameMode.CUSTOM_PVBOT);
+        if (vsBot) {
+            float diff = 1.0f;
+            if (data.getBotDifficulty() != null) {
+                try {
+                    diff = Float.parseFloat(data.getBotDifficulty());
+                } catch (Exception ignored) {
+                    System.err.println("Invalid botDifficulty: " + data.getBotDifficulty());
+                }
+            }
 
+            p2 = new BotPlayer(
+                    p2Name,
+                    0,
+                    diff,                 // 🔥 difficulté du bot restaurée
+                    circle,
+                    winCondition,
+                    board.useCase        // cases jouables pour l'IA
+            );
+        } else {
+            p2 = new Player(p2Name, 0, circle);
+        }
+
+        // 7) Créer le GameController correct selon le mode (vsBot ou non)
+        GameController controller;
+        if (vsBot && p2 instanceof BotPlayer) {
+            controller = new GameController(p1, (BotPlayer) p2, true, this::showMainMenu, board);
+        } else {
+            controller = new GameController(p1, p2, board);
+        }
+
+        // 8) Remettre le bon joueur courant grâce à currentPlayerName
+        try {
+            Game g = controller.getGame();
+            if (g != null && data.getCurrentPlayerName() != null) {
+                String cur = data.getCurrentPlayerName();
+
+                if (cur.equals(p1.getName())) {
+                    g.setCurrentPlayer(p1);
+                } else if (cur.equals(p2.getName())) {
+                    g.setCurrentPlayer(p2);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Could not restore current player: " + e.getMessage());
+        }
+
+        // 9) Créer la vue de jeu avec menu + infos de sauvegarde
         GameBoardWithMenuView view = new GameBoardWithMenuView(
                 controller.getGameBoardView(),
                 this::showMainMenu,
                 controller,
-                GameMode.PVP,                    // pour l’instant on traite comme un PVP générique
-                Game.getDefaultMaxNumberSymbolAlign(),   // winCondition par défaut
-                null                             // pas de bot pour l’instant
+                mode,
+                winCondition,
+                data.getBotDifficulty()
         );
 
-        controller.handleGame(this::showMainMenu);
+        // 🔥 10) Très important : brancher handleGame **uniquement** pour le PVP
+        if (!vsBot || !(p2 instanceof BotPlayer)) {
+            // Mode PVP → on utilise le contrôleur générique
+            controller.handleGame(this::showMainMenu);
+        }
+        // Mode VS BOT → c'est le PvsBotController créé dans le constructeur
+        // qui gère déjà les clics + IA
+
         setView(view);
     }
+
+
 
     // ========== MODE PLAYER vs PLAYER ==========
 
