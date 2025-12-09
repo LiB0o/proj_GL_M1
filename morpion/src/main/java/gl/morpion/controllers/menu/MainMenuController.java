@@ -1,13 +1,7 @@
 package gl.morpion.controllers.menu;
 
 import gl.morpion.controllers.GameController;
-import gl.morpion.model.BotPlayer;
-import gl.morpion.model.Game;
-import gl.morpion.model.GameMode;
-import gl.morpion.model.Player;
-import gl.morpion.model.RectangleBoard;
-import gl.morpion.model.Symbol;
-import gl.morpion.model.TypeOfSymbol;
+import gl.morpion.model.*;
 import gl.morpion.persistence.SaveManager;
 import gl.morpion.persistence.SaveMetadata;
 import gl.morpion.view.GameBoardView;
@@ -137,13 +131,14 @@ public class MainMenuController {
      * Ici on délègue à SaveManager la recréation du GameController & co.
      */
     private void loadCustomSave(SaveMetadata metadata) {
+        System.out.println("Loading save : " + metadata.getSaveName());
 
-        // 1) Lire le fichier JSON complet
-        GameData data = SaveManager.loadGame(metadata.getFile());
+        // 1) Charger GameData complet à partir du fichier
+        GameData data = SaveManager.loadGameData(metadata.getFileName());
         if (data == null) {
-            ErrorView errorView = new ErrorView(
-                    "Erreur",
-                    "Impossible de charger la sauvegarde.",
+            System.err.println("Impossible de charger GameData pour " + metadata.getFileName());
+            ModePlaceholderView errorView = new ModePlaceholderView(
+                    "Error while loading save.",
                     this::showCustomLoadMenu
             );
             setView(errorView);
@@ -220,6 +215,7 @@ public class MainMenuController {
             if (data.getBotDifficulty() != null) {
                 try {
                     diff = Float.parseFloat(data.getBotDifficulty());
+                    System.out.println("Bot difficulty---------------------: " + diff);
                 } catch (Exception ignored) {
                     System.err.println("Invalid botDifficulty: " + data.getBotDifficulty());
                 }
@@ -261,6 +257,18 @@ public class MainMenuController {
             System.err.println("Could not restore current player: " + e.getMessage());
         }
 
+        // 8bis) 🔁 Resynchroniser le cerveau du bot avec le plateau chargé
+        if (vsBot && p2 instanceof BotPlayer) {
+            BotPlayer bot = (BotPlayer) p2;
+            Game g = controller.getGame();
+            GameBoard gb = g.getGameBoard();
+
+            bot.resyncBoardViewFromBoard(gb, p1.getSymbol());
+        }
+
+        // 🔄 Synchroniser la vue avec le plateau chargé
+        controller.refreshViewFromModel();
+
         // 9) Créer la vue de jeu avec menu + infos de sauvegarde
         GameBoardWithMenuView view = new GameBoardWithMenuView(
                 controller.getGameBoardView(),
@@ -271,13 +279,11 @@ public class MainMenuController {
                 data.getBotDifficulty()
         );
 
-        // 🔥 10) Très important : brancher handleGame **uniquement** pour le PVP
+        // ⚠️ En mode BOT, handleGame ne fait rien (early return),
+        // mais si tu veux être ultra propre, tu peux conditionner :
         if (!vsBot || !(p2 instanceof BotPlayer)) {
-            // Mode PVP → on utilise le contrôleur générique
             controller.handleGame(this::showMainMenu);
         }
-        // Mode VS BOT → c'est le PvsBotController créé dans le constructeur
-        // qui gère déjà les clics + IA
 
         setView(view);
     }

@@ -550,6 +550,43 @@ public Pair<Integer, Integer> getMaxValue(){
         if (winCondition > 8) winCondition = 8;
         this.win_condition = winCondition;
     }
+    /**
+     * Resynchronise le "cerveau" du bot (boardView) avec un plateau déjà rempli.
+     * À utiliser après un chargement de partie.
+     *
+     * @param board       plateau courant (chargé depuis la sauvegarde)
+     * @param humanSymbol symbole du joueur humain (adversaire du bot)
+     */
+    public void resyncBoardViewFromBoard(GameBoard board, Symbol humanSymbol) {
+        if (board == null || board.useCase == null) {
+            return;
+        }
+
+        // 1) On repart d'un boardView propre basé sur les cases jouables
+        this.boardView.clear();
+        setBotBoard(board.useCase);  // remet toutes les cases jouables à 1.0f
+
+        Symbol botSymbol = this.getSymbol();
+
+        // 2) Pour chaque case jouée sur le plateau :
+        //    - si c'est le symbole du bot -> symbolPutByBot
+        //    - si c'est le symbole de l'humain -> symbolPutByPlayer
+        for (Pair<Integer, Integer> pos : board.useCase) {
+            int r = pos.getKey();
+            int c = pos.getValue();
+            Symbol s = board.getSymbolInCase(r, c);
+            if (s == null) continue;
+
+            if (s == botSymbol) {
+                symbolPutByBot(pos);
+            } else if (s == humanSymbol) {
+                symbolPutByPlayer(pos);
+            }
+        }
+        // Pas obligé de refaire computeAllValues(), symbolPutByBot / symbolPutByPlayer
+        // recalculent déjà les voisins.
+    }
+
 
 
 }
