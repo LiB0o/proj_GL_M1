@@ -19,6 +19,10 @@ import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import gl.morpion.persistence.*;
+import gl.morpion.audio.AudioManager;
+import gl.morpion.settings.SettingsModel;
+import gl.morpion.view.menu.SettingsView;
+
 
 
 import java.util.List;
@@ -31,6 +35,7 @@ public class MainMenuController {
 
     private final Stage stage;
     private final StackPane root;   // 🔹 conteneur racine de la Scene unique
+    private final SettingsModel settings = SettingsModel.load();
 
     private static final int WIDTH = 1200;
     private static final int HEIGHT = 800;
@@ -89,10 +94,6 @@ public class MainMenuController {
     }
 
 
-
-    public void openSettings() {
-        // à implémenter plus tard
-    }
 
     public void toggleLanguage(String code) {
         // à implémenter plus tard
@@ -595,7 +596,13 @@ public class MainMenuController {
     // ========== RÈGLES ==========
 
 
-    public void openSettings() { /* todo later */ }
+    public void openSettings() {
+        // (optionnel) petit son de clic si tu veux
+        // AudioManager.playClick();
+
+        SettingsView view = new SettingsView(this, settings);
+        setView(view);
+    }
 
     /**
      * <h3>showRules</h3>
@@ -606,6 +613,23 @@ public class MainMenuController {
 
         RulesView view = new RulesView(this::showMainMenu);
         setView(view);
+    }
+    public void applyResolution(String resolution) {
+        try {
+            String[] d = resolution.split("x");
+            double w = Double.parseDouble(d[0]);
+            double h = Double.parseDouble(d[1]);
+
+            // IMPORTANT : il faut que "stage" existe dans ton controller
+            stage.setWidth(w);
+            stage.setHeight(h);
+
+        } catch (Exception e) {
+            System.err.println("Bad resolution: " + resolution);
+        }
+    }
+    public void applyFullscreen(boolean fullscreen) {
+        stage.setFullScreen(fullscreen);
     }
 
 

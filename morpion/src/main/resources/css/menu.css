@@ -173,3 +173,39 @@
 .form-card .check-box {
     -fx-text-fill: #e8f6ff; /* blanc bleu comme les autres */
 }
+/* ===============================
+   Settings – ChoiceBox Resolution
+   =============================== */
+
+/* Boîte fermée */
+.form-card .choice-box {
+    -fx-background-color: rgba(255,255,255,0.10);
+    -fx-border-color: rgba(120, 220, 255, 0.45);
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-mark-color: #e8f6ff; /* flèche */
+}
+
+/* Texte sélectionné */
+.form-card .choice-box .label {
+    -fx-text-fill: #e8f6ff;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+/* Menu déroulant */
+.form-card .choice-box .context-menu {
+    -fx-background-color: #0a0f14;
+    -fx-border-color: rgba(120, 220, 255, 0.45);
+}
+
+/* Items */
+.form-card .choice-box .menu-item .label {
+    -fx-text-fill: #e8f6ff;
+    -fx-font-size: 14px;
+}
+
+/* Hover item */
+.form-card .choice-box .menu-item:focused {
+    -fx-background-color: rgba(120, 220, 255, 0.25);
+}
