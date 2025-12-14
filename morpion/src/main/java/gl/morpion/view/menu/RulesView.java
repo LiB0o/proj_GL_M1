@@ -1,5 +1,5 @@
 package gl.morpion.view.menu;
-
+import gl.morpion.audio.SoundFX;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -114,6 +114,7 @@ public class RulesView extends StackPane {
         back.setOnAction(e -> {
             if (onBack != null) onBack.run();
         });
+        SoundFX.attachReturn(back);
 
         BorderPane layout = new BorderPane();
         layout.setTop(back);

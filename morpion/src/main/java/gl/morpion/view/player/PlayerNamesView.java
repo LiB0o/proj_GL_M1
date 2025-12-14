@@ -1,5 +1,6 @@
 package gl.morpion.view.player;
 
+import gl.morpion.audio.SoundFX;
 import gl.morpion.model.Game;
 import gl.morpion.model.Player;
 import gl.morpion.model.Symbol;
@@ -92,6 +93,7 @@ public class PlayerNamesView extends BorderPane {
                 onBack.run();
             }
         });
+        SoundFX.attachReturn(backBtn);
 
         // Carte centrale (look propre + espacement)
         VBox content = new VBox(12,

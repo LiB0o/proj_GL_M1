@@ -1,5 +1,5 @@
 package gl.morpion.view.menu;
-
+import gl.morpion.audio.SoundFX;
 import gl.morpion.controllers.GameController;
 import gl.morpion.model.Game;
 import gl.morpion.model.GameMode;
@@ -86,6 +86,7 @@ public class GameBoardWithMenuView extends StackPane {
                 this.showAskSavePopup(onBack);
             }
         });
+        SoundFX.attachReturn(backButton);
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);

@@ -16,7 +16,8 @@ public class AudioManager {
 
     // ✅ SFX clic (UN SEUL son pour tous les boutons)
     private static final String CLICK_SFX = "/audio/play.wav";
-
+    private static final String QUIT_SFX = "/audio/quit.wav";
+    private static final String RETURN_SFX = "/audio/return.wav";
     // optionnel : musique du menu
     private static final String MENU_MUSIC = "/audio/menu.mp3";
 
@@ -36,6 +37,12 @@ public class AudioManager {
         musicPlayer.setCycleCount(MediaPlayer.INDEFINITE);
         applyMusicVolume();
         musicPlayer.play();
+    }
+    public static void playQuit() {
+        playSfx(QUIT_SFX);
+    }
+    public static void playReturn() {
+        playSfx(RETURN_SFX);
     }
 
     public static void stopMusic() {

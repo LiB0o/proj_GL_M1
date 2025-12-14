@@ -1,5 +1,5 @@
 package gl.morpion.view.menu;
-
+import gl.morpion.audio.SoundFX;
 import gl.morpion.persistence.SaveManager;
 import gl.morpion.persistence.SaveMetadata;
 import javafx.geometry.Insets;
@@ -69,6 +69,7 @@ public class SaveListView extends BorderPane {
         backBtn.setOnAction(e -> {
             if (onBack != null) onBack.run();
         });
+        SoundFX.attachReturn(backBtn);
 
         HBox buttons = new HBox(12, playBtn, deleteBtn, backBtn);
         buttons.setAlignment(Pos.CENTER);

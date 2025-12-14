@@ -1,5 +1,5 @@
 package gl.morpion.view.menu;
-
+import gl.morpion.audio.SoundFX;
 import gl.morpion.audio.AudioManager;
 import gl.morpion.controllers.menu.MainMenuController;
 import gl.morpion.settings.SettingsModel;
@@ -136,6 +136,7 @@ public class SettingsView extends StackPane {
         Button back = new Button("Back");
         back.getStyleClass().add("big-button");
         back.setOnAction(e -> controller.showMainMenu());
+        SoundFX.attachReturn(back);
 
         // ===== Card =====
         VBox card = new VBox(16,

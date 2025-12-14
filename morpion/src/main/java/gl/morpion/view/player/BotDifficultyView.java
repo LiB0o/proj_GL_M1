@@ -1,4 +1,5 @@
 package gl.morpion.view.player;
+import gl.morpion.audio.SoundFX;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -39,6 +40,8 @@ public class BotDifficultyView extends BorderPane {
         Button backBtn = new Button("Back");
         backBtn.getStyleClass().add("pill-button");
         backBtn.setOnAction(e -> onBack.run());
+        SoundFX.attachReturn(backBtn);
+
 
         VBox box = new VBox(14, title, easyBtn, normalBtn, hardBtn, backBtn);
         box.setAlignment(Pos.CENTER);

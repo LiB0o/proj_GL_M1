@@ -1,5 +1,5 @@
 package gl.morpion.view.menu;
-
+import gl.morpion.audio.SoundFX;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -57,7 +57,7 @@ public class CustomView extends StackPane {
         back.setOnAction(e -> {
             if (onBack != null) onBack.run();
         });
-
+        SoundFX.attachReturn(back);
         VBox box = new VBox(16, title, subMsg, newGameBtn, loadBtn, back);
         box.setAlignment(Pos.CENTER);
         box.setPadding(new Insets(16));

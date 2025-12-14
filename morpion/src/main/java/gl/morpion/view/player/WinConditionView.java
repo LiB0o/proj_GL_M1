@@ -1,5 +1,6 @@
 package gl.morpion.view.player;
 
+import gl.morpion.audio.SoundFX;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -68,6 +69,7 @@ public class WinConditionView extends BorderPane {
         backBtn.setOnAction(e -> {
             if (onBack != null) onBack.run();
         });
+        SoundFX.attachReturn(backBtn);
 
         // --------- Layout principal ----------
         VBox content = new VBox(12,

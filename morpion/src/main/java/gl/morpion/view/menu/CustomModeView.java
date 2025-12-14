@@ -1,5 +1,5 @@
 package gl.morpion.view.menu;
-
+import gl.morpion.audio.SoundFX;
 import gl.morpion.model.CustomGameConfig;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -151,6 +151,8 @@ public class CustomModeView extends BorderPane {
         backBtn.setOnAction(e -> {
             if (onBack != null) onBack.run();
         });
+        SoundFX.attachReturn(backBtn);
+
 
         VBox content = new VBox(
                 16,

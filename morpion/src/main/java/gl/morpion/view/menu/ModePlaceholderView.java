@@ -1,5 +1,5 @@
 package gl.morpion.view.menu;
-
+import gl.morpion.audio.SoundFX;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -50,6 +50,7 @@ public class ModePlaceholderView extends StackPane {
         );
         // Attach click handler that executes the onBack callback
         back.setOnAction(e -> { if (onBack != null) onBack.run(); });
+        SoundFX.attachReturn(back);
 
         // Create vertical box to center message and button with 16px spacing
         VBox box = new VBox(16, msg, back);

@@ -78,7 +78,25 @@ public class MainMenuView extends StackPane {
         vsBot    = big("Player vs Bots",   controller::startChooseBotDifficulty);
         vsPlayer = big("Player vs Player", controller::startModePvp);
         custom   = big("Custom",           controller::showCustomEntry);
-        QUIT     = big("QUIT",              () -> controller.showMode("QUIT"));
+        QUIT = new Button("QUIT");
+        QUIT.getStyleClass().add("big-button");
+
+        QUIT.setOnAction(e -> {
+            AudioManager.playQuit();  // 🔊 son spécial QUIT
+
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Quit");
+            alert.setHeaderText("Exit the game?");
+            alert.setContentText("Are you sure you want to quit?");
+
+            var result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                javafx.application.Platform.exit();
+                System.exit(0);
+            }
+        });
+
+
 
         VBox btnCol = new VBox(14, vsBot, vsPlayer, custom, QUIT);
         btnCol.setAlignment(Pos.CENTER);
