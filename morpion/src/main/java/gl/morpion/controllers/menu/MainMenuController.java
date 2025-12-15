@@ -23,41 +23,74 @@ import gl.morpion.audio.AudioManager;
 import gl.morpion.settings.SettingsModel;
 import gl.morpion.view.menu.SettingsView;
 
-
-
 import java.util.List;
 
 /**
- * <h1>controller MainMenuController</h1>
- * <h2>Elements of MainMenuController</h2>
+ * Main menu controller for the application.
+ * <p>
+ * This controller manages navigation within a single JavaFX {@link Stage} and a single
+ * root {@link StackPane}. It swaps views in the same scene to display:
+ * </p>
+ * <ul>
+ *     <li>Main menu</li>
+ *     <li>Game modes (PvP, PvBot, Custom)</li>
+ *     <li>Custom mode entry (New / Load)</li>
+ *     <li>Save list and saved game loading</li>
+ *     <li>Rules and Settings screens</li>
+ * </ul>
+ *
+ * <p>
+ * It is responsible for wiring UI views (menu screens) to game creation logic
+ * (creating players, boards, controllers, restoring saved data, etc.).
+ * </p>
  */
 public class MainMenuController {
 
+    /** The main JavaFX stage used by the application. */
     private final Stage stage;
-    private final StackPane root;   // 🔹 conteneur racine de la Scene unique
+
+    /** Root container of the single-scene setup where views are swapped. */
+    private final StackPane root;   // root container for the single Scene
+
+    /** Application settings loaded from persistence (or defaults). */
     private final SettingsModel settings = SettingsModel.load();
 
+    /** Default application width (may be overridden by settings). */
     private static final int WIDTH = 1200;
+
+    /** Default application height (may be overridden by settings). */
     private static final int HEIGHT = 800;
 
-    // nb de symboles alignés pour gagner
+    /** Current number of aligned symbols required to win (used by win-condition selection screens). */
     private int currentWinCondition = Game.getDefaultMaxNumberSymbolAlign();
 
+    /**
+     * Creates a menu controller.
+     *
+     * @param stage the main JavaFX stage
+     * @param root  the root container of the single scene
+     */
     public MainMenuController(Stage stage, StackPane root) {
         this.stage = stage;
         this.root = root;
     }
 
-    // 🔁 Change le contenu de la même Scene
+    /**
+     * Replaces the content of the root container with the given view.
+     *
+     * @param view the new view node to display
+     */
     private void setView(Node view) {
         root.getChildren().setAll(view);
     }
 
-    // ========== MENU PRINCIPAL ==========
+    // ========== MAIN MENU ==========
 
     /**
-     * <h3>showMainMenu</h3>
-     * Show the window of the game
+     * Displays the main menu screen.
+     * <p>
+     * This method creates a {@link MainMenuView} and swaps it into the current scene.
+     * </p>
      */
     public void showMainMenu() {
         System.out.println("Je suis dans : MENU PRINCIPAL");
@@ -67,9 +100,17 @@ public class MainMenuController {
     }
 
     /**
-     * <h3>showMode</h3>
-     * Permit to go to the selected mode or to quit
-     * @param modeName name of the name (PvsP, PvsBot)
+     * Handles a mode selection from the main menu.
+     * <p>
+     * Supported mode names include:
+     * </p>
+     * <ul>
+     *     <li>{@code "QUIT"}: closes the application</li>
+     *     <li>{@code "Custom"}: opens the custom entry screen (New / Load)</li>
+     *     <li>Other values: displays a placeholder view</li>
+     * </ul>
+     *
+     * @param modeName the selected mode name (e.g., "PvsP", "PvsBot", "Custom", "QUIT")
      */
     public void showMode(String modeName) {
         if ("QUIT".equals(modeName)) {
@@ -78,9 +119,9 @@ public class MainMenuController {
             return;
         }
 
-        // 🔹 ICI : quand on clique sur le bouton "Custom"
+        // When clicking the "Custom" button
         if ("Custom".equalsIgnoreCase(modeName)) {
-            // 👉 d’abord l’écran avec "Play a new game / Load a saved game"
+            // First show the entry screen with "Play a new game / Load a saved game"
             showCustomEntry();
             return;
         }
@@ -93,37 +134,52 @@ public class MainMenuController {
         setView(view);
     }
 
-
-
+    /**
+     * Toggles the application language.
+     * <p>
+     * This feature is currently a placeholder.
+     * </p>
+     *
+     * @param code the language code
+     */
     public void toggleLanguage(String code) {
-        // à implémenter plus tard
+        // to be implemented later
     }
 
-    // ========== ÉCRAN D'ENTRÉE MODE CUSTOM (New / Load) ==========
+    // ========== CUSTOM MODE ENTRY SCREEN (New / Load) ==========
 
+    /**
+     * Displays the Custom mode entry screen (New / Load / Back).
+     * <p>
+     * This screen lets the player choose to start a new custom game or load an existing one.
+     * </p>
+     */
     public void showCustomEntry() {
         System.out.println("Je suis dans : CUSTOM ENTRY (New / Load)");
         CustomView view = new CustomView(
-                // New custom game → on lance le flow habituel de config
+                // New custom game: start the configuration flow
                 this::startModeCustom,
-                // Load saved game → ouvre le menu des sauvegardes
+                // Load saved game: open the save list menu
                 this::showCustomLoadMenu,
-                // Back → retour au menu principal
+                // Back: return to main menu
                 this::showMainMenu
         );
         setView(view);
     }
 
     /**
-     * Menu des sauvegardes pour le mode Custom.
-     * Utilise SaveManager.listSaves() et affiche SaveListView.
+     * Displays the save list menu for the Custom mode.
+     * <p>
+     * Uses {@link SaveManager#listSaves()} and displays a {@link SaveListView}.
+     * If there are no saves, a fallback placeholder view is shown.
+     * </p>
      */
     private void showCustomLoadMenu() {
         System.out.println("Je suis dans : MENU DES SAUVEGARDES (Custom)");
 
         List<SaveMetadata> saves = SaveManager.listSaves();
         if (saves == null || saves.isEmpty()) {
-            // petit fallback : message simple si aucune sauvegarde
+            // Fallback message if no saves exist
             ModePlaceholderView empty = new ModePlaceholderView(
                     "No saved games found.",
                     this::showCustomEntry
@@ -134,20 +190,35 @@ public class MainMenuController {
 
         SaveListView view = new SaveListView(
                 saves,
-                this::loadCustomSave,   // quand on clique sur Play
-                this::showCustomEntry   // bouton Back
+                this::loadCustomSave,   // when clicking Play
+                this::showCustomEntry   // Back button
         );
         setView(view);
     }
 
     /**
-     * Chargement d'une sauvegarde Custom sélectionnée dans SaveListView.
-     * Ici on délègue à SaveManager la recréation du GameController & co.
+     * Loads a Custom saved game selected from {@link SaveListView}.
+     * <p>
+     * This method restores the game state from a persisted {@link GameData} instance:
+     * </p>
+     * <ol>
+     *     <li>Loads game data from file</li>
+     *     <li>Restores mode, board size, win condition, and bot difficulty</li>
+     *     <li>Recreates the board and re-applies placed symbols</li>
+     *     <li>Recreates players (human vs human or human vs bot)</li>
+     *     <li>Restores current player and refreshes the view</li>
+     * </ol>
+     *
+     * <p>
+     * Side effects: updates {@link Game#setDefaultMaxNumberSymbolAlign(int)} and swaps the current view.
+     * </p>
+     *
+     * @param metadata metadata describing the save to load
      */
     private void loadCustomSave(SaveMetadata metadata) {
         System.out.println("Loading save : " + metadata.getSaveName());
 
-        // 1) Charger GameData complet à partir du fichier
+        // 1) Load the full GameData from disk
         GameData data = SaveManager.loadGameData(metadata.getFileName());
         if (data == null) {
             System.err.println("Impossible de charger GameData pour " + metadata.getFileName());
@@ -159,7 +230,7 @@ public class MainMenuController {
             return;
         }
 
-        // 2) Récupérer mode, taille, winCondition, difficulté du bot
+        // 2) Restore mode, board size, win condition, and bot difficulty
         GameMode mode = null;
         try {
             if (data.getMode() != null) {
@@ -177,13 +248,13 @@ public class MainMenuController {
         int winCondition = (data.getWinCondition() != null) ? data.getWinCondition()
                 : Game.getDefaultMaxNumberSymbolAlign();
 
-        // On met à jour la win condition globale
+        // Update the global win condition
         Game.setDefaultMaxNumberSymbolAlign(winCondition);
 
-        // 3) Recréer le plateau
+        // 3) Recreate the board
         RectangleBoard board = new RectangleBoard(rows, cols);
 
-        // 4) Créer les Symbol (X / O)
+        // 4) Create symbols (X / O)
         Symbol cross = new Symbol(
                 getClass().getResource("/gl/morpion/croix.jpg").toExternalForm(),
                 TypeOfSymbol.CROSS
@@ -193,7 +264,7 @@ public class MainMenuController {
                 TypeOfSymbol.CIRCLE
         );
 
-        // 5) Replacer les symboles sur le plateau à partir de board[]
+        // 5) Restore placed symbols on the board from board[] data
         if (data.getBoard() != null) {
             for (CellData cell : data.getBoard()) {
                 String sym = cell.getSymbol();
@@ -211,7 +282,7 @@ public class MainMenuController {
             }
         }
 
-        // 6) Recréer les joueurs
+        // 6) Recreate players
         String p1Name = (data.getPlayer1Name() != null && !data.getPlayer1Name().isBlank())
                 ? data.getPlayer1Name()
                 : "Player 1";
@@ -238,16 +309,16 @@ public class MainMenuController {
             p2 = new BotPlayer(
                     p2Name,
                     0,
-                    diff,                 // 🔥 difficulté du bot restaurée
+                    diff,                 // bot difficulty restored
                     circle,
                     winCondition,
-                    board.useCase        // cases jouables pour l'IA
+                    board.useCase        // playable cells for AI
             );
         } else {
             p2 = new Player(p2Name, 0, circle);
         }
 
-        // 7) Créer le GameController correct selon le mode (vsBot ou non)
+        // 7) Create the correct GameController depending on the mode
         GameController controller;
         if (vsBot && p2 instanceof BotPlayer) {
             controller = new GameController(p1, (BotPlayer) p2, true, this::showMainMenu, board);
@@ -255,7 +326,7 @@ public class MainMenuController {
             controller = new GameController(p1, p2, board);
         }
 
-        // 8) Remettre le bon joueur courant grâce à currentPlayerName
+        // 8) Restore the correct current player using currentPlayerName
         try {
             Game g = controller.getGame();
             if (g != null && data.getCurrentPlayerName() != null) {
@@ -271,7 +342,7 @@ public class MainMenuController {
             System.err.println("Could not restore current player: " + e.getMessage());
         }
 
-        // 8bis) 🔁 Resynchroniser le cerveau du bot avec le plateau chargé
+        // 8bis) Resynchronize bot internal state with the loaded board
         if (vsBot && p2 instanceof BotPlayer) {
             BotPlayer bot = (BotPlayer) p2;
             Game g = controller.getGame();
@@ -280,10 +351,10 @@ public class MainMenuController {
             bot.resyncBoardViewFromBoard(gb, p1.getSymbol());
         }
 
-        // 🔄 Synchroniser la vue avec le plateau chargé
+        // Synchronize the view with the loaded model
         controller.refreshViewFromModel();
 
-        // 9) Créer la vue de jeu avec menu + infos de sauvegarde
+        // 9) Create the game view with menu and restored save info
         GameBoardWithMenuView view = new GameBoardWithMenuView(
                 controller.getGameBoardView(),
                 this::showMainMenu,
@@ -293,8 +364,8 @@ public class MainMenuController {
                 data.getBotDifficulty()
         );
 
-        // ⚠️ En mode BOT, handleGame ne fait rien (early return),
-        // mais si tu veux être ultra propre, tu peux conditionner :
+        // In BOT mode, handleGame does nothing (early return),
+        // but if you want to be extra clean, you can condition it:
         if (!vsBot || !(p2 instanceof BotPlayer)) {
             controller.handleGame(this::showMainMenu);
         }
@@ -302,27 +373,37 @@ public class MainMenuController {
         setView(view);
     }
 
+    // ========== PLAYER VS PLAYER MODE ==========
 
-
-    // ========== MODE PLAYER vs PLAYER ==========
-
+    /**
+     * Starts the Player vs Player flow:
+     * <ol>
+     *     <li>Choose win condition</li>
+     *     <li>Enter player names</li>
+     *     <li>Create players and start the game</li>
+     * </ol>
+     *
+     * <p>
+     * Side effects: updates {@link #currentWinCondition} and swaps views in the root container.
+     * </p>
+     */
     public void startModePvp() {
         System.out.println("Je suis dans : ÉCRAN CHOIX NB SYMBOLES (PVP)");
 
         WinConditionView winView = new WinConditionView(
                 currentWinCondition,
                 value -> {
-                    // on mémorise la nouvelle condition de victoire
+                    // Store the new win condition
                     currentWinCondition = value;
 
                     System.out.println("Je suis dans : MODE PLAYER VS PLAYER (NOMS)");
 
-                    // ⇨ maintenant on passe à l'écran pour taper les noms
+                    // Now show the player names screen
                     PlayerNamesView namesView = new PlayerNamesView(
                             (name1, name2) -> {
                                 System.out.println("Je suis dans : MODE PLAYER VS PLAYER (JEU)");
 
-                                // Joueurs avec tes symboles
+                                // Players with symbols
                                 Player p1 = new Player(
                                         name1,
                                         0,
@@ -340,7 +421,7 @@ public class MainMenuController {
                                         )
                                 );
 
-                                // Contrôleur de jeu PVP standard (board par défaut)
+                                // Standard PvP game controller (default board)
                                 GameController gameController = new GameController(p1, p2);
 
                                 GameBoardView boardView = gameController.getGameBoardView();
@@ -349,32 +430,43 @@ public class MainMenuController {
                                         boardView,
                                         this::showMainMenu,
                                         gameController,
-                                        GameMode.PVP,          // 🔹 mode
-                                        currentWinCondition,   // 🔹 nb de symboles choisis
-                                        null                   // 🔹 pas de bot
+                                        GameMode.PVP,          // mode
+                                        currentWinCondition,   // chosen win condition
+                                        null                   // no bot
                                 );
 
-                                // callback de fin → retour au menu
+                                // End callback: return to menu
                                 gameController.handleGame(this::showMainMenu);
 
-                                // on affiche la vue de jeu dans la MÊME scène
+                                // Display the game view in the same scene
                                 setView(gameView);
                             },
-                            this::showMainMenu   // bouton Back depuis PlayerNamesView
+                            this::showMainMenu   // Back button from PlayerNamesView
                     );
 
-                    // on affiche PlayerNamesView dans la même scène
+                    // Display PlayerNamesView in the same scene
                     setView(namesView);
                 },
-                this::showMainMenu   // bouton Back depuis WinConditionView
+                this::showMainMenu   // Back button from WinConditionView
         );
 
-        // on affiche WinConditionView
+        // Display WinConditionView
         setView(winView);
     }
 
-    // ========== MODE PLAYER vs BOT : choix nb symboles & difficulté ==========
+    // ========== PLAYER VS BOT MODE: choose win condition & difficulty ==========
 
+    /**
+     * Starts the "Player vs Bot" flow by letting the user choose:
+     * <ol>
+     *     <li>Win condition</li>
+     *     <li>Bot difficulty</li>
+     * </ol>
+     *
+     * <p>
+     * Once selected, it launches {@link #startModePvsBot(int)} with the chosen win condition.
+     * </p>
+     */
     public void startChooseBotDifficulty() {
         System.out.println("Je suis dans : ÉCRAN CHOIX NB SYMBOLES");
 
@@ -401,15 +493,24 @@ public class MainMenuController {
         setView(winView);
     }
 
-    // ========== MODE PLAYER vs BOT : nom + lancement ==========
+    // ========== PLAYER VS BOT MODE: name + launch ==========
 
+    /**
+     * Starts a Player vs Bot game with the given win condition.
+     * <p>
+     * The user is prompted for the human player name, then a {@link BotPlayer} is created
+     * with the currently selected default difficulty level.
+     * </p>
+     *
+     * @param winCondition the number of aligned symbols required to win
+     */
     public void startModePvsBot(int winCondition) {
         System.out.println("Je suis dans : MODE PLAYER VS BOT (winCondition = " + winCondition + ")");
 
         PlayerNamesView namesView = new PlayerNamesView(
-                true,   // vsBot : un seul champ pour le joueur humain
+                true,   // vsBot: only one input field for the human player
                 (name1, ignored) -> {
-                    // Joueur humain (X)
+                    // Human player (X)
                     Player human = new Player(
                             name1,
                             0,
@@ -419,13 +520,13 @@ public class MainMenuController {
                             )
                     );
 
-                    // Symbole du bot (O)
+                    // Bot symbol (O)
                     Symbol botSymbol = new Symbol(
                             getClass().getResource("/gl/morpion/cercle.png").toExternalForm(),
                             TypeOfSymbol.CIRCLE
                     );
 
-                    // BotPlayer
+                    // Bot player
                     BotPlayer bot = new BotPlayer(
                             "BOT",
                             0,
@@ -438,18 +539,18 @@ public class MainMenuController {
                             ).useCase
                     );
 
-                    // Contrôleur de jeu VS BOT
+                    // VS BOT game controller
                     GameController gameController =
                             new GameController(human, bot, true, this::showMainMenu);
 
-                    // 4. Construct view with menu like in PvP
+                    // Construct the game view with menu (as in PvP)
                     GameBoardWithMenuView gameView = new GameBoardWithMenuView(
                             gameController.getGameBoardView(),
                             this::showMainMenu,
                             gameController,
-                            GameMode.PVBOT,                          // 🔹 mode
-                            winCondition,                            // 🔹 win condition
-                            String.valueOf(BotPlayer.getCurrentDefaultLevel()) // 🔹 difficulté (float → String)
+                            GameMode.PVBOT,                          // mode
+                            winCondition,                            // win condition
+                            String.valueOf(BotPlayer.getCurrentDefaultLevel()) // difficulty (float -> String)
                     );
 
                     setView(gameView);
@@ -460,17 +561,33 @@ public class MainMenuController {
         setView(namesView);
     }
 
-    // ========== MODE CUSTOM ==========
+    // ========== CUSTOM MODE ==========
 
+    /**
+     * Starts the Custom mode configuration flow.
+     * <p>
+     * This method displays {@link CustomModeView} to collect user configuration, then:
+     * </p>
+     * <ul>
+     *     <li>Sets the global win condition</li>
+     *     <li>Creates a board (square or rectangle)</li>
+     *     <li>Creates players (PvP or PvBot)</li>
+     *     <li>Creates the corresponding {@link GameController} and view</li>
+     * </ul>
+     *
+     * <p>
+     * Side effects: updates {@link Game#setDefaultMaxNumberSymbolAlign(int)} and swaps views.
+     * </p>
+     */
     public void startModeCustom() {
         System.out.println("Je suis dans : MODE CUSTOM (CONFIG NOUVELLE PARTIE)");
 
         CustomModeView view = new CustomModeView(
                 config -> {
-                    // 1) win condition globale
+                    // 1) Global win condition
                     Game.setDefaultMaxNumberSymbolAlign(config.getWinCondition());
 
-                    // 2) plateau selon la forme (rectangle / carré)
+                    // 2) Board depending on the shape (rectangle / square)
                     int rows = config.getRows();
                     int cols = config.getCols();
                     // If you want to manage end with GameController
@@ -484,7 +601,7 @@ public class MainMenuController {
                         board = new RectangleBoard(rows, cols);
                     }
 
-                    // 3) symboles
+                    // 3) Symbols
                     Symbol cross = new Symbol(
                             getClass().getResource("/gl/morpion/croix.jpg").toExternalForm(),
                             TypeOfSymbol.CROSS
@@ -495,7 +612,7 @@ public class MainMenuController {
                     );
 
                     if (!config.isVsBot()) {
-                        // ===== MODE CUSTOM PVP =====
+                        // ===== CUSTOM PvP MODE =====
                         Player p1 = new Player(config.getPlayer1Name(), 0, cross);
                         Player p2 = new Player(config.getPlayer2Name(), 0, circle);
 
@@ -506,16 +623,16 @@ public class MainMenuController {
                                 boardView,
                                 this::showMainMenu,
                                 gameController,
-                                GameMode.CUSTOM_PVP,           // 🔹 mode custom PVP
-                                config.getWinCondition(),      // 🔹 win condition custom
-                                null                           // 🔹 pas de bot
+                                GameMode.CUSTOM_PVP,           // custom PvP mode
+                                config.getWinCondition(),      // custom win condition
+                                null                           // no bot
                         );
 
                         gameController.handleGame(this::showMainMenu);
                         setView(gameView);
 
                     } else {
-                        // ===== MODE CUSTOM VS BOT =====
+                        // ===== CUSTOM VS BOT MODE =====
                         Player human = new Player(config.getPlayer1Name(), 0, cross);
 
                         String botName = config.getPlayer2Name();
@@ -525,23 +642,23 @@ public class MainMenuController {
                         String finalBotName = botName;
                         int winCond = config.getWinCondition();
 
-                        // 👉 On affiche l'écran de difficulté du bot
+                        // Display bot difficulty selection screen
                         BotDifficultyView diffView = new BotDifficultyView(
                                 difficultyKey -> {
-                                    // 1) on change le niveau global de l'IA
+                                    // 1) Update global AI level
                                     BotPlayer.changeLevel(difficultyKey);
 
-                                    // 2) on crée le Bot avec CE niveau
+                                    // 2) Create the bot with this level
                                     BotPlayer bot = new BotPlayer(
                                             finalBotName,
                                             0,
                                             BotPlayer.getCurrentDefaultLevel(),
                                             circle,
                                             winCond,
-                                            finalBoard.useCase   // cases jouables pour l'IA
+                                            finalBoard.useCase   // playable cells for AI
                                     );
 
-                                    // 3) on lance la partie custom VS BOT
+                                    // 3) Start the custom VS BOT game
                                     GameController gameController =
                                             new GameController(human, bot, true, this::showMainMenu, finalBoard);
 
@@ -551,25 +668,39 @@ public class MainMenuController {
                                             boardView,
                                             this::showMainMenu,
                                             gameController,
-                                            GameMode.CUSTOM_PVBOT,                    // 🔹 mode custom VS BOT
-                                            winCond,                                  // 🔹 win condition
-                                            String.valueOf(BotPlayer.getCurrentDefaultLevel()) // 🔹 difficulté float → String
+                                            GameMode.CUSTOM_PVBOT,                    // custom VS BOT mode
+                                            winCond,                                  // win condition
+                                            String.valueOf(BotPlayer.getCurrentDefaultLevel()) // difficulty float -> String
                                     );
 
                                     setView(gameView);
                                 },
-                                this::showCustomEntry   // Back → retour à l'écran New / Load
+                                this::showCustomEntry   // Back: return to New / Load entry screen
                         );
 
                         setView(diffView);
                     }
                 },
-                this::showCustomEntry   // Back depuis CustomModeView → retour New / Load
+                this::showCustomEntry   // Back from CustomModeView -> return to New / Load
         );
 
         setView(view);
     }
-    // 🔹 Helper : transforme un code ("X", "O", "CROSS", "CIRCLE") en Symbol avec la bonne image
+
+    // Helper: converts a code ("X", "O", "CROSS", "CIRCLE") into a Symbol with the matching image
+    /**
+     * Creates a {@link Symbol} instance based on a textual code.
+     * <p>
+     * Supported values (case-insensitive) include:
+     * </p>
+     * <ul>
+     *     <li>{@code "X"} or {@code "CROSS"} for the cross symbol</li>
+     *     <li>{@code "O"} or {@code "CIRCLE"} for the circle symbol</li>
+     * </ul>
+     *
+     * @param code the symbol code to convert
+     * @return the created {@link Symbol}, or {@code null} if the code is null or unsupported
+     */
     private Symbol createSymbolFromCode(String code) {
         if (code == null) return null;
 
@@ -592,12 +723,13 @@ public class MainMenuController {
         return null;
     }
 
+    // ========== RULES ==========
 
-    // ========== RÈGLES ==========
-
-
+    /**
+     * Opens the Settings view.
+     */
     public void openSettings() {
-        // (optionnel) petit son de clic si tu veux
+        // (Optional) small click sound if desired
         // AudioManager.playClick();
 
         SettingsView view = new SettingsView(this, settings);
@@ -605,8 +737,7 @@ public class MainMenuController {
     }
 
     /**
-     * <h3>showRules</h3>
-     * Show the rules in the main menu
+     * Displays the rules screen.
      */
     public void showRules() {
         System.out.println("Je suis dans : ÉCRAN DES RÈGLES");
@@ -614,13 +745,22 @@ public class MainMenuController {
         RulesView view = new RulesView(this::showMainMenu);
         setView(view);
     }
+
+    /**
+     * Applies a resolution to the main stage using the format {@code "<width>x<height>"}.
+     * <p>
+     * Example: {@code "1200x800"}.
+     * </p>
+     *
+     * @param resolution resolution string formatted as "WIDTHxHEIGHT"
+     */
     public void applyResolution(String resolution) {
         try {
             String[] d = resolution.split("x");
             double w = Double.parseDouble(d[0]);
             double h = Double.parseDouble(d[1]);
 
-            // IMPORTANT : il faut que "stage" existe dans ton controller
+            // IMPORTANT: the "stage" must exist in this controller
             stage.setWidth(w);
             stage.setHeight(h);
 
@@ -628,9 +768,13 @@ public class MainMenuController {
             System.err.println("Bad resolution: " + resolution);
         }
     }
+
+    /**
+     * Enables or disables fullscreen mode on the main stage.
+     *
+     * @param fullscreen {@code true} to enable fullscreen, {@code false} to disable it
+     */
     public void applyFullscreen(boolean fullscreen) {
         stage.setFullScreen(fullscreen);
     }
-
-
 }

@@ -3,18 +3,21 @@ package gl.morpion.model;
 
 /**
  * <h1>class Symbol</h1>
+ * Represents a game symbol with its visual representation and type.
+ * Each symbol has an image path and a type (CROSS or CIRCLE).
  * <h2>Elements of Symbol</h2>
  */
 public class Symbol {
 
 	/**
 	 * <h3>typeOfSymbol</h3>
-	 * enumtype that permit to separate symbols
+	 * The type of this symbol (CROSS or CIRCLE)
 	 */
 	TypeOfSymbol typeOfSymbol;
+
 	/**
 	 * <h3>image</h3>
-	 * address of the image for the symbol
+	 * Path to the image file representing this symbol
 	 */
 	private String image;
 
@@ -23,16 +26,24 @@ public class Symbol {
 	 */
 
 	/**
-	 *<h3>Symbol</h3>
-	 * constructor of Symbol
-	 * @param image the link toward the image of the symbol for the game
-	 * @param typeSymbol the type od symbol
+	 * <h3>Symbol</h3>
+	 * Creates a new Symbol with specified image and type.
+	 *
+	 * @param image the path to the image file for this symbol
+	 * @param typeSymbol the type of symbol (CROSS or CIRCLE)
 	 */
 	public Symbol(String image, TypeOfSymbol typeSymbol) {
 		this.image = image;
 		this.typeOfSymbol = typeSymbol;
 	}
 
+	/**
+	 * Creates a Symbol from a path string by detecting the symbol type.
+	 * Determines the type based on keywords in the path ("croix" for CROSS, "cercle" for CIRCLE).
+	 *
+	 * @param symbolPath the path to the symbol image
+	 * @return a new Symbol instance, or null if type cannot be determined
+	 */
 	public static Symbol fromString(String symbolPath) {
 		if(symbolPath.contains("croix")) {
 			return new Symbol(symbolPath, TypeOfSymbol.CROSS);
@@ -44,7 +55,9 @@ public class Symbol {
 
 	/**
 	 * <h3>getImage</h3>
-	 * @return the link of the picture
+	 * Gets the image path for this symbol.
+	 *
+	 * @return the path to the symbol's image file
 	 */
 	public String getImage() {
 		return this.image;
@@ -52,8 +65,9 @@ public class Symbol {
 
 	/**
 	 * <h3>setImage</h3>
-	 * Change the image use for the symbol
-	 * @param image the new link
+	 * Sets a new image path for this symbol.
+	 *
+	 * @param image the new image path
 	 */
 	public void setImage(String image) {
 		this.image = image;
@@ -61,12 +75,14 @@ public class Symbol {
 
 	/**
 	 * <h3>getTypeOfSymbol</h3>
-	 * @return the type of the symbol
+	 * Gets the type of this symbol.
+	 *
+	 * @return the symbol type (CROSS or CIRCLE)
 	 */
     public TypeOfSymbol getTypeOfSymbol() {
         return typeOfSymbol;
     }
-    
+
 
 
 }

@@ -34,28 +34,38 @@ public abstract class GameBoard {
 	public List<Pair<Integer, Integer>> useCase;
 
 
+	/**
+	 * <h3>getSymbolAt</h3>
+	 * Gets the symbol at the specified position.
+	 *
+	 * @param x row coordinate
+	 * @param y column coordinate
+	 * @return the symbol at the given position (Symbol or null)
+	 */
     public Symbol getSymbolAt(int x, int y) {
         return symbols.get(x)[y];
     }
+
 	/**
 	 * <h2>Functions of GameBoard</h2>
 	 */
 
-	/*
-	 * <h3>getSymbolAt</h3>
+	/**
+	 * <h3>getColumn</h3>
+	 * Gets the number of columns in the board.
 	 *
-	 * @param x row
-	 * @param y column
-	 * @return the symbol at the given position (Symbol or null)
-	 *
-	public Symbol getSymbolAt(int x, int y) {
-        return symbols.get(x)[y];
-    }*/
-
+	 * @return the column count
+	 */
 	public int getColumn() {
 		return this.column;
 	}
 
+	/**
+	 * <h3>getRow</h3>
+	 * Gets the number of rows in the board.
+	 *
+	 * @return the row count
+	 */
 	public int getRow() {
 		return this.row;
 	}
@@ -177,7 +187,13 @@ public abstract class GameBoard {
 		return new Pair<>(x, y);
 	}
 
-	//------------------debug-------------------//
+	/**
+	 * <h3>debugSymbol</h3>
+	 * Converts a symbol to its string representation for debugging purposes.
+	 *
+	 * @param symbol the symbol to convert
+	 * @return "CROSS", "CIRCLE", or "NONE" as string
+	 */
 	public String debugSymbol(Symbol symbol){
 		if(symbol != null){
 			if(symbol.getTypeOfSymbol() == TypeOfSymbol.CROSS){
@@ -189,7 +205,11 @@ public abstract class GameBoard {
 		return "NONE";
 	}
 
-
+	/**
+	 * <h3>debugGameBoard</h3>
+	 * Prints the entire game board to console for debugging.
+	 * Displays each cell's coordinates and symbol state.
+	 */
 	public void debugGameBoard() {
 		int rows = this.getRow();
 		int cols = this.getColumn();
@@ -200,10 +220,21 @@ public abstract class GameBoard {
 			System.out.println();
 		}
 	}
+
+	/**
+	 * <h3>setSymbolAt</h3>
+	 * Sets a symbol at the specified position on the board.
+	 * Used primarily for undo functionality to restore board state.
+	 *
+	 * @param x row coordinate
+	 * @param y column coordinate
+	 * @param symbol the symbol to place (or null to clear)
+	 */
     public void setSymbolAt(int x, int y, Symbol symbol) {
         if (x >= 0 && x < row && y >= 0 && y < column) {
             this.symbols.get(x)[y] = symbol;
         }
     }
+
 
 }

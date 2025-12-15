@@ -1,5 +1,4 @@
 package gl.morpion.controllers;
-
 import gl.morpion.model.*;
 import gl.morpion.view.GameBoardView;
 import javafx.application.Platform;
@@ -95,6 +94,7 @@ public class GameController {
 
         this.gameBoardView = new GameBoardView(customBoard, player1, player2);
         this.gameBoardController = new PvsPController(gameBoardView, customBoard);
+        this.gameBoardController.setupUndo(game); // Activer undo pour PVP custom
 
         this.board.debugGameBoard();
     }
@@ -128,6 +128,7 @@ public class GameController {
         this.gameBoardView = new GameBoardView(game.getGameBoard(), player1Name, player2Name);
         // Initialize the board controller to handle cell interactions
         this.gameBoardController = new PvsPController(gameBoardView, (RectangleBoard) game.getGameBoard());
+        this.gameBoardController.setupUndo(game); // Activer undo pour PVP standard
         this.board.debugGameBoard();
 
     }
@@ -168,6 +169,16 @@ public class GameController {
         // Dimensions du plateau
         int rows = game.getGameBoard().getRow();
         int cols = game.getGameBoard().getColumn();
+
+        // Gérer le bouton Undo
+        gameBoardView.getUndoButton().setOnAction(event -> {
+            if (game.canUndo()) {
+                game.undo(); // Restaure automatiquement le joueur qui avait joué
+                gameBoardView.update(game.getGameBoard(), game.getCurrentPlayer().getSymbol());
+                gameBoardView.setActivePlayer(game.getCurrentPlayer());
+                ended = false; // Réactiver le jeu si undo après une victoire
+            }
+        });
 
         // On attache un handler de clic sur chaque case
         for (int i = 0; i < rows; i++) {

@@ -78,7 +78,34 @@ public class PvsBotController {
         this.onFinish = onFinish;
 
         initCellEvents();
+        setupUndoForBot();
         boardView.setActivePlayer(human);
+    }
+
+    /**
+     * <h3>setupUndoForBot</h3>
+     *
+     * Setup undo button for Bot mode: undo 2 moves (player + bot)
+     */
+    private void setupUndoForBot() {
+        boardView.getUndoButton().setOnAction(event -> {
+            if (ended) return;
+
+            // Undo 2 fois : le coup du bot puis celui du joueur
+            if (game.canUndo()) {
+                game.undo(); // Annuler le coup du bot
+                bot.undoSymbol(); // Mettre à jour l'historique du bot
+
+                if (game.canUndo()) {
+                    game.undo(); // Annuler le coup du joueur
+                    bot.undoSymbol(); // Mettre à jour l'historique du bot
+                }
+
+                // Mettre à jour la vue
+                boardView.update(game.getGameBoard(), game.getCurrentPlayer().getSymbol());
+                boardView.setActivePlayer(game.getCurrentPlayer());
+            }
+        });
     }
 
     /**

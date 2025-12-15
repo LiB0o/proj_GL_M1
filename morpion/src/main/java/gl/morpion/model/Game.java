@@ -4,20 +4,66 @@ import javafx.util.Pair;
 
 import java.util.*;
 
+/**
+ * <h1>class Game</h1>
+ * Core game logic class for tic-tac-toe.
+ * Manages game state, victory conditions, player turns, and move history.
+ * Supports variable board sizes and configurable win conditions.
+ * <h2>Elements of Game</h2>
+ */
 public class Game {
+	/**
+	 * Default number of aligned symbols required to win
+	 */
     private static int DEFAULT_MAX_SYMBOL_ALIGN = 5;
-	private int MaxNumberSymbolAlign = DEFAULT_MAX_SYMBOL_ALIGN;;
-
-	private HashMap<Pair<Integer,Integer>,Symbol> usedCase;
-	private GameBoard gameBoard;
-	List<Player> players;
-	private boolean end=false;
-	private Player currentPlayer, p1, p2;
-
 
 	/**
-	 * Create the instance of Game
-	 * @param board of type GameBoard
+	 * Current number of aligned symbols required to win this game
+	 */
+	private int MaxNumberSymbolAlign = DEFAULT_MAX_SYMBOL_ALIGN;
+
+	/**
+	 * Map of board positions to symbols currently placed
+	 */
+	private HashMap<Pair<Integer,Integer>,Symbol> usedCase;
+
+	/**
+	 * The game board
+	 */
+	private GameBoard gameBoard;
+
+	/**
+	 * List of players in the game
+	 */
+	List<Player> players;
+
+	/**
+	 * Whether the game has ended
+	 */
+	private boolean end=false;
+
+	/**
+	 * Current active player and player references
+	 */
+	private Player currentPlayer, p1, p2;
+
+	/**
+	 * Stack storing move history for undo functionality
+	 */
+	private Stack<Move> moveHistory = new Stack<>();
+
+	/**
+	 * <h2>Functions of Game</h2>
+	 */
+
+	/**
+	 * <h3>Game</h3>
+	 * Creates a new game instance with specified board and players.
+	 *
+	 * @param board the game board
+	 * @param p1 first player
+	 * @param p2 second player
+	 * @param currentPlayer the player who starts the game
 	 */
 	public Game(GameBoard board, Player p1, Player p2, Player currentPlayer){
 		this.p1 = p1;
@@ -28,13 +74,23 @@ public class Game {
 		this.currentPlayer = currentPlayer;
         this.MaxNumberSymbolAlign = DEFAULT_MAX_SYMBOL_ALIGN;
 	}
+
+	/**
+	 * <h3>addPlayer</h3>
+	 * Adds a player to the game's player list.
+	 *
+	 * @param player the player to add
+	 */
 	public void addPlayer(Player player){
 		this.players.add(player);
 	}
 	/**
-	 * test every possibility for a case to check if there is a win
-	 * @param limit: how many symbols are needed next to each other to win
-	 * @return a pair with a boolean and the symbol of the winner (if boolean == true)
+	 * <h3>checkClassicVictory</h3>
+	 * Tests all positions on the board to check if there is a winning alignment.
+	 * Checks horizontal, vertical, and diagonal alignments for each position.
+	 *
+	 * @param limit how many symbols are needed aligned to win
+	 * @return a Pair with boolean (true if victory) and the winner's Symbol (if victory detected)
 	 */
 	public Pair<Boolean,Symbol> checkClassicVictory(int limit) {
 		boolean victory = false;
@@ -60,10 +116,13 @@ public class Game {
 	}
 
 	/**
-	 * check if you win with on a diagonal from up left to down right
-	 * @param key position of case, first Integer is x/line and the second Integer is y/column
-	 * @param limit how many symbols are needed next to each other to win
-	 * @return boolean
+	 * <h3>checkDiagonalUpLeft_DownRight</h3>
+	 * Checks for a winning diagonal alignment from upper-left to lower-right direction.
+	 * Tests both forward and backward from the given position.
+	 *
+	 * @param key position to check (first Integer is row, second is column)
+	 * @param limit how many aligned symbols needed to win
+	 * @return true if winning alignment found, false otherwise
 	 */
 	private boolean checkDiagonalUpLeft_DownRight(Pair<Integer,Integer>key,int limit){
 		boolean result = false;
@@ -350,6 +409,12 @@ public class Game {
             return false; // ❌ coup refusé
         }
 
+        // Sauvegarder l'état avant le coup pour l'undo
+        Move move = new Move(x, y, currentPlayer, this.end,
+                            players.get(0).getPoints(),
+                            players.get(1).getPoints());
+        moveHistory.push(move);
+
         // Case libre → jouer le coup
         this.gameBoard.placeSymbol(currentPlayer.getSymbol(), x, y);
 
@@ -364,7 +429,7 @@ public class Game {
             System.out.println("Toutes les cases sont remplies !");
         }
 
-        // Si quelqu’un a des points, on considère que c’est fini
+        // Si quelqu'un a des points, on considère que c'est fini
         if (players.get(0).getPoints() != 0 || players.get(1).getPoints() != 0) {
             this.end = true;
         }
@@ -407,5 +472,38 @@ public class Game {
 
 	public HashMap<Pair<Integer, Integer>, Symbol> getUsedCase() {
 		return usedCase;
+	}
+
+	/**
+	 * Undo the last move played
+	 * @return true if undo was successful, false if no move to undo
+	 */
+	public boolean undo() {
+		if (moveHistory.isEmpty()) {
+			return false;
+		}
+
+		Move lastMove = moveHistory.pop();
+
+		// Restaurer la case vide
+		gameBoard.setSymbolAt(lastMove.getX(), lastMove.getY(), null);
+
+		// Restaurer l'état du jeu
+		this.currentPlayer = lastMove.getPlayerBefore();
+		this.end = lastMove.isEndBefore();
+
+		// Restaurer les points
+		players.get(0).setPoints(lastMove.getP1PointsBefore());
+		players.get(1).setPoints(lastMove.getP2PointsBefore());
+
+		return true;
+	}
+
+	/**
+	 * Check if undo is available
+	 * @return true if there are moves to undo
+	 */
+	public boolean canUndo() {
+		return !moveHistory.isEmpty();
 	}
 }

@@ -523,6 +523,26 @@ public class BotPlayer extends Player {
 		recomputeNeighbour(position);
 	}
 
+	/**
+	 * <h3>undoSymbol</h3>
+	 * Remove symbol from bot's board view (for undo functionality)
+	 * @param position the position to reset
+	 */
+	public void undoSymbol(Pair<Integer,Integer> position){
+		resetValueCase(position);
+	}
+
+	/**
+	 * <h3>undoSymbol</h3>
+	 * Wrapper method for undo without position
+	 * This is called by the controller when undoing
+	 */
+	public void undoSymbol(){
+		// Method used by controller, actual reset is done by game.undo()
+		// which resets the board, then we recompute all values
+		computeAllValues();
+	}
+
 public Pair<Integer, Integer> getMaxValue(){
 		Pair<Integer, Integer> maxVal = new Pair<>(-1,-1);
 		float max = 0.0f;

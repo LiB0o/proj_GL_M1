@@ -7,6 +7,7 @@ import gl.morpion.model.Symbol;
 import gl.morpion.persistence.SaveBoard;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -37,6 +38,7 @@ public class GameBoardView extends BorderPane {
     Polygon triangleVisible1, triangleVisible2;
     private GameBoard gameBoard;
     private SaveBoard save;
+    private Button undoButton;
 
 
     public GameBoardView(GameBoard gameBoard, Player player1, Player player2) {
@@ -70,6 +72,14 @@ public class GameBoardView extends BorderPane {
         HBox hBox = this.createPlayerPanel(this.player1, this.player2);
         this.setTop(hBox);
         this.setCenter(grid);
+
+        // Créer le bouton Undo et l'ajouter en bas
+        this.undoButton = new Button("Undo");
+        this.undoButton.setStyle("-fx-font-size: 16px; -fx-padding: 10px 20px;");
+        HBox bottomBox = new HBox(undoButton);
+        bottomBox.setAlignment(Pos.CENTER);
+        bottomBox.setPadding(new Insets(10));
+        this.setBottom(bottomBox);
     }
 
     public void save(){
@@ -210,4 +220,9 @@ public class GameBoardView extends BorderPane {
     public ImageView getImageView() {
         return imageView;
     }
+
+    public Button getUndoButton() {
+        return undoButton;
+    }
+
 }

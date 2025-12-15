@@ -1,9 +1,17 @@
 package gl.morpion.model;
 
 /**
- * This class lists the types of symbols in our system (X, +, O, ...)
+ * Enumeration of symbol types used in the tic-tac-toe game.
+ * Defines the available symbols that players can use to mark the board.
  */
 public enum TypeOfSymbol {
+    /**
+     * Cross symbol (X)
+     */
     CROSS,
+
+    /**
+     * Circle symbol (O)
+     */
     CIRCLE
 }
