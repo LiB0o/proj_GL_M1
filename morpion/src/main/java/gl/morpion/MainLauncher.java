@@ -1,5 +1,6 @@
 package gl.morpion;
 
+import gl.morpion.audio.AudioManager;
 import gl.morpion.controllers.menu.MainMenuController;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -37,6 +38,7 @@ public class MainLauncher extends Application {
         });
 
         // Afficher le menu au démarrage
+        AudioManager.startMenuMusic();
         controller.showMainMenu();
 
         stage.setTitle("Morpion – GL M1");

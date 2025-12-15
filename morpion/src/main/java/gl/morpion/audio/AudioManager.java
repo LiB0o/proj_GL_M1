@@ -18,29 +18,68 @@ public class AudioManager {
     private static final String CLICK_SFX = "/audio/play.wav";
     private static final String QUIT_SFX = "/audio/quit.wav";
     private static final String RETURN_SFX = "/audio/return.wav";
-    // optionnel : musique du menu
-    private static final String MENU_MUSIC = "/audio/menu.mp3";
+
+    // ✅ PLAYLIST MENU
+    private static final String MENU_TRACK_1 = "/audio/Intro.mp3";
+    private static final String MENU_MUSIC   = "/audio/GameMusic.mp3"; //
+    private static final String MENU_TRACK_3 = "/audio/Track3.mp3";
+    private static final String MENU_TRACK_2 = "/audio/Track2.mp3";
+
+    private static final String[] MENU_PLAYLIST = {
+            MENU_TRACK_1,
+            MENU_MUSIC,
+            MENU_TRACK_2,
+            MENU_TRACK_3
+
+    };
+
+    private static int menuIndex = 0;
 
     // =========================
     // MUSIC
     // =========================
     public static void startMenuMusic() {
         if (muted) return;
-
-        var url = AudioManager.class.getResource(MENU_MUSIC);
-        if (url == null) return;
-
         if (musicPlayer != null) return;
+
+        menuIndex = 0;
+        playNextMenuTrack();
+    }
+
+    private static void playNextMenuTrack() {
+        if (muted) return;
+
+        if (menuIndex >= MENU_PLAYLIST.length) {
+            menuIndex = 0; // 🔁 loop playlist
+        }
+
+        var url = AudioManager.class.getResource(MENU_PLAYLIST[menuIndex]);
+        if (url == null) {
+            System.err.println("Music not found: " + MENU_PLAYLIST[menuIndex]);
+            menuIndex++;
+            playNextMenuTrack();
+            return;
+        }
 
         Media media = new Media(url.toExternalForm());
         musicPlayer = new MediaPlayer(media);
-        musicPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+
         applyMusicVolume();
+
+        musicPlayer.setOnEndOfMedia(() -> {
+            musicPlayer.dispose();
+            musicPlayer = null;
+            menuIndex++;
+            playNextMenuTrack();
+        });
+
         musicPlayer.play();
     }
+
     public static void playQuit() {
         playSfx(QUIT_SFX);
     }
+
     public static void playReturn() {
         playSfx(RETURN_SFX);
     }
