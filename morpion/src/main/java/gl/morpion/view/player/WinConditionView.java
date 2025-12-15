@@ -12,54 +12,62 @@ import javafx.scene.layout.VBox;
 import java.util.function.IntConsumer;
 
 /**
- * Vue qui permet de choisir le nombre de symboles à aligner pour gagner.
- * L'utilisateur tape un entier au clavier (entre MIN et MAX).
+ * View that allows the user to choose the number of symbols to align in order to win.
+ * <p>
+ * The user types an integer value using the keyboard. The value is validated to be within
+ * the allowed range [{@link #MIN}, {@link #MAX}]. If valid, a callback is invoked.
+ * </p>
  */
 public class WinConditionView extends BorderPane {
 
+    /** Minimum allowed win condition. */
     private static final int MIN = 3;
+
+    /** Maximum allowed win condition. */
     private static final int MAX = 8;
 
     private final TextField numberField = new TextField();
     private final Label errorLabel = new Label();
 
     /**
-     * @param currentValue valeur actuelle (par ex. 5)
-     * @param onValidate   callback appelé avec la nouvelle valeur validée
-     * @param onBack       callback pour le bouton "Back"
+     * Creates the win condition selection view.
+     *
+     * @param currentValue the current value to pre-fill in the input field (e.g., 5)
+     * @param onValidate   callback invoked with the validated value
+     * @param onBack       callback executed when the user clicks "Back"
      */
     public WinConditionView(int currentValue,
                             IntConsumer onValidate,
                             Runnable onBack) {
 
-        // Fond comme le menu principal
+        // Same background as the main menu
         getStyleClass().add("main-menu-bg");
 
-        // --------- Titre ----------
+        // --------- Title ----------
         Label title = new Label("Win condition");
         title.getStyleClass().add("title-glow");
 
-        // --------- Texte d'explication ----------
+        // --------- Explanation text ----------
         Label info = new Label(
                 "How many symbols in a row to win ? (" + MIN + " - " + MAX + ")"
         );
         info.getStyleClass().add("form-label");
 
-        // --------- Champ de saisie ----------
+        // --------- Input field ----------
         numberField.setText(String.valueOf(currentValue));
         numberField.setPromptText(MIN + " - " + MAX);
         numberField.getStyleClass().add("text-input");
         numberField.setMaxWidth(120);
 
-        // Quand on appuie sur Entrée dans le champ, on valide
+        // Pressing Enter validates the value
         numberField.setOnAction(e -> validateAndSend(onValidate));
 
-        // --------- Label d'erreur ----------
-        errorLabel.setText(""); // vide par défaut
-        // Si tu veux le styliser, tu peux ajouter une classe CSS:
+        // --------- Error label ----------
+        errorLabel.setText(""); // empty by default
+        // If you want to style it, you can add a CSS class:
         // errorLabel.getStyleClass().add("error-label");
 
-        // --------- Boutons ----------
+        // --------- Buttons ----------
         Button validateBtn = new Button("Validate");
         validateBtn.getStyleClass().add("big-button");
         validateBtn.setOnAction(e -> validateAndSend(onValidate));
@@ -71,7 +79,7 @@ public class WinConditionView extends BorderPane {
         });
         SoundFX.attachReturn(backBtn);
 
-        // --------- Layout principal ----------
+        // --------- Main layout ----------
         VBox content = new VBox(12,
                 title,
                 info,
@@ -89,8 +97,17 @@ public class WinConditionView extends BorderPane {
     }
 
     /**
-     * Lit la valeur tapée, vérifie qu'elle est entre MIN et MAX,
-     * puis appelle le callback si tout est OK.
+     * Reads the typed value, validates that it is between {@link #MIN} and {@link #MAX},
+     * then calls the callback if everything is valid.
+     * <p>
+     * Side effects:
+     * </p>
+     * <ul>
+     *     <li>Updates {@link #errorLabel} to display validation feedback</li>
+     *     <li>Invokes {@code onValidate.accept(value)} when valid</li>
+     * </ul>
+     *
+     * @param onValidate callback invoked with the validated integer (may be {@code null})
      */
     private void validateAndSend(IntConsumer onValidate) {
         if (onValidate == null) return;
@@ -108,7 +125,7 @@ public class WinConditionView extends BorderPane {
                 return;
             }
 
-            // OK → on efface l'erreur et on envoie la valeur
+            // OK → clear error and send value
             errorLabel.setText("");
             onValidate.accept(value);
 

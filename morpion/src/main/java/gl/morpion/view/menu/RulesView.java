@@ -1,4 +1,5 @@
 package gl.morpion.view.menu;
+
 import gl.morpion.audio.SoundFX;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -12,8 +13,29 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 
+/**
+ * View displaying the game rules.
+ * <p>
+ * This screen shows a scrollable rules card containing:
+ * </p>
+ * <ul>
+ *     <li>Basic rules</li>
+ *     <li>Win conditions</li>
+ *     <li>Project strategy notes (useful for the AI later)</li>
+ * </ul>
+ *
+ * <p>
+ * The view uses a styled background consistent with the main menu and includes a back button
+ * to return to the previous screen.
+ * </p>
+ */
 public class RulesView extends StackPane {
 
+    /**
+     * Creates the rules screen.
+     *
+     * @param onBack callback executed when the user clicks the Back button
+     */
     public RulesView(Runnable onBack) {
         setPrefSize(1200, 800);
 
@@ -27,7 +49,7 @@ public class RulesView extends StackPane {
         Label title = new Label("Game rules");
         title.getStyleClass().add("title-glow");
 
-        // ---------- Texts (from the PDF, player version) ----------
+        // ---------- Text blocks (player-friendly rules) ----------
 
         String basicText = """
                 • The game is played by 2 players.
@@ -58,7 +80,7 @@ public class RulesView extends StackPane {
                   promising open quintuplets.
                 """;
 
-        // Basic rules block
+        // Basic rules section
         Label basicTitle = new Label("Basic rules");
         basicTitle.getStyleClass().add("rules-section-title");
 
@@ -67,7 +89,7 @@ public class RulesView extends StackPane {
         basic.setTextAlignment(TextAlignment.LEFT);
         basic.getStyleClass().add("rules-text");
 
-        // Winning rules block
+        // Winning rules section
         Label winTitle = new Label("Winning the game");
         winTitle.getStyleClass().add("rules-section-title");
 
@@ -76,7 +98,7 @@ public class RulesView extends StackPane {
         winning.setTextAlignment(TextAlignment.LEFT);
         winning.getStyleClass().add("rules-text");
 
-        // Strategy block
+        // Strategy notes section
         Label stratTitle = new Label("From the project strategy");
         stratTitle.getStyleClass().add("rules-section-title");
 
@@ -85,7 +107,7 @@ public class RulesView extends StackPane {
         strategy.setTextAlignment(TextAlignment.LEFT);
         strategy.getStyleClass().add("rules-text");
 
-        // Card with all sections
+        // Card containing all sections
         VBox card = new VBox(18,
                 title,
                 basicTitle, basic,
@@ -100,12 +122,12 @@ public class RulesView extends StackPane {
         wrapper.setAlignment(Pos.TOP_CENTER);
         wrapper.setPadding(new Insets(40, 40, 40, 40));
 
-        // Scroll (just in case window is smaller)
+        // Scroll (in case the window is smaller)
         ScrollPane scroll = new ScrollPane(wrapper);
         scroll.setFitToWidth(true);
         scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        // important pour ne pas repeindre un fond blanc
+        // Keep the background transparent (avoid a white background)
         scroll.setStyle("-fx-background-color: transparent;");
 
         // Back button (top-left)
@@ -121,7 +143,7 @@ public class RulesView extends StackPane {
         BorderPane.setAlignment(back, Pos.TOP_LEFT);
         BorderPane.setMargin(back, new Insets(16, 5, 0, 5));
         layout.setCenter(scroll);
-        // important : on laisse voir le main-menu-bg derrière
+        // Keep layout background transparent to show the main-menu-bg behind it
         layout.setStyle("-fx-background-color: transparent;");
 
         getChildren().addAll(bg, layout);

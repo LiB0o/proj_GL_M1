@@ -1,4 +1,5 @@
 package gl.morpion.view.menu;
+
 import gl.morpion.audio.SoundFX;
 import gl.morpion.audio.AudioManager;
 import gl.morpion.controllers.menu.MainMenuController;
@@ -8,8 +9,32 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 
+/**
+ * Settings screen view.
+ * <p>
+ * This view allows the user to configure application settings such as:
+ * </p>
+ * <ul>
+ *     <li>Fullscreen mode</li>
+ *     <li>Mute state</li>
+ *     <li>Music volume</li>
+ *     <li>SFX volume</li>
+ *     <li>Screen resolution (preset or custom)</li>
+ * </ul>
+ *
+ * <p>
+ * Side effects: updates and persists {@link SettingsModel}, and applies changes immediately
+ * through {@link MainMenuController} and {@link AudioManager}.
+ * </p>
+ */
 public class SettingsView extends StackPane {
 
+    /**
+     * Creates the Settings view.
+     *
+     * @param controller the main menu controller used to navigate and apply UI changes
+     * @param settings   the current settings model (loaded from persistence)
+     */
     public SettingsView(MainMenuController controller, SettingsModel settings) {
 
         // ===== Background =====
@@ -65,7 +90,7 @@ public class SettingsView extends StackPane {
             settings.setMuted(b);
             settings.save();
             AudioManager.setMuted(b);
-            // pour bien refléter le mute sur la musique
+            // Ensure mute is reflected on the music channel
             AudioManager.setMusicVolume(settings.isMuted() ? 0.0 : settings.getMusicVolume() / 100.0);
         });
 
@@ -77,9 +102,9 @@ public class SettingsView extends StackPane {
         res.getItems().addAll("1200x800", "1600x900", "1920x1080");
         res.setValue(settings.getResolution());
 
-        // champ custom (tapable)
+        // Custom input (editable)
         TextField customRes = new TextField(settings.getResolution());
-        customRes.getStyleClass().add("text-input");   // ✅ ton style
+        customRes.getStyleClass().add("text-input");   // keep your style
         customRes.setPrefWidth(180);
         customRes.setPromptText("ex: 1600x900");
 
@@ -87,7 +112,7 @@ public class SettingsView extends StackPane {
         apply.getStyleClass().add("big-button");
         apply.setPrefWidth(140);
 
-        // quand on choisit un preset -> on remplit aussi le champ + applique direct
+        // When selecting a preset -> also fill the field and apply immediately
         res.getSelectionModel().selectedItemProperty().addListener((o, a, b) -> {
             if (b == null) return;
             customRes.setText(b);
@@ -97,11 +122,11 @@ public class SettingsView extends StackPane {
             controller.applyResolution(b);
         });
 
-        // fonction util locale
+        // Local utility function
         Runnable applyCustom = () -> {
             String value = customRes.getText().trim();
 
-            // format attendu : 1234x567
+            // Expected format: 1234x567
             if (!value.matches("\\d{3,5}x\\d{3,5}")) {
                 customRes.setStyle(customRes.getStyle() + "; -fx-border-color: red;");
                 return;
@@ -111,13 +136,13 @@ public class SettingsView extends StackPane {
             int w = Integer.parseInt(d[0]);
             int h = Integer.parseInt(d[1]);
 
-            // limites raisonnables
+            // Reasonable bounds
             if (w < 800 || h < 600 || w > 7680 || h > 4320) {
                 customRes.setStyle(customRes.getStyle() + "; -fx-border-color: red;");
                 return;
             }
 
-            // reset bordure si ok (on garde le style de base)
+            // Reset border if OK (keep the base style)
             customRes.setStyle(null);
             customRes.getStyleClass().add("text-input");
 
@@ -127,7 +152,7 @@ public class SettingsView extends StackPane {
         };
 
         apply.setOnAction(e -> applyCustom.run());
-        customRes.setOnAction(e -> applyCustom.run()); // Enter dans le champ => apply
+        customRes.setOnAction(e -> applyCustom.run()); // Enter key in the field => apply
 
         HBox resRow = new HBox(12, res, customRes, apply);
         resRow.setAlignment(Pos.CENTER);
@@ -151,7 +176,7 @@ public class SettingsView extends StackPane {
 
         card.setAlignment(Pos.CENTER);
         card.setPadding(new Insets(32));
-        card.setMaxWidth(720); // un peu plus large à cause du champ + bouton
+        card.setMaxWidth(720); // slightly wider because of the field + button
         card.getStyleClass().add("form-card");
 
         getChildren().addAll(bg, card);

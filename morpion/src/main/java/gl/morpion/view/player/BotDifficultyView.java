@@ -1,6 +1,6 @@
 package gl.morpion.view.player;
-import gl.morpion.audio.SoundFX;
 
+import gl.morpion.audio.SoundFX;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -10,21 +10,33 @@ import javafx.scene.layout.VBox;
 
 import java.util.function.Consumer;
 
+/**
+ * View allowing the user to choose the bot difficulty level.
+ * <p>
+ * This screen is used before starting a Player vs Bot game (or Custom vs Bot),
+ * and returns a difficulty key through a callback.
+ * </p>
+ * <p>
+ * The expected difficulty keys are: {@code "EASY"}, {@code "NORMAL"}, {@code "HARD"}.
+ * </p>
+ */
 public class BotDifficultyView extends BorderPane {
 
     /**
-     * @param onSelect callback appelé avec "EASY", "NORMAL" ou "HARD"
-     * @param onBack   callback pour revenir au menu principal
+     * Creates the bot difficulty selection screen.
+     *
+     * @param onSelect callback invoked with {@code "EASY"}, {@code "NORMAL"} or {@code "HARD"}
+     * @param onBack   callback invoked to go back to the previous menu
      */
     public BotDifficultyView(Consumer<String> onSelect, Runnable onBack) {
-        // Fond identique au menu principal
+        // Same background as the main menu
         getStyleClass().add("main-menu-bg");
 
-        // Titre
+        // Title
         Label title = new Label("Choose Bot Difficulty");
         title.getStyleClass().add("title-glow");
 
-        // Boutons (même style que les gros boutons du menu)
+        // Buttons (same style as main menu big buttons)
         Button easyBtn = new Button("Easy");
         easyBtn.getStyleClass().add("big-button");
         easyBtn.setOnAction(e -> onSelect.accept("EASY"));
@@ -41,7 +53,6 @@ public class BotDifficultyView extends BorderPane {
         backBtn.getStyleClass().add("pill-button");
         backBtn.setOnAction(e -> onBack.run());
         SoundFX.attachReturn(backBtn);
-
 
         VBox box = new VBox(14, title, easyBtn, normalBtn, hardBtn, backBtn);
         box.setAlignment(Pos.CENTER);

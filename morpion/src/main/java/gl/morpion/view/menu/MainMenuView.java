@@ -13,18 +13,31 @@ import gl.morpion.audio.AudioManager;
 
 /**
  * Main menu view for the Tic-Tac-Toe game.
- * Displays a styled menu with game mode options, settings, and navigation controls.
- * Extends StackPane to layer background and UI components.
+ * <p>
+ * This view displays the main navigation screen of the application. It provides:
+ * </p>
+ * <ul>
+ *     <li>Game mode selection (PvP, PvBot, Custom)</li>
+ *     <li>Settings access</li>
+ *     <li>Rules access</li>
+ *     <li>Optional language toggle</li>
+ *     <li>Quit confirmation</li>
+ * </ul>
+ *
+ * <p>
+ * The UI is built as a single {@link StackPane} so it can layer a styled background behind a
+ * {@link BorderPane} layout containing the controls.
+ * </p>
  */
 public class MainMenuView extends StackPane {
 
-    // Main menu buttons for different game modes
+    /** Main menu buttons for different game modes. */
     private Button vsBot, vsPlayer, custom, QUIT;
 
     /**
-     * Constructor: Creates the main menu UI with all components and styling.
+     * Creates the main menu UI with all components and styling.
      *
-     * @param controller The MainMenuController that handles user interactions and navigation
+     * @param controller the {@link MainMenuController} that handles user interactions and navigation
      */
     public MainMenuView(MainMenuController controller) {
         // Set preferred size for the menu view (1200x800 pixels)
@@ -49,7 +62,7 @@ public class MainMenuView extends StackPane {
         Button btnSettings = new Button("⚙");
         btnSettings.getStyleClass().add("icon-button");
         btnSettings.setOnAction(e -> {
-            AudioManager.playClick();          // 🔊 son
+            AudioManager.playClick();          // click sound
             controller.openSettings();
         });
 
@@ -78,11 +91,12 @@ public class MainMenuView extends StackPane {
         vsBot    = big("Player vs Bots",   controller::startChooseBotDifficulty);
         vsPlayer = big("Player vs Player", controller::startModePvp);
         custom   = big("Custom",           controller::showCustomEntry);
+
         QUIT = new Button("QUIT");
         QUIT.getStyleClass().add("big-button");
 
         QUIT.setOnAction(e -> {
-            AudioManager.playQuit();  // 🔊 son spécial QUIT
+            AudioManager.playQuit();  // dedicated quit sound
 
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Quit");
@@ -95,8 +109,6 @@ public class MainMenuView extends StackPane {
                 System.exit(0);
             }
         });
-
-
 
         VBox btnCol = new VBox(14, vsBot, vsPlayer, custom, QUIT);
         btnCol.setAlignment(Pos.CENTER);
@@ -113,7 +125,7 @@ public class MainMenuView extends StackPane {
         Button rules = new Button("Rules…");
         rules.getStyleClass().add("pill-button");
         rules.setOnAction(e -> {
-            AudioManager.playClick();          // 🔊 son
+            AudioManager.playClick();          // click sound
             controller.showRules();
         });
 
@@ -141,15 +153,21 @@ public class MainMenuView extends StackPane {
     }
 
     /**
-     * Helper method to create a styled button with custom action.
-     * ALL big buttons will play the SAME sound here.
+     * Helper method to create a styled button with a custom action.
+     * <p>
+     * All buttons created by this method will play the same click sound before executing their action.
+     * </p>
+     *
+     * @param text   the button label
+     * @param action the action to run when the button is clicked (may be {@code null})
+     * @return a styled {@link Button} instance
      */
     private Button big(String text, Runnable action) {
         Button b = new Button(text);
         b.getStyleClass().add("big-button");
 
         b.setOnAction(e -> {
-            AudioManager.playClick();   // 🔊 SON ICI (UNE SEULE FOIS)
+            AudioManager.playClick();   // click sound
             if (action != null) action.run();
         });
 

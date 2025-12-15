@@ -15,24 +15,49 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * High-level save / load manager built on top of SaveBoard / LoadBoard.
+ * High-level save/load manager built on top of {@link SaveBoard} / {@link LoadBoard}.
+ * <p>
+ * Responsibilities:
+ * </p>
+ * <ul>
+ *     <li>{@link #saveGame(Game, GameBoardView, String, GameMode, String, int)}: creates a full {@link GameData}
+ *     and writes it to {@code save/<name>.json}</li>
+ *     <li>{@link #listSaves()}: lists all available {@code .json} save files in the {@code save/} directory</li>
+ *     <li>{@link #loadGameData(String)}: reads a {@link GameData} from a file</li>
+ *     <li>{@link #deleteSave(String)}: deletes a save file</li>
+ * </ul>
  *
- * - saveGame(...) : crée un GameData complet et l'écrit dans save/<nom>.json
- * - listSaves()   : liste tous les fichiers .json dans save/
- * - loadGameData(fileName) : lit un GameData à partir d'un fichier
+ * <p>
+ * This class is static-only and cannot be instantiated.
+ * </p>
  */
 public final class SaveManager {
 
+    /** Directory name (relative to the detected project root) where saves are stored. */
     private static final String SAVE_DIR_NAME = "save";
+
+    /** Date-time format used for saved timestamps. */
     private static final DateTimeFormatter TS_FORMAT =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+    /**
+     * Private constructor to prevent instantiation.
+     */
     private SaveManager() {
         // static-only
     }
 
-    // ==== utilitaires fichiers ====
+    // ==== File utilities ====
 
+    /**
+     * Attempts to detect the project root directory.
+     * <p>
+     * The method uses the current working directory ({@code user.dir}). If the current directory is named
+     * {@code "morpion"}, it returns its parent directory; otherwise, it returns the current directory.
+     * </p>
+     *
+     * @return the detected project root directory
+     */
     private static File getProjectRoot() {
         File currentDir = new File(System.getProperty("user.dir"));
         if ("morpion".equals(currentDir.getName())) {
@@ -41,6 +66,11 @@ public final class SaveManager {
         return currentDir;
     }
 
+    /**
+     * Returns the directory where saves are stored, creating it if needed.
+     *
+     * @return the save directory
+     */
     private static File getSaveDir() {
         File root = getProjectRoot();
         File dir = new File(root, SAVE_DIR_NAME);
@@ -50,11 +80,25 @@ public final class SaveManager {
         return dir;
     }
 
+    /**
+     * Normalizes a user-provided save name into a safe file name.
+     * <p>
+     * This method:
+     * </p>
+     * <ul>
+     *     <li>Creates a fallback name if {@code raw} is null/blank</li>
+     *     <li>Replaces spaces and unsupported characters with underscores</li>
+     *     <li>Ensures the file name ends with {@code .json}</li>
+     * </ul>
+     *
+     * @param raw the raw save name provided by the user
+     * @return a normalized file name ending with {@code .json}
+     */
     private static String normalizeFileName(String raw) {
         if (raw == null || raw.isBlank()) {
             return "save_" + System.currentTimeMillis();
         }
-        // remplace espaces / caractères bizarres
+        // Replace spaces / unsupported characters
         String s = raw.trim().replaceAll("[^a-zA-Z0-9_-]", "_");
         if (!s.toLowerCase().endsWith(".json")) {
             s = s + ".json";
@@ -65,14 +109,21 @@ public final class SaveManager {
     // ==== SAVE ====
 
     /**
-     * Sauvegarde la partie actuelle dans un fichier dédié.
+     * Saves the current game state into a dedicated file.
+     * <p>
+     * This method first uses {@link SaveBoard} to create a base {@link GameData} JSON in a temporary
+     * {@code save/save.json} file. Then it enriches that {@link GameData} with metadata (save name, mode,
+     * bot difficulty, board size, win condition, timestamp) and writes the final JSON to a normalized file name.
+     * </p>
      *
-     * @param game         l'objet Game (pour la board, les joueurs, etc.)
-     * @param boardView    la vue du plateau (sert à SaveBoard)
-     * @param saveName     nom choisi par l'utilisateur
-     * @param mode         mode de jeu (PVP, PVBOT, ...)
-     * @param botDifficulty niveau du bot (ou null si pas de bot)
-     * @param winCondition  nb de symboles pour gagner
+     * @param game          the {@link Game} instance (board, players, current player, etc.)
+     * @param boardView     the board view (used by {@link SaveBoard})
+     * @param saveName      the user-visible save name
+     * @param mode          the game mode (PVP, PVBOT, CUSTOM_PVP, CUSTOM_PVBOT, ...)
+     * @param botDifficulty the bot difficulty level (or {@code null} if no bot)
+     * @param winCondition  the number of aligned symbols required to win
+     * @throws IllegalArgumentException if {@code game} or {@code boardView} is {@code null}
+     * @throws RuntimeException         if the temporary save cannot be read or the final save cannot be written
      */
     public static void saveGame(Game game,
                                 GameBoardView boardView,
@@ -85,9 +136,9 @@ public final class SaveManager {
             throw new IllegalArgumentException("game and boardView must not be null");
         }
 
-        // 1) On réutilise ton SaveBoard pour construire un GameData "de base"
+        // 1) Reuse SaveBoard to build a "base" GameData
         SaveBoard sb = new SaveBoard(boardView);
-        sb.saveBoard(game); // écrit dans save/save.json
+        sb.saveBoard(game); // writes to save/save.json
 
         File tempFile = new File(getSaveDir(), "save.json");
         Gson gson = new Gson();
@@ -103,7 +154,7 @@ public final class SaveManager {
             data = new GameData();
         }
 
-        // 2) On enrichit avec les métadonnées
+        // 2) Enrich with metadata
         GameBoard gb = game.getGameBoard();
 
         data.setSaveName(saveName);
@@ -114,7 +165,7 @@ public final class SaveManager {
         data.setWinCondition(winCondition);
         data.setSavedAt(LocalDateTime.now().format(TS_FORMAT));
 
-        // 3) On écrit dans un fichier dédié
+        // 3) Write into a dedicated file
         String fileName = normalizeFileName(saveName);
         File saveFile = new File(getSaveDir(), fileName);
 
@@ -130,7 +181,13 @@ public final class SaveManager {
     // ==== LIST ====
 
     /**
-     * Retourne la liste de toutes les sauvegardes disponibles dans save/.
+     * Returns the list of all available saves in the {@code save/} directory.
+     * <p>
+     * Each JSON file is parsed as {@link GameData} and converted into a {@link SaveMetadata} entry.
+     * If parsing fails for a file, the error is logged and the file is skipped.
+     * </p>
+     *
+     * @return a list of {@link SaveMetadata} entries, or an empty list if none exist
      */
     public static List<SaveMetadata> listSaves() {
         File dir = getSaveDir();
@@ -176,8 +233,15 @@ public final class SaveManager {
     // ==== LOAD ====
 
     /**
-     * Charge le GameData complet à partir d'un nom de fichier.
-     * (La reconstruction du Game / GameController se fait ailleurs).
+     * Loads a full {@link GameData} instance from a given save file name.
+     * <p>
+     * Note: reconstructing the {@link Game} / controller / views from this data is handled elsewhere.
+     * </p>
+     *
+     * @param fileName the save file name (must exist inside the {@code save/} directory)
+     * @return the loaded {@link GameData}
+     * @throws IllegalArgumentException if {@code fileName} is null or blank
+     * @throws RuntimeException         if the save file does not exist or cannot be read
      */
     public static GameData loadGameData(String fileName) {
         if (fileName == null || fileName.isBlank()) {
@@ -198,7 +262,9 @@ public final class SaveManager {
     }
 
     /**
-     * Supprime une sauvegarde.
+     * Deletes a save file if it exists.
+     *
+     * @param fileName the save file name to delete
      */
     public static void deleteSave(String fileName) {
         if (fileName == null || fileName.isBlank()) return;

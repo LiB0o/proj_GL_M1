@@ -1,4 +1,5 @@
 package gl.morpion.view.menu;
+
 import gl.morpion.audio.SoundFX;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -13,22 +14,25 @@ import javafx.scene.text.FontWeight;
 
 /**
  * Placeholder view for game modes that are not yet implemented.
- * Displays a message and a back button to return to the previous screen.
- * Extends StackPane to layer background and centered content.
+ * <p>
+ * This view displays a custom message in the center of the screen and provides a back button
+ * to return to the previous screen.
+ * </p>
+ * Extends {@link StackPane} to layer a background and centered content.
  */
 public class ModePlaceholderView extends StackPane {
 
     /**
-     * Constructor: Creates a placeholder view with a custom message and back button.
-     * 
-     * @param message The message to display in the center of the view
-     * @param onBack Callback function executed when the back button is clicked
+     * Creates a placeholder view with a custom message and a back button.
+     *
+     * @param message the message to display in the center of the view
+     * @param onBack  callback executed when the back button is clicked
      */
     public ModePlaceholderView(String message, Runnable onBack) {
         // Set preferred size for the placeholder view (1200x800 pixels)
         setPrefSize(1200, 800);
 
-        // Fond
+        // Background
         // Create background region with gradient styling
         Region bg = new Region();
         bg.setStyle("-fx-background-color: linear-gradient(to bottom, #0a0f14, #14202a);");
@@ -36,13 +40,13 @@ public class ModePlaceholderView extends StackPane {
         bg.prefWidthProperty().bind(widthProperty());
         bg.prefHeightProperty().bind(heightProperty());
 
-        // Contenu centré
+        // Centered content
         // Create message label with white text and bold font
         Label msg = new Label(message);
         msg.setTextFill(Color.WHITE);
         msg.setFont(Font.font("Montserrat", FontWeight.BOLD, 36));
 
-        // Create back button with arrow icon and custom inline styling
+        // Create back button with arrow and custom inline styling
         Button back = new Button("← Back");
         back.setStyle(
                 "-fx-background-radius:12; -fx-background-color: rgba(255,255,255,0.10);" +

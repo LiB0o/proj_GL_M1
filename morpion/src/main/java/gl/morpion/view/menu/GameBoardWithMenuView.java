@@ -1,4 +1,5 @@
 package gl.morpion.view.menu;
+
 import gl.morpion.audio.SoundFX;
 import gl.morpion.controllers.GameController;
 import gl.morpion.model.Game;
@@ -16,12 +17,14 @@ import javafx.scene.paint.Color;
 
 /**
  * Custom JavaFX view that wraps a game board with a styled menu interface.
+ * <p>
  * Provides a back button and decorative styling around the game board.
- * Extends StackPane to layer background, game board, and UI elements.
+ * Extends {@link StackPane} to layer background, game board, and UI elements.
+ * </p>
  */
 public class GameBoardWithMenuView extends StackPane {
 
-    // ====== NOUVEAUX CHAMPS ======
+    // ====== NEW CHAMPS ======
     private final GameBoardView boardView;
     private final GameController gameController;
     private final GameMode gameMode;
@@ -29,16 +32,23 @@ public class GameBoardWithMenuView extends StackPane {
     private final String botDifficulty;
 
     /**
-     * Ancien constructeur "simple" (pour compatibilité).
-     * Par défaut on considère que c'est un PVP avec winCondition = 3.
+     * Default constructor for compatibility.
+     * Assumes a Player vs Player (PVP) mode with a win condition of 3.
+     *
+     * @param gameBoardView the view of the game board
+     * @param onBack        the callback for the "Back" button
      */
     public GameBoardWithMenuView(Node gameBoardView, Runnable onBack) {
         this(gameBoardView, onBack, null, GameMode.PVP, 3, null);
     }
 
     /**
-     * Ancien constructeur avec GameController (pour compatibilité).
-     * Par défaut on considère PVP avec winCondition = 3.
+     * Constructor for compatibility with GameController.
+     * Assumes Player vs Player (PVP) mode with a win condition of 3.
+     *
+     * @param gameBoardView the view of the game board
+     * @param onBack        the callback for the "Back" button
+     * @param gameController the game controller instance
      */
     public GameBoardWithMenuView(Node gameBoardView,
                                  Runnable onBack,
@@ -47,13 +57,20 @@ public class GameBoardWithMenuView extends StackPane {
     }
 
     /**
-     * Nouveau constructeur complet :
-     * - gameBoardView : la vue du plateau
-     * - onBack        : callback retour menu
-     * - gameController: pour accéder au Game (sauvegarde)
-     * - gameMode      : PVP / PVBOT / CUSTOM_PVP / CUSTOM_PVBOT…
-     * - winCondition  : nombre de symboles à aligner
-     * - botDifficulty : niveau du bot (ou null si pas de bot)
+     * Full constructor:
+     * - gameBoardView: the game board view
+     * - onBack        : callback for the back button
+     * - gameController: to access the game (for saving)
+     * - gameMode      : game mode (PVP / PVBOT / CUSTOM_PVP / CUSTOM_PVBOT)
+     * - winCondition  : the number of symbols required to align
+     * - botDifficulty : the bot difficulty (or null if no bot)
+     *
+     * @param gameBoardView  the view of the game board
+     * @param onBack         the callback for the "Back" button
+     * @param gameController the game controller instance
+     * @param gameMode       the game mode
+     * @param winCondition   the win condition (number of symbols required to win)
+     * @param botDifficulty  the bot difficulty (or null if not applicable)
      */
     public GameBoardWithMenuView(Node gameBoardView,
                                  Runnable onBack,
@@ -77,12 +94,12 @@ public class GameBoardWithMenuView extends StackPane {
         bg.prefWidthProperty().bind(widthProperty());
         bg.prefHeightProperty().bind(heightProperty());
 
-        // Bouton "Back"
+        // "Back" button
         Button backButton = new Button("← Back");
         backButton.getStyleClass().add("pill-button");
         backButton.setOnAction(e -> {
             if (onBack != null) {
-                // On passe toujours par le popup
+                // Always prompt for a save before going back
                 this.showAskSavePopup(onBack);
             }
         });
@@ -95,7 +112,7 @@ public class GameBoardWithMenuView extends StackPane {
         topBar.setPadding(new Insets(16, 16, 0, 16));
         topBar.setAlignment(Pos.CENTER_LEFT);
 
-        // Container pour le plateau
+        // Game board container
         StackPane gameContainer = new StackPane(gameBoardView);
         gameContainer.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
         gameContainer.setAlignment(Pos.CENTER);
@@ -127,8 +144,10 @@ public class GameBoardWithMenuView extends StackPane {
     }
 
     /**
-     * Popup "Voulez-vous sauvegarder la partie ?" avant de quitter.
-     * Utilise SaveManager pour écrire une sauvegarde complète.
+     * Prompts the user with a confirmation dialog to save the game before exiting.
+     * Uses {@link SaveManager} to write the full save data.
+     *
+     * @param onBack the callback to return to the previous screen if no save is made
      */
     public void showAskSavePopup(Runnable onBack) {
         Platform.runLater(() -> {
@@ -149,11 +168,11 @@ public class GameBoardWithMenuView extends StackPane {
 
             alert.showAndWait().ifPresent(response -> {
                 if (response == buttonTypeYes) {
-                    // On a accepté de sauvegarder
+                    // Save the game
                     if (gameController != null && gameController.getGame() != null) {
                         Game game = gameController.getGame();
 
-                        // Demande du nom de sauvegarde
+                        // Ask for the save name
                         String defaultName;
                         try {
                             String p1 = game.getPlayers().get(0).getName();
@@ -170,7 +189,7 @@ public class GameBoardWithMenuView extends StackPane {
 
                         nameDialog.showAndWait().ifPresent(saveName -> {
                             if (saveName != null && !saveName.isBlank()) {
-                                // Appel à ton SaveManager
+                                // Save using SaveManager
                                 SaveManager.saveGame(
                                         game,
                                         boardView,
@@ -181,18 +200,18 @@ public class GameBoardWithMenuView extends StackPane {
                                 );
                                 System.out.println("Game saved as: " + saveName);
                             }
-                            // dans tous les cas (nom donné ou pas) on retourne au menu
+                            // Return to the menu regardless of save name
                             onBack.run();
                         });
 
                     } else {
-                        // fallback : ancien comportement si on n'a pas de GameController
+                        // Fallback behavior if GameController is not available
                         this.boardView.save();
                         onBack.run();
                     }
 
                 } else if (response == buttonTypeNo) {
-                    // Pas de sauvegarde, retour direct
+                    // No save, return directly
                     onBack.run();
                     System.out.println("Save cancelled");
                 }

@@ -1,4 +1,5 @@
 package gl.morpion.view.menu;
+
 import gl.morpion.audio.SoundFX;
 import gl.morpion.model.CustomGameConfig;
 import javafx.geometry.Insets;
@@ -10,6 +11,12 @@ import javafx.scene.layout.VBox;
 
 import java.util.function.Consumer;
 
+/**
+ * CustomModeView is the UI screen for configuring and starting a custom game.
+ * <p>
+ * The user can configure the game board size, shape, win condition, and player names (Player vs Player or Player vs Bot).
+ * </p>
+ */
 public class CustomModeView extends BorderPane {
 
     private final Spinner<Integer> rowSpinner;
@@ -23,15 +30,21 @@ public class CustomModeView extends BorderPane {
     private final Label p2Label;
     private final Label winHintLabel;
 
+    /**
+     * Creates the Custom Mode view with the specified behavior for starting the game and navigating back.
+     *
+     * @param onStart a {@link Consumer} to be executed when the user starts the game with the configured settings
+     * @param onBack  a {@link Runnable} to be executed when the user clicks "Back"
+     */
     public CustomModeView(Consumer<CustomGameConfig> onStart, Runnable onBack) {
-        // Fond gradient
+        // Background gradient
         getStyleClass().add("main-menu-bg");
 
-        // ----- Titre -----
+        // ----- Title -----
         Label title = new Label("Custom mode");
         title.getStyleClass().add("title-glow");
 
-        // ----- Taille du plateau -----
+        // ----- Board Size -----
         Label sizeLabel = new Label("Board size (3 - 10 rows × 3 - 10 columns):");
         sizeLabel.getStyleClass().add("form-label");
 
@@ -47,7 +60,7 @@ public class CustomModeView extends BorderPane {
         );
         sizeBox.setAlignment(Pos.CENTER);
 
-        // ----- Forme du plateau -----
+        // ----- Board Shape -----
         Label shapeLabel = new Label("Board shape:");
         shapeLabel.getStyleClass().add("form-label");
 
@@ -57,7 +70,7 @@ public class CustomModeView extends BorderPane {
 
         shapeCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
             if ("Square".equalsIgnoreCase(newVal)) {
-                // carré → mêmes lignes et colonnes
+                // Square → same number of rows and columns
                 colSpinner.getValueFactory().setValue(rowSpinner.getValue());
             }
             updateWinMax();
@@ -72,21 +85,21 @@ public class CustomModeView extends BorderPane {
 
         colSpinner.valueProperty().addListener((obs, o, n) -> updateWinMax());
 
-        // ----- Win condition -----
+        // ----- Win Condition -----
         Label winLabel = new Label("Number of symbols to align (3 - 8):");
         winLabel.getStyleClass().add("form-label");
 
-        // de 3 à 8 comme dans les autres modes
+        // Range from 3 to 8 as in other modes
         winSpinner = new Spinner<>(3, 8, 5);
         winSpinner.setEditable(true);
 
-        // Petit texte explicatif sous le spinner
+        // Help text under the spinner
         winHintLabel = new Label();
         winHintLabel.getStyleClass().add("rules-text");
 
         winSpinner.valueProperty().addListener((obs, o, n) -> updateWinMax());
 
-        // ----- Mode de jeu -----
+        // ----- Game Mode -----
         Label modeLabel = new Label("Game mode:");
         modeLabel.getStyleClass().add("form-label");
 
@@ -101,7 +114,7 @@ public class CustomModeView extends BorderPane {
         HBox modeBox = new HBox(16, pvpRadio, pvbRadio);
         modeBox.setAlignment(Pos.CENTER);
 
-        // ----- Noms -----
+        // ----- Player Names -----
         Label p1Label = new Label("Name player 1 (X):");
         p1Label.getStyleClass().add("form-label");
         player1Field = new TextField();
@@ -116,17 +129,17 @@ public class CustomModeView extends BorderPane {
         player2Field.getStyleClass().add("text-input");
         player2Field.setMaxWidth(320);
 
-        // 🔁 Logique PVP / Bot pour le champ Player 2
+        // Logic for PVP / Bot for Player 2 field
         modeGroup.selectedToggleProperty().addListener((obs, oldT, newT) -> {
             boolean vsBot = newT == pvbRadio;
             if (vsBot) {
-                // Mode Bot → nom fixé "BOT", champ désactivé
+                // Bot mode → fixed name "BOT", disable field
                 player2Field.setText("BOT");
                 player2Field.setDisable(true);
                 player2Field.setOpacity(0.6);
                 p2Label.setText("Bot name (O):");
             } else {
-                // Mode PVP → champ éditable
+                // PVP mode → editable field
                 if ("BOT".equals(player2Field.getText())) {
                     player2Field.clear();
                 }
@@ -136,7 +149,7 @@ public class CustomModeView extends BorderPane {
             }
         });
 
-        // ----- Boutons -----
+        // ----- Buttons -----
         Button startBtn = new Button("Start game");
         startBtn.getStyleClass().add("big-button");
         startBtn.setOnAction(e -> {
@@ -153,14 +166,13 @@ public class CustomModeView extends BorderPane {
         });
         SoundFX.attachReturn(backBtn);
 
-
         VBox content = new VBox(
                 16,
                 title,
                 sizeLabel, sizeBox,
                 shapeLabel, shapeCombo,
                 winLabel, winSpinner,
-                winHintLabel,              // 🔹 texte "3 - 8 / limité par la taille"
+                winHintLabel,              // Help text "3 - 8 / limited by size"
                 modeLabel, modeBox,
                 p1Label, player1Field,
                 p2Label, player2Field,
@@ -174,20 +186,22 @@ public class CustomModeView extends BorderPane {
         setCenter(content);
         setPadding(new Insets(24));
 
-        // initialiser le texte d'aide
+        // Initialize the help text
         updateWinMax();
     }
 
     /**
-     * Met à jour la limite logique du nombre de symboles :
-     * - min(8, max(rows, cols))
-     * - met à jour le texte d'aide
+     * Updates the logical limit of the number of symbols to align.
+     * <p>
+     * The maximum is constrained to the smaller of 8 and the larger dimension of the board (rows or columns).
+     * </p>
+     * It also updates the help text shown below the win condition spinner.
      */
     private void updateWinMax() {
         int rows = rowSpinner.getValue();
         int cols = colSpinner.getValue();
         int maxBoard = Math.max(rows, cols);
-        int logicalMax = Math.min(8, maxBoard); // jamais > 8 et jamais > taille du plateau
+        int logicalMax = Math.min(8, maxBoard); // Never > 8 and never > board size
 
         SpinnerValueFactory<Integer> vf = winSpinner.getValueFactory();
         if (vf instanceof SpinnerValueFactory.IntegerSpinnerValueFactory intVF) {
@@ -197,13 +211,18 @@ public class CustomModeView extends BorderPane {
             }
         }
 
-        // texte explicatif comme dans tes autres écrans
+        // Help text as seen in other screens
         winHintLabel.setText(
                 "You can choose between 3 and " + logicalMax +
                         " symbols to align (limited by board size " + rows + " × " + cols + ")."
         );
     }
 
+    /**
+     * Builds a {@link CustomGameConfig} based on the user's input in the UI.
+     *
+     * @return a {@link CustomGameConfig} instance
+     */
     private CustomGameConfig buildConfig() {
         int rows = rowSpinner.getValue();
         int cols = colSpinner.getValue();
@@ -212,7 +231,7 @@ public class CustomModeView extends BorderPane {
         String shapeKey;
         if ("Square".equalsIgnoreCase(shapeLabel)) {
             shapeKey = "SQUARE";
-            cols = rows; // carré
+            cols = rows; // Square board
         } else {
             shapeKey = "RECTANGLE";
         }
